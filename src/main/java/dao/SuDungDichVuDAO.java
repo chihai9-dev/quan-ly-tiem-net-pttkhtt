@@ -1,3 +1,4 @@
+package dao;
 import entity.SuDungDichVu;
 import dao.DBConnection;
 import java.sql.*;
@@ -10,7 +11,6 @@ public class SuDungDichVuDAO{
     Connection conn = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
-
     /*
     Phương thức getByPhien, có chức năng lấy các thông tin của các ghi có mã phiên giống với mã phiên được truyền vô.
     parameter: mã phiên.
