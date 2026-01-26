@@ -1,3 +1,4 @@
+package dao;
 import entity.GoiDichVuKhachHang;
 
 import dao.DBConnection;
