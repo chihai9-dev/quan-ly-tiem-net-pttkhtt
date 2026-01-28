@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.net.ConnectException;
-public class KhuMayDAO {
+public class   KhuMayDAO {
     public List<KhuMay> getAll() {
         List<KhuMay> list = new ArrayList<>();
         String sql = "SELECT * FROM KhuMay ORDER BY MaKhu DESC";
@@ -47,7 +47,7 @@ public class KhuMayDAO {
             if(rs.next()){
                 String maKhu = rs.getString("MaKhu");
                 //LẤY TỪ VỊ TRÍ THỨ 2
-                int num = Integer.parseInt(maKhu.substring(2));
+                int num = Integer.parseInt(maKhu.substring(3));
                 //FORMAT CHO MÃ KHU
 
                 conn.close();
@@ -111,10 +111,12 @@ public class KhuMayDAO {
             pstmt.setDouble(3,km.getGiacoso());
             pstmt.setInt(4,km.getSomaytoida());
             pstmt.setString(5, "HOATDONG");
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Lỗi update KhachHang : " + e.getMessage());
+            throw new RuntimeException("Lỗi update KhuMay : " + e.getMessage());
         }
-        return true;
+
     }
 
 
@@ -146,7 +148,7 @@ public class KhuMayDAO {
                 return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Lỗi isTenKhuExists KhachHang " + e.getMessage());
+            throw new RuntimeException("Lỗi isTenKhuExists  " + e.getMessage());
         }
         return false;
     }
@@ -191,7 +193,7 @@ public class KhuMayDAO {
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
-            throw new RuntimeException("Lỗi update KhachHang : " + e.getMessage());
+            throw new RuntimeException("Lỗi update KhuMay : " + e.getMessage());
         }
         return true;
     }
