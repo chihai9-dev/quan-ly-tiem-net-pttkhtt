@@ -437,7 +437,7 @@ public class ChuongTrinhKhuyenMaiDAO {
         return result;
     }
 
-    // ===== 22. TẠO MÃ CHƯƠNG TRÌNH TỰ ĐỘNG =====
+    // ===== 22. TẠO MÃ CHƯƠNG TRÌNH TỰ ĐỘNG - ĐÃ SỬA THÀNH FORMAT KM =====
     public String taoMaChuongTrinhTuDong() {
         String sql = "SELECT MaCTKM FROM chuongtrinhkhuyenmai ORDER BY MaCTKM DESC LIMIT 1";
 
@@ -447,15 +447,33 @@ public class ChuongTrinhKhuyenMaiDAO {
 
             if (rs.next()) {
                 String maCuoi = rs.getString("MaCTKM");
-                int soThuTu = Integer.parseInt(maCuoi.substring(4)) + 1;
-                return String.format("CTKM%03d", soThuTu);
+
+                // Kiểm tra và xử lý các format khác nhau
+                if (maCuoi == null || maCuoi.isEmpty()) {
+                    return "KM001";  // ← SỬA: KM thay vì CTKM
+                }
+
+                // Loại bỏ tất cả ký tự không phải số
+                String soPhan = maCuoi.replaceAll("[^0-9]", "");
+
+                if (soPhan.isEmpty()) {
+                    return "KM001";  // ← SỬA: KM thay vì CTKM
+                }
+
+                try {
+                    int soThuTu = Integer.parseInt(soPhan) + 1;
+                    return String.format("KM%03d", soThuTu);  // ← SỬA: KM thay vì CTKM
+                } catch (NumberFormatException e) {
+                    System.out.println("Lỗi parse mã: " + maCuoi + " -> " + soPhan);
+                    return "KM001";  // ← SỬA: KM thay vì CTKM
+                }
             } else {
-                return "CTKM001";
+                return "KM001";  // ← SỬA: KM thay vì CTKM
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return "CTKM001";
+            return "KM001";  // ← SỬA: KM thay vì CTKM
         }
     }
 

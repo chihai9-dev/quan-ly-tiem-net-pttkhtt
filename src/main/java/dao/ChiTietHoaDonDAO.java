@@ -8,6 +8,10 @@ import java.util.List;
 
 public class ChiTietHoaDonDAO {
 
+    // Counter để tạo mã unique trong 1 phiên
+    private static int counter = 0;
+    private static String lastGeneratedBase = "";
+
     // ===== 1. THÊM CHI TIẾT HÓA ĐƠN =====
     public boolean them(ChiTietHoaDon chiTiet) {
         String sql = "INSERT INTO chitiethoadon (MaCTHD, MaHD, LoaiChiTiet, MoTa, " +
@@ -379,35 +383,66 @@ public class ChiTietHoaDonDAO {
         return false;
     }
 
-    // ===== 17. TẠO MÃ CHI TIẾT TỰ ĐỘNG =====
-    // Trong ChiTietHoaDonDAO.java
-    public String taoMaChiTietTuDong() {
-        try {
-            // Lấy số thứ tự từ DB
-            String sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(MaCTHD, 5) AS UNSIGNED)), 0) + 1 AS SoMoi FROM chitiethoadon";
-            Connection con = DBConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+    // ===== 17. TẠO MÃ CHI TIẾT TỰ ĐỘNG - SỬA DÙNG SYNCHRONIZED COUNTER =====
+    public synchronized String taoMaChiTietTuDong() {
+        String sql = "SELECT MaCTHD FROM chitiethoadon ORDER BY MaCTHD DESC LIMIT 1";
 
-            int soMoi = 1;
+        try (Connection conn = DBConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            int soThuTu = 1; // Mặc định
+
             if (rs.next()) {
-                soMoi = rs.getInt("SoMoi");
+                String maCuoi = rs.getString("MaCTHD");
+
+                if (maCuoi != null && !maCuoi.isEmpty()) {
+                    // Loại bỏ tất cả ký tự không phải số
+                    String soPhan = maCuoi.replaceAll("[^0-9]", "");
+
+                    if (!soPhan.isEmpty()) {
+                        try {
+                            // Chỉ lấy 3 chữ số cuối để tránh overflow
+                            if (soPhan.length() > 3) {
+                                soThuTu = Integer.parseInt(soPhan.substring(soPhan.length() - 3)) + 1;
+                            } else {
+                                soThuTu = Integer.parseInt(soPhan) + 1;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Lỗi parse mã: " + maCuoi);
+                            soThuTu = 1;
+                        }
+                    }
+                }
             }
 
-            rs.close();
-            ps.close();
+            // Tạo base code
+            String baseCode = String.format("CTHD%03d", soThuTu);
 
-            // Thêm timestamp để đảm bảo unique
-            long timestamp = System.currentTimeMillis() % 10000; // Lấy 4 chữ số cuối
+            // Nếu trùng với lần tạo trước, tăng counter
+            if (baseCode.equals(lastGeneratedBase)) {
+                counter++;
+                // Nếu vượt quá 999, reset về 1
+                if (soThuTu + counter > 999) {
+                    counter = 0;
+                    soThuTu = 1;
+                }
+                baseCode = String.format("CTHD%03d", soThuTu + counter);
+            } else {
+                // Mã mới, reset counter
+                counter = 0;
+                lastGeneratedBase = baseCode;
+            }
 
-            return String.format("CTHD%03d%04d", soMoi, timestamp);
-            // Ví dụ: CTHD0421234, CTHD0421235, CTHD0421236
+            return baseCode;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return "CTHD" + System.currentTimeMillis();
+            // Fallback: dùng timestamp
+            return "CTHD" + (System.currentTimeMillis() % 1000);
         }
     }
+
     // ===== 18. TÍNH THÀNH TIỀN TỰ ĐỘNG =====
     public static double tinhThanhTien(double soLuong, double donGia) {
         return soLuong * donGia;
