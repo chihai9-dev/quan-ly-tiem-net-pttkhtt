@@ -1,4 +1,5 @@
 package entity;
+import java.sql.*;
 
 public class KhuMay {
     private String makhu;
@@ -57,4 +58,24 @@ public class KhuMay {
     public void setTrangthai(String trangthai) {
         this.trangthai = trangthai;
     }
+    public String generateMaMay() {
+        String sql = "SELECT MaKH FROM khachhang ORDER BY MaKH DESC LIMIT 1";
+
+        try (
+                Connection conn = DBConnection.getConnection();
+                Statement st = conn.createStatement();
+                ResultSet rs = st.executeQuery(sql)
+        ) {
+            if (rs.next()) {
+                String lastMa = rs.getString("MaKH");  // VD: "KH015"
+                int num = Integer.parseInt(lastMa.substring(2));  // 15
+                return String.format("KH%03d", num + 1);  // "KH016"
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "MAY001";  // Nếu chưa có dữ liệu
+    }
+}
 }

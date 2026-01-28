@@ -1,81 +1,127 @@
 package entity;
 
 public class ChiTietHoaDon {
-    private String macthd;
-    private String mahd;
-    private String loaichitiet;
-    private String mota;
-    private double soluong;
-    private double dongia;
-    private double thanhtien;
+    private String maCTHD;
+    private String maHD;
+    private String loaiChiTiet;  // GIOCHOI hoặc DICHVU
+    private String moTa;
+    private double soLuong;
+    private double donGia;
+    private double thanhTien;
 
     public ChiTietHoaDon() {
+        this.soLuong = 1.0;
+        this.donGia = 0.0;
+        this.thanhTien = 0.0;
     }
 
-    public ChiTietHoaDon( String macthd,  String mahd, String loaichitiet, String mota,
-                         double soluong, double dongia, double thanhtien) {
-        this.macthd = macthd;
-        this.mahd = mahd;
-        this.loaichitiet = loaichitiet;
-        this.mota = mota;
-        this.soluong = soluong;
-        this.dongia = dongia;
-        this.thanhtien = thanhtien;
+    public ChiTietHoaDon(String maCTHD, String maHD, String loaiChiTiet,
+                         String moTa, double soLuong, double donGia, double thanhTien) {
+        this.maCTHD = maCTHD;
+        this.maHD = maHD;
+        this.loaiChiTiet = loaiChiTiet;
+        this.moTa = moTa;
+        this.soLuong = soLuong;
+        this.donGia = donGia;
+        this.thanhTien = thanhTien;
     }
 
-    public  String getMacthd() {
-        return macthd;
+    // Getters
+    public String getMaCTHD() {
+        return maCTHD;
     }
 
-    public void setMacthd( String macthd) {
-        this.macthd = macthd;
+    public String getMaHD() {
+        return maHD;
     }
 
-    public  String getMahd() {
-        return mahd;
+    public String getLoaiChiTiet() {
+        return loaiChiTiet;
     }
 
-    public void setMahd(String mahd) {
-        this.mahd = mahd;
+    public String getMoTa() {
+        return moTa;
     }
 
-    public String getLoaichitiet() {
-        return loaichitiet;
+    public double getSoLuong() {
+        return soLuong;
     }
 
-    public void setLoaichitiet(String loaichitiet) {
-        this.loaichitiet = loaichitiet;
+    public double getDonGia() {
+        return donGia;
     }
 
-    public String getMota() {
-        return mota;
+    public double getThanhTien() {
+        return thanhTien;
     }
 
-    public void setMota(String mota) {
-        this.mota = mota;
+    // Setters
+    public void setMaCTHD(String maCTHD) {
+        this.maCTHD = maCTHD;
     }
 
-    public double getSoluong() {
-        return soluong;
+    public void setMaHD(String maHD) {
+        this.maHD = maHD;
     }
 
-    public void setSoluong(double soluong) {
-        this.soluong = soluong;
+    public void setLoaiChiTiet(String loaiChiTiet) {
+        this.loaiChiTiet = loaiChiTiet;
     }
 
-    public double getDongia() {
-        return dongia;
+    public void setMoTa(String moTa) {
+        this.moTa = moTa;
     }
 
-    public void setDongia(double dongia) {
-        this.dongia = dongia;
+    public void setSoLuong(double soLuong) {
+        this.soLuong = soLuong;
     }
 
-    public double getThanhtien() {
-        return thanhtien;
+    public void setDonGia(double donGia) {
+        this.donGia = donGia;
     }
 
-    public void setThanhtien(double thanhtien) {
-        this.thanhtien = thanhtien;
+    public void setThanhTien(double thanhTien) {
+        this.thanhTien = thanhTien;
+    }
+
+    // Phương thức tính toán
+    public void tinhThanhTien() {
+        this.thanhTien = this.soLuong * this.donGia;
+    }
+
+    // Format hiển thị tiền
+    public String getDonGiaFormatted() {
+        return String.format("%,.0f VND", donGia);
+    }
+
+    public String getThanhTienFormatted() {
+        return String.format("%,.0f VND", thanhTien);
+    }
+
+    // Lấy tên loại chi tiết hiển thị
+    public String getTenLoaiChiTiet() {
+        if (loaiChiTiet == null) return "";
+
+        switch (loaiChiTiet) {
+            case "GIOCHOI":
+                return "Giờ chơi";
+            case "DICHVU":
+                return "Dịch vụ";
+            default:
+                return loaiChiTiet;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ChiTietHoaDon{" +
+                "maCTHD='" + maCTHD + '\'' +
+                ", maHD='" + maHD + '\'' +
+                ", loaiChiTiet='" + loaiChiTiet + '\'' +
+                ", moTa='" + moTa + '\'' +
+                ", soLuong=" + soLuong +
+                ", donGia=" + donGia +
+                ", thanhTien=" + thanhTien +
+                '}';
     }
 }

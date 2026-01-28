@@ -1,134 +1,221 @@
 package entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class LichSuNapTien {
-    private String manap;
-    private String makh;
-    private String manv;
-    private String mactkm;
-    private double sotiennap;
-    private double khuyenmai;
-    private double tongtiencong;
-    private double sodutruoc;
-    private double sodusau;
-    private String phuongthuc;
-    private String magiaodich;
-    private LocalDateTime ngaynap;
+    private String maNap;
+    private String maKH;
+    private String maNV;
+    private String maCTKM;
+    private double soTienNap;
+    private double khuyenMai;
+    private double tongTienCong;
+    private double soDuTruoc;
+    private double soDuSau;
+    private String phuongThuc;
+    private String maGiaoDich;
+    private LocalDateTime ngayNap;
 
     public LichSuNapTien() {
+        this.ngayNap = LocalDateTime.now();
+        this.soTienNap = 0.0;
+        this.khuyenMai = 0.0;
+        this.tongTienCong = 0.0;
+        this.soDuTruoc = 0.0;
+        this.soDuSau = 0.0;
     }
 
-    public LichSuNapTien(String manap, String makh, String manv, String mactkm, double sotiennap,
-                         double khuyenmai, double tongtiencong, double sodutruoc,
-                         double sodusau, String phuongthuc, String magiaodich, LocalDateTime ngaynap) {
-        this.manap = manap;
-        this.makh = makh;
-        this.manv = manv;
-        this.mactkm = mactkm;
-        this.sotiennap = sotiennap;
-        this.khuyenmai = khuyenmai;
-        this.tongtiencong = tongtiencong;
-        this.sodutruoc = sodutruoc;
-        this.sodusau = sodusau;
-        this.phuongthuc = phuongthuc;
-        this.magiaodich = magiaodich;
-        this.ngaynap = ngaynap;
+    public LichSuNapTien(String maNap, String maKH, String maNV, String maCTKM,
+                         double soTienNap, double khuyenMai, double tongTienCong,
+                         double soDuTruoc, double soDuSau, String phuongThuc,
+                         String maGiaoDich, LocalDateTime ngayNap) {
+        this.maNap = maNap;
+        this.maKH = maKH;
+        this.maNV = maNV;
+        this.maCTKM = maCTKM;
+        this.soTienNap = soTienNap;
+        this.khuyenMai = khuyenMai;
+        this.tongTienCong = tongTienCong;
+        this.soDuTruoc = soDuTruoc;
+        this.soDuSau = soDuSau;
+        this.phuongThuc = phuongThuc;
+        this.maGiaoDich = maGiaoDich;
+        this.ngayNap = ngayNap;
     }
 
-    public String getManap() {
-        return manap;
+    // Getters
+    public String getMaNap() {
+        return maNap;
     }
 
-    public void setManap(String manap) {
-        this.manap = manap;
+    public String getMaKH() {
+        return maKH;
     }
 
-    public String getMakh() {
-        return makh;
+    public String getMaNV() {
+        return maNV;
     }
 
-    public void setMakh(String makh) {
-        this.makh = makh;
+    public String getMaCTKM() {
+        return maCTKM;
     }
 
-    public String getManv() {
-        return manv;
+    public double getSoTienNap() {
+        return soTienNap;
     }
 
-    public void setManv(String manv) {
-        this.manv = manv;
+    public double getKhuyenMai() {
+        return khuyenMai;
     }
 
-    public String getMactkm() {
-        return mactkm;
+    public double getTongTienCong() {
+        return tongTienCong;
     }
 
-    public void setMactkm(String mactkm) {
-        this.mactkm = mactkm;
+    public double getSoDuTruoc() {
+        return soDuTruoc;
     }
 
-    public double getSotiennap() {
-        return sotiennap;
+    public double getSoDuSau() {
+        return soDuSau;
     }
 
-    public void setSotiennap(double sotiennap) {
-        this.sotiennap = sotiennap;
+    public String getPhuongThuc() {
+        return phuongThuc;
     }
 
-    public double getKhuyenmai() {
-        return khuyenmai;
+    public String getMaGiaoDich() {
+        return maGiaoDich;
     }
 
-    public void setKhuyenmai(double khuyenmai) {
-        this.khuyenmai = khuyenmai;
+    public LocalDateTime getNgayNap() {
+        return ngayNap;
     }
 
-    public double getTongtiencong() {
-        return tongtiencong;
+    // Setters
+    public void setMaNap(String maNap) {
+        this.maNap = maNap;
     }
 
-    public void setTongtiencong(double tongtiencong) {
-        this.tongtiencong = tongtiencong;
+    public void setMaKH(String maKH) {
+        this.maKH = maKH;
     }
 
-    public double getSodutruoc() {
-        return sodutruoc;
+    public void setMaNV(String maNV) {
+        this.maNV = maNV;
     }
 
-    public void setSodutruoc(double sodutruoc) {
-        this.sodutruoc = sodutruoc;
+    public void setMaCTKM(String maCTKM) {
+        this.maCTKM = maCTKM;
     }
 
-    public double getSodusau() {
-        return sodusau;
+    public void setSoTienNap(double soTienNap) {
+        this.soTienNap = soTienNap;
     }
 
-    public void setSodusau(double sodusau) {
-        this.sodusau = sodusau;
+    public void setKhuyenMai(double khuyenMai) {
+        this.khuyenMai = khuyenMai;
     }
 
-    public String getPhuongthuc() {
-        return phuongthuc;
+    public void setTongTienCong(double tongTienCong) {
+        this.tongTienCong = tongTienCong;
     }
 
-    public void setPhuongthuc(String phuongthuc) {
-        this.phuongthuc = phuongthuc;
+    public void setSoDuTruoc(double soDuTruoc) {
+        this.soDuTruoc = soDuTruoc;
     }
 
-    public String getMagiaodich() {
-        return magiaodich;
+    public void setSoDuSau(double soDuSau) {
+        this.soDuSau = soDuSau;
     }
 
-    public void setMagiaodich(String magiaodich) {
-        this.magiaodich = magiaodich;
+    public void setPhuongThuc(String phuongThuc) {
+        this.phuongThuc = phuongThuc;
     }
 
-    public LocalDateTime getNgaynap() {
-        return ngaynap;
+    public void setMaGiaoDich(String maGiaoDich) {
+        this.maGiaoDich = maGiaoDich;
     }
 
-    public void setNgaynap(LocalDateTime ngaynap) {
-        this.ngaynap = ngaynap;
+    public void setNgayNap(LocalDateTime ngayNap) {
+        this.ngayNap = ngayNap;
+    }
+
+    // Phương thức tính toán tự động
+    public void tinhTongTienCong() {
+        this.tongTienCong = this.soTienNap + this.khuyenMai;
+    }
+
+    public void tinhSoDuSau() {
+        this.soDuSau = this.soDuTruoc + this.tongTienCong;
+    }
+
+    // Format hiển thị tiền
+    public String getSoTienNapFormatted() {
+        return String.format("%,.0f VND", soTienNap);
+    }
+
+    public String getKhuyenMaiFormatted() {
+        return String.format("%,.0f VND", khuyenMai);
+    }
+
+    public String getTongTienCongFormatted() {
+        return String.format("%,.0f VND", tongTienCong);
+    }
+
+    public String getSoDuTruocFormatted() {
+        return String.format("%,.0f VND", soDuTruoc);
+    }
+
+    public String getSoDuSauFormatted() {
+        return String.format("%,.0f VND", soDuSau);
+    }
+
+    // Format hiển thị ngày
+    public String getNgayNapFormatted() {
+        if (ngayNap != null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            return ngayNap.format(formatter);
+        }
+        return "";
+    }
+
+    // Lấy tên phương thức thanh toán hiển thị
+    public String getTenPhuongThuc() {
+        if (phuongThuc == null) return "";
+
+        switch (phuongThuc) {
+            case "TIENMAT":
+                return "Tiền mặt";
+            case "MOMO":
+                return "MoMo";
+            case "CHUYENKHOAN":
+                return "Chuyển khoản";
+            case "VNPAY":
+                return "VNPay";
+            case "THE":
+                return "Thẻ ngân hàng";
+            default:
+                return phuongThuc;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "LichSuNapTien{" +
+                "maNap='" + maNap + '\'' +
+                ", maKH='" + maKH + '\'' +
+                ", maNV='" + maNV + '\'' +
+                ", maCTKM='" + maCTKM + '\'' +
+                ", soTienNap=" + soTienNap +
+                ", khuyenMai=" + khuyenMai +
+                ", tongTienCong=" + tongTienCong +
+                ", soDuTruoc=" + soDuTruoc +
+                ", soDuSau=" + soDuSau +
+                ", phuongThuc='" + phuongThuc + '\'' +
+                ", maGiaoDich='" + maGiaoDich + '\'' +
+                ", ngayNap=" + ngayNap +
+                '}';
     }
 }
