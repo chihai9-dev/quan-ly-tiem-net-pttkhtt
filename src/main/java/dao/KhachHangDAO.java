@@ -397,31 +397,30 @@ public class KhachHangDAO {
         return false;
     }
 
-    private  boolean hasActiveSession (String MaKH ){
+    private boolean hasActiveSession(String MaKH) {
         String sql = "SELECT COUNT(*) FROM phiensudung WHERE MaKH = ? AND TrangThai = 'DANGCHOI'";
-        try{
+        boolean hasSession = false; // Biến lưu kết quả
+
+        try {
             Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
-
-            pstmt.setString(1,MaKH);
-
+            pstmt.setString(1, MaKH);
             ResultSet rs = pstmt.executeQuery();
 
-
-
-            conn.close();
-            pstmt.close();
-
-
-            if(rs.next()){
-                return rs.getInt(1) > 0 ;
+            // 1. ĐỌC DỮ LIỆU TRƯỚC
+            if (rs.next()) {
+                hasSession = rs.getInt(1) > 0;
             }
 
-        }catch (SQLException e){
-            throw new RuntimeException("Lỗi hasActiveSession KhachHang " + e.getMessage());
+            // 2. SAU ĐÓ MỚI ĐÓNG KẾT NỐI
+            rs.close();
+            pstmt.close();
+            conn.close();
 
+        } catch (SQLException e) {
+            throw new RuntimeException("Lỗi hasActiveSession KhachHang " + e.getMessage());
         }
-        return  false;
+        return hasSession;
     }
     //Tìm khách hàng theo Id
     private KhachHang getById(String MaKH){
