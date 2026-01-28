@@ -26,7 +26,7 @@ public class SuDungDichVu {
     }
 
     public String getMasd() {
-        return masd;
+        return this.masd;
     }
 
     public void setMasd(String masd) {
@@ -34,7 +34,7 @@ public class SuDungDichVu {
     }
 
     public String getMaphien() {
-        return maphien;
+        return this.maphien;
     }
 
     public void setMaphien(String maphien) {
@@ -42,7 +42,7 @@ public class SuDungDichVu {
     }
 
     public String getMadv() {
-        return madv;
+        return this.madv;
     }
 
     public void setMadv(String madv) {
@@ -50,7 +50,7 @@ public class SuDungDichVu {
     }
 
     public int getSoluong() {
-        return soluong;
+        return this.soluong;
     }
 
     public void setSoluong(int soluong) {
@@ -58,7 +58,7 @@ public class SuDungDichVu {
     }
 
     public double getDongia() {
-        return dongia;
+        return this.dongia;
     }
 
     public void setDongia(double dongia) {
@@ -66,7 +66,7 @@ public class SuDungDichVu {
     }
 
     public double getThanhtien() {
-        return thanhtien;
+        return this.thanhtien;
     }
 
     public void setThanhtien(double thanhtien) {
@@ -74,7 +74,7 @@ public class SuDungDichVu {
     }
 
     public LocalDateTime getThoigian() {
-        return thoigian;
+        return this.thoigian;
     }
 
     public void setThoigian(LocalDateTime thoigian) {

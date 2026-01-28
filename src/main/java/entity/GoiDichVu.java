@@ -15,8 +15,8 @@ public class GoiDichVu {
     }
 
     public GoiDichVu( String magoi, String tengoi, String loaigoi, double sogio,
-                     int songayhieuluc, double giagoc, double giagoi,
-                     String apdungchokhu, String trangthai) {
+                      int songayhieuluc, double giagoc, double giagoi,
+                      String apdungchokhu, String trangthai) {
         this.magoi = magoi;
         this.tengoi = tengoi;
         this.loaigoi = loaigoi;
@@ -29,7 +29,7 @@ public class GoiDichVu {
     }
 
     public String getMagoi() {
-        return magoi;
+        return this.magoi;
     }
 
     public void setMagoi(String magoi) {
@@ -37,7 +37,7 @@ public class GoiDichVu {
     }
 
     public String getTengoi() {
-        return tengoi;
+        return this.tengoi;
     }
 
     public void setTengoi(String tengoi) {
@@ -45,7 +45,7 @@ public class GoiDichVu {
     }
 
     public String getLoaigoi() {
-        return loaigoi;
+        return this.loaigoi;
     }
 
     public void setLoaigoi(String loaigoi) {
@@ -53,7 +53,7 @@ public class GoiDichVu {
     }
 
     public double getSogio() {
-        return sogio;
+        return this.sogio;
     }
 
     public void setSogio(double sogio) {
@@ -61,7 +61,7 @@ public class GoiDichVu {
     }
 
     public int getSongayhieuluc() {
-        return songayhieuluc;
+        return this.songayhieuluc;
     }
 
     public void setSongayhieuluc(int songayhieuluc) {
@@ -69,7 +69,7 @@ public class GoiDichVu {
     }
 
     public double getGiagoc() {
-        return giagoc;
+        return this.giagoc;
     }
 
     public void setGiagoc(double giagoc) {
@@ -77,7 +77,7 @@ public class GoiDichVu {
     }
 
     public double getGiagoi() {
-        return giagoi;
+        return this.giagoi;
     }
 
     public void setGiagoi(double giagoi) {
@@ -85,7 +85,7 @@ public class GoiDichVu {
     }
 
     public String getApdungchokhu() {
-        return apdungchokhu;
+        return this.apdungchokhu;
     }
 
     public void setApdungchokhu(String apdungchokhu) {
@@ -93,7 +93,7 @@ public class GoiDichVu {
     }
 
     public String getTrangthai() {
-        return trangthai;
+        return this.trangthai;
     }
 
     public void setTrangthai(String trangthai) {

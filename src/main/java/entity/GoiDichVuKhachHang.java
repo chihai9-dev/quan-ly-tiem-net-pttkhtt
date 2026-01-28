@@ -18,9 +18,9 @@ public class GoiDichVuKhachHang {
     }
 
     public GoiDichVuKhachHang(String magoikh, String makh, String magoi, String manv,
-                               double sogiobandau, double sogioconlai,
-                               LocalDateTime ngaymua, LocalDateTime ngayhethan,
-                               double giamua, String trangthai) {
+                              double sogiobandau, double sogioconlai,
+                              LocalDateTime ngaymua, LocalDateTime ngayhethan,
+                              double giamua, String trangthai) {
         this.magoikh = magoikh;
         this.makh = makh;
         this.magoi = magoi;
@@ -34,7 +34,7 @@ public class GoiDichVuKhachHang {
     }
 
     public String getMagoikh() {
-        return magoikh;
+        return this.magoikh;
     }
 
     public void setMagoikh(String magoikh) {
@@ -42,7 +42,7 @@ public class GoiDichVuKhachHang {
     }
 
     public String getMakh() {
-        return makh;
+        return this.makh;
     }
 
     public void setMakh(String makh) {
@@ -50,7 +50,7 @@ public class GoiDichVuKhachHang {
     }
 
     public String getMagoi() {
-        return magoi;
+        return this.magoi;
     }
 
     public void setMagoi(String magoi) {
@@ -58,7 +58,7 @@ public class GoiDichVuKhachHang {
     }
 
     public String getManv() {
-        return manv;
+        return this.manv;
     }
 
     public void setManv(String manv) {
@@ -66,7 +66,7 @@ public class GoiDichVuKhachHang {
     }
 
     public double getSogiobandau() {
-        return sogiobandau;
+        return this.sogiobandau;
     }
 
     public void setSogiobandau(double sogiobandau) {
@@ -74,7 +74,7 @@ public class GoiDichVuKhachHang {
     }
 
     public double getSogioconlai() {
-        return sogioconlai;
+        return this.sogioconlai;
     }
 
     public void setSogioconlai(double sogioconlai) {
@@ -82,7 +82,7 @@ public class GoiDichVuKhachHang {
     }
 
     public LocalDateTime getNgaymua() {
-        return ngaymua;
+        return this.ngaymua;
     }
 
     public void setNgaymua(LocalDateTime ngaymua) {
@@ -90,7 +90,7 @@ public class GoiDichVuKhachHang {
     }
 
     public LocalDateTime getNgayhethan() {
-        return ngayhethan;
+        return this.ngayhethan;
     }
 
     public void setNgayhethan(LocalDateTime ngayhethan) {
@@ -98,7 +98,7 @@ public class GoiDichVuKhachHang {
     }
 
     public double getGiamua() {
-        return giamua;
+        return this.giamua;
     }
 
     public void setGiamua(double giamua) {
@@ -106,7 +106,7 @@ public class GoiDichVuKhachHang {
     }
 
     public String getTrangthai() {
-        return trangthai;
+        return this.trangthai;
     }
 
     public void setTrangthai(String trangthai) {
