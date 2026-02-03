@@ -1,73 +1,60 @@
 package entity;
 
-import java.math.BigDecimal;
-
 public class ChiTietPhieuNhap {
-    private String mactpn;
-    private String maphieunhap;
-    private String madv;
-    private int soluong;
-    private double gianhap;
-    private double thanhtien;
+    private String maCTPN;
+    private String maPhieuNhap;
+    private String maDV;
+    private int soLuong;
+    private double giaNhap;
+    private double thanhTien;
 
-    public ChiTietPhieuNhap() {
+    public ChiTietPhieuNhap() {}
+
+    public String getMaCTPN() {
+        return maCTPN;
     }
 
-    public ChiTietPhieuNhap(String mactpn, String maphieunhap, String madv, int soluong,
-                            double gianhap, double thanhtien) {
-        this.mactpn = mactpn;
-        this.maphieunhap = maphieunhap;
-        this.madv = madv;
-        this.soluong = soluong;
-        this.gianhap = gianhap;
-        this.thanhtien = thanhtien;
+    public void setMaCTPN(String maCTPN) {
+        this.maCTPN = maCTPN;
     }
 
-    public String getMactpn() {
-        return mactpn;
+    public String getMaPhieuNhap() {
+        return maPhieuNhap;
     }
 
-    public void setMactpn(String mactpn) {
-        this.mactpn = mactpn;
+    public void setMaPhieuNhap(String maPhieuNhap) {
+        this.maPhieuNhap = maPhieuNhap;
     }
 
-    public String getMaphieunhap() {
-        return maphieunhap;
+    public String getMaDV() {
+        return maDV;
     }
 
-    public void setMaphieunhap(String maphieunhap) {
-        this.maphieunhap = maphieunhap;
+    public void setMaDV(String maDV) {
+        this.maDV = maDV;
     }
 
-    public String getMadv() {
-        return madv;
+    public int getSoLuong() {
+        return soLuong;
     }
 
-    public void setMadv(String madv) {
-        this.madv = madv;
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
     }
 
-    public int getSoluong() {
-        return soluong;
+    public double getGiaNhap() {
+        return giaNhap;
     }
 
-    public void setSoluong(int soluong) {
-        this.soluong = soluong;
+    public void setGiaNhap(double giaNhap) {
+        this.giaNhap = giaNhap;
     }
 
-    public double getGianhap() {
-        return gianhap;
+    public double getThanhTien() {
+        return thanhTien;
     }
 
-    public void setGianhap(double gianhap) {
-        this.gianhap = gianhap;
-    }
-
-    public double getThanhtien() {
-        return thanhtien;
-    }
-
-    public void setThanhtien(double thanhtien) {
-        this.thanhtien = thanhtien;
+    public void setThanhTien(double thanhTien) {
+        this.thanhTien = thanhTien;
     }
 }
