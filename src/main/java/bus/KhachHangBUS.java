@@ -2,6 +2,9 @@ package bus;
 
 import dao.KhachHangDAO;
 import entity.KhachHang;
+import untils.PermissionHelper;
+import untils.SessionManager;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,114 +15,122 @@ public class KhachHangBUS {
         this.khachHangDAO = new KhachHangDAO();
     }
 
-    // Lấy danh sách tất cả khách hàng
-    public List<KhachHang> getAllKhachHang() {
-        return khachHangDAO.getAll();
-    }
-
-    // Tìm kiếm khách hàng (Tìm theo Tên hoặc SĐT)
-    // Vì DAO chưa có hàm search, BUS sẽ xử lý lọc list (theo nguyên tắc Layered Architecture)
-    public List<KhachHang> timKiemKhachHang(String keyword) {
-        List<KhachHang> all = khachHangDAO.getAll();
-        if (keyword == null || keyword.isEmpty()) {
-            return all;
-        }
-        String key = keyword.toLowerCase();
-        return all.stream()
-                .filter(kh -> kh.getTen().toLowerCase().contains(key) ||
-                        kh.getHo().toLowerCase().contains(key) ||
-                        (kh.getSodienthoai() != null && kh.getSodienthoai().contains(key)))
-                .collect(Collectors.toList());
-    }
-
-    // Đăng nhập dành cho Khách hàng (Tại máy trạm)
     public KhachHang dangNhap(String tenDangNhap, String matKhau) throws Exception {
         try {
             KhachHang kh = khachHangDAO.login(tenDangNhap, matKhau);
             if (kh == null) {
-                throw new Exception("Tên đăng nhập hoặc mật khẩu không đúng!");
+                throw new Exception("Sai tên đăng nhập hoặc mật khẩu!");
             }
-            if (kh.isNgung()) {
-                throw new Exception("Tài khoản khách hàng đã bị khóa!");
-            }
+            // Lưu session khách hàng
+            SessionManager.setCurrentUser(kh);
             return kh;
         } catch (RuntimeException e) {
             throw new Exception(e.getMessage());
         }
     }
 
-    // Thêm khách hàng mới (Đăng ký)
+    public List<KhachHang> getAllKhachHang() throws Exception {
+        // Cả Quản lý và Nhân viên đều xem được danh sách KH
+        PermissionHelper.requireNhanVien();
+        return khachHangDAO.getAll();
+    }
+
     public boolean themKhachHang(KhachHang kh) throws Exception {
-        // 1. Validate dữ liệu đầu vào
-        if (kh.getHo() == null || kh.getTen() == null) {
-            throw new Exception("Họ và tên không được để trống!");
-        }
+        // Theo tài liệu nghiệp vụ: Thêm KH cần quyền QUANLY
+        // Nếu thực tế NHANVIEN được thêm, hãy sửa requireQuanLy() thành requireNhanVien() ở đây
+        PermissionHelper.requireQuanLy();
 
-        // Kiểm tra SĐT (10 số, bắt đầu bằng 0)
-        if (kh.getSodienthoai() != null && !kh.getSodienthoai().matches("^0\\d{9}$")) {
-            throw new Exception("Số điện thoại không đúng định dạng (phải có 10 số)!");
-        }
-
-        // Kiểm tra trùng tên đăng nhập
+        // Validate nghiệp vụ bổ sung
         if (khachHangDAO.isTenDangNhapExists(kh.getTendangnhap())) {
-            throw new Exception("Tên đăng nhập '" + kh.getTendangnhap() + "' đã có người sử dụng!");
+            throw new Exception("Tên đăng nhập '" + kh.getTendangnhap() + "' đã tồn tại!");
         }
 
         try {
-            return khachHangDAO.insert(kh);
+            boolean result = khachHangDAO.insert(kh);
+            if (result) {
+                PermissionHelper.logAction("Thêm khách hàng", kh.getMakh());
+            }
+            return result;
         } catch (RuntimeException e) {
-            throw new Exception("Lỗi thêm khách hàng: " + e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
 
-    // Cập nhật thông tin khách hàng
     public boolean suaKhachHang(KhachHang kh) throws Exception {
-        // Validate cơ bản
-        if (kh.getMatkhau() != null && kh.getMatkhau().length() < 6) {
-            throw new Exception("Mật khẩu mới phải có ít nhất 6 ký tự!");
+        // Kiểm tra quyền sửa (Helper logic: QUANLY sửa all, NHANVIEN không được sửa)
+        if (!PermissionHelper.canEditKhachHang(kh.getMakh())) {
+            // Nếu Helper trả về false (do là NHANVIEN), ta ném lỗi rõ ràng
+            throw new Exception("Chỉ Quản lý mới có quyền sửa thông tin khách hàng!");
         }
 
         try {
-            return khachHangDAO.update(kh);
+            boolean result = khachHangDAO.update(kh);
+            if (result) {
+                PermissionHelper.logAction("Sửa khách hàng", kh.getMakh());
+            }
+            return result;
         } catch (RuntimeException e) {
-            throw new Exception("Lỗi cập nhật: " + e.getMessage());
+            throw new Exception(e.getMessage());
         }
     }
 
-    // Xóa khách hàng (Khóa tài khoản)
     public boolean xoaKhachHang(String maKH) throws Exception {
-        // 1. Kiểm tra logic nghiệp vụ [cite: 123]
-        // DAO delete() đã kiểm tra hasActiveSession (Khách đang chơi) và ném exception nếu có.
+        PermissionHelper.requireQuanLy();
 
         try {
-            return khachHangDAO.delete(maKH);
+            // DAO đã kiểm tra phiên chơi (hasActiveSession)
+            boolean result = khachHangDAO.delete(maKH);
+            if (result) {
+                PermissionHelper.logAction("Xóa khách hàng", maKH);
+            }
+            return result;
         } catch (RuntimeException e) {
-            // Chuyển RuntimeException từ DAO thành Exception có message rõ ràng cho GUI
             throw new Exception(e.getMessage());
         }
     }
 
-    // Khôi phục khách hàng
     public boolean khoiPhucKhachHang(String maKH) throws Exception {
+        PermissionHelper.requireQuanLy();
         try {
-            return khachHangDAO.restore(maKH);
+            boolean result = khachHangDAO.restore(maKH);
+            if (result) {
+                PermissionHelper.logAction("Khôi phục khách hàng", maKH);
+            }
+            return result;
         } catch (RuntimeException e) {
             throw new Exception(e.getMessage());
         }
     }
 
-    // Lấy cảnh báo trước khi xóa (Check số dư, gói còn hạn...) [cite: 123]
-    public String getCanhBaoXoa(String maKH) {
-        return khachHangDAO.getDeleteWarning(maKH);
+    /**
+     * Tìm kiếm khách hàng (In-memory search)
+     * Vì DAO chưa có hàm search SQL, ta lọc từ list all
+     */
+    public List<KhachHang> timKiem(String keyword) throws Exception {
+        PermissionHelper.requireNhanVien(); // NV và QL đều được tìm
+
+        List<KhachHang> allList = khachHangDAO.getAll();
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return allList;
+        }
+
+        String key = keyword.toLowerCase().trim();
+
+        return allList.stream()
+                .filter(kh ->
+                        (kh.getTen() != null && kh.getTen().toLowerCase().contains(key)) ||
+                                (kh.getHo() != null && kh.getHo().toLowerCase().contains(key)) ||
+                                (kh.getSodienthoai() != null && kh.getSodienthoai().contains(key)) ||
+                                (kh.getMakh() != null && kh.getMakh().toLowerCase().contains(key)) ||
+                                (kh.getTendangnhap() != null && kh.getTendangnhap().toLowerCase().contains(key))
+                )
+                .collect(Collectors.toList());
     }
 
-    // Lấy khách hàng theo ID
-    public KhachHang getKhachHangById(String maKH) throws Exception {
-        // Vì DAO không public getById, ta dùng getAll filter hoặc thêm hàm getById public vào DAO.
-        // Ở đây giả định ta sẽ tìm trong getAll để không sửa DAO.
-        return khachHangDAO.getAll().stream()
-                .filter(kh -> kh.getMakh().equals(maKH))
-                .findFirst()
-                .orElse(null);
+    // Lấy cảnh báo (Số dư, Gói...) để hiện popup confirm
+    public String getCanhBaoXoa(String maKH) throws Exception {
+        PermissionHelper.requireQuanLy();
+        return khachHangDAO.getDeleteWarning(maKH);
     }
 }
