@@ -17,7 +17,7 @@ public class PhieuNhapHangDAO {
      * Sinh mã phiếu nhập theo dạng timestamp để KHÔNG phụ thuộc dữ liệu cũ trong DB.
      * Ví dụ: PN260201_154312
      *
-     * Lý do: DB của bạn đã có mã dạng PNyyMMdd_HHmmss nên cách tăng PN001 sẽ bị NumberFormatException.
+     * Lý do: DB  đã có mã dạng PNyyMMdd_HHmmss nên cách tăng PN001 sẽ bị NumberFormatException.
      */
     private String genMaPhieuNhap(Connection conn) {
         String base = "PN" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"));
@@ -112,7 +112,10 @@ public class PhieuNhapHangDAO {
                 ps.setString(1, maPN);
                 ps.setString(2, maNCC);
                 ps.setString(3, maNV);
-                ps.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+
+                // ✅ đổi sang LocalDateTime (logic vẫn là "thời điểm hiện tại")
+                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
+
                 ps.setDouble(5, 0.0);
                 ps.setString(6, "CHODUYET");
                 ps.executeUpdate();
@@ -270,7 +273,11 @@ public class PhieuNhapHangDAO {
         pn.setMaPhieuNhap(rs.getString("MaPhieuNhap"));
         pn.setMaNCC(rs.getString("MaNCC"));
         pn.setMaNV(rs.getString("MaNV"));
-        pn.setNgayNhap(rs.getTimestamp("NgayNhap"));
+
+
+        Timestamp ts = rs.getTimestamp("NgayNhap");
+        pn.setNgayNhap(ts == null ? null : ts.toLocalDateTime());
+
         pn.setTongTien(rs.getDouble("TongTien"));
         pn.setTrangThai(rs.getString("TrangThai"));
         return pn;
