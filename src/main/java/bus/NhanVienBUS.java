@@ -50,28 +50,31 @@ public class NhanVienBUS {
     }
 
     public boolean doiMatKhau(String maNV, String mkCu, String mkMoi) throws Exception {
-        // Kiểm tra quyền (Chính chủ hoặc Quản lý)
+        // 1. Kiểm tra quyền
         PermissionHelper.canEditNhanVien(maNV);
 
+        // 2. Validate mật khẩu mới
         if (mkMoi == null || mkMoi.length() < 6) {
-            throw new Exception("Mật khẩu mới phải từ 6 ký tự!");
+            throw new Exception("Mật khẩu mới phải có ít nhất 6 ký tự!");
         }
 
         NhanVien nv = nhanVienDAO.getById(maNV);
-        if (nv == null) throw new Exception("Nhân viên không tồn tại!");
+        if (nv == null) {
+            throw new Exception("Nhân viên không tồn tại!");
+        }
 
-        // Nếu là tự đổi mật khẩu thì phải nhập đúng mật khẩu cũ
-        // (Nếu Quản lý đổi cho người khác thì có thể bỏ qua bước này tùy nghiệp vụ)
-        if (!PermissionHelper.isQuanLy() || (mkCu != null && !mkCu.isEmpty())) {
+        // 3. Kiểm tra mật khẩu cũ
+        // SỬA LẠI DÒNG NÀY: Dùng SessionManager.isQuanLy() thay vì PermissionHelper
+        if (!SessionManager.isQuanLy() || (mkCu != null && !mkCu.trim().isEmpty())) {
             if (!PasswordEncoder.matches(mkCu, nv.getMatkhau())) {
-                throw new Exception("Mật khẩu cũ sai!");
+                throw new Exception("Mật khẩu cũ không chính xác!");
             }
         }
 
-        // Mã hóa mật khẩu mới và cập nhật
+        // 4. Cập nhật mật khẩu mới (Mã hóa)
         nv.setMatkhau(PasswordEncoder.encode(mkMoi));
 
-        // Gọi DAO update (lấy người thực hiện từ Session)
+        // 5. Gọi DAO update
         return nhanVienDAO.update(nv, SessionManager.getCurrentNhanVien());
     }
 
