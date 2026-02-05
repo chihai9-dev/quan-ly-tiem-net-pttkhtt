@@ -144,8 +144,24 @@ public class KhachHangBUS {
             throw new Exception(e.getMessage());
         }
     }
+    // ================== KIỂM TRA SỐ DƯ ==================
+    public double kiemTraSoDu(String maKH) throws Exception {
+        // 1. Kiểm tra quyền: Chỉ Nhân viên hoặc Quản lý mới được xem
+        PermissionHelper.requireNhanVien();
 
-    public List<KhachHang> timKiem(String keyword) throws Exception {
+        // 2. Gọi DAO lấy thông tin khách hàng
+        KhachHang kh = khachHangDAO.getById(maKH);
+
+        // 3. Kiểm tra tồn tại
+        if (kh == null) {
+            throw new Exception("Khách hàng không tồn tại!");
+        }
+
+        // 4. Trả về số dư
+        return kh.getSodu();
+    }
+
+    public List<KhachHang> timKiemKhachHang(String keyword) throws Exception {
         PermissionHelper.requireNhanVien();
         List<KhachHang> allList = khachHangDAO.getAll();
         if (keyword == null || keyword.trim().isEmpty()) {

@@ -226,7 +226,7 @@ public class KhachHangDAO {
 
         if(kh.getSodu() > 0 ){
             warning.append("Khách hàng còn số dư : ")
-                    .append(String.format("%,.0f",kh.getSodu()))
+                    .append(String.format(java.util.Locale.GERMANY, "%,.0f", kh.getSodu()))
                     .append(" đồng. \n ");
 
         }
@@ -422,7 +422,7 @@ public class KhachHangDAO {
         return hasSession;
     }
     //Tìm khách hàng theo Id
-    private KhachHang getById(String MaKH){
+    public KhachHang getById(String MaKH){
         KhachHang kh = null;
         String sql = "SELECT * FROM khachhang WHERE MaKH = ?";
 
