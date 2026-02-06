@@ -206,6 +206,15 @@ public class MayTinhDAO {
         return updateTrangThai(maMay, "BAOTRI", "TRONG");
     }
 
+    public void chuyenDangDung(String maMay) {
+        // chuyển trạng thái TRONG sang DANGDUNG
+        updateTrangThai(maMay, "TRONG", "DANGDUNG");
+    }
+    public void chuyenTrong(String maMay) {
+        // chuyển trạng thái DANGDUNG sang TRONG
+        updateTrangThai(maMay, "DANGDUNG", "TRONG");
+    }
+
     public boolean ngungSuDung(String maMay) {
         String sql = "UPDATE MayTinh SET TrangThai = 'NGUNG' " +
                 "WHERE MaMay = ? AND (TrangThai = 'TRONG' OR TrangThai = 'BAOTRI')";

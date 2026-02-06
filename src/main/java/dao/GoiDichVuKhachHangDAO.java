@@ -60,6 +60,43 @@ public class GoiDichVuKhachHangDAO{
         return danhSach;
     }
 
+    public GoiDichVuKhachHang getByMaGoiKhachHang(String maGoiKH) {
+        GoiDichVuKhachHang goiKH = new GoiDichVuKhachHang();
+        String sql = "SELECT MaGoiKH, MaKH, MaGoi, MaNV, SoGioBanDau, SoGioConLai, NgayMua, " +
+                "NgayHetHan, GiaMua, TrangThai " + "FROM goidichvu_khachhang WHERE MaGoiKH = ?";
+
+        try {
+            conn = DBConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, maGoiKH);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String magoikh = rs.getString("MaGoiKH");
+                String makh = rs.getString("MaKH");
+                String magoi = rs.getString("MaGoi");
+                String manv = rs.getString("MaNV");
+                double sogiobandau = rs.getDouble("SoGioBanDau");
+                double sogioconlai = rs.getDouble("SoGioConLai");
+                LocalDateTime ngaymua = rs.getTimestamp("NgayMua").toLocalDateTime();
+                LocalDateTime ngayhethan = rs.getTimestamp("NgayHetHan").toLocalDateTime();
+                double giamua = rs.getDouble("GiaMua");
+                String trangthai = rs.getString("TrangThai");
+
+                GoiDichVuKhachHang gdvkh = new GoiDichVuKhachHang(magoikh, makh, magoi, manv,
+                        sogiobandau, sogioconlai, ngaymua, ngayhethan, giamua, trangthai);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("[LỖI GETBYMAGOIKHACHHANG - GoiDichVuKhachHangDAO]: " + e.getMessage());
+            return null;
+        } finally {
+            DBConnection.closeConnection();
+        }
+
+        return goiKH;
+    }
+
     /*
     Phương thức insert: tạo thêm một ghi.
     paramter: GoiDichVuKhachHang newGDVKH.

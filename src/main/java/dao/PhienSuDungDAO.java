@@ -1,680 +1,551 @@
 package dao;
 
+import entity.PhienSuDung;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import entity.PhienSuDung;
 
 /**
- * DAO class để quản lý phiên sử dụng
- * Các phương thức: getAll, getById, getByMay, insert, update, ketThucPhien
+ * PhienSuDungDAO - Data Access Object cho bảng phiensudung
+ *
+ * Class này xử lý tất cả các thao tác CRUD với database cho PhienSuDung.
+ * Bao gồm: tạo phiên mới, kết thúc phiên, cập nhật thông tin, truy vấn...
+ *
+ * @author QuanLyTiemNet Team
+ * @version 1.0
+ * @since 2026-02-03
  */
 public class PhienSuDungDAO {
 
+    // ============== CONSTRUCTOR ==============
+
+    /**
+     * Constructor mặc định
+     */
+    public PhienSuDungDAO() {
+        // Constructor công khai - có thể tạo nhiều instance
+    }
+
+    // ============== CRUD METHODS ==============
+
     /**
      * Lấy tất cả phiên sử dụng
-     * @return List<PhienSuDung> danh sách tất cả phiên
+     *
+     * @return Danh sách tất cả phiên sử dụng
+     * @throws SQLException nếu có lỗi database
      */
-    public List<PhienSuDung> getAll() {
-        List<PhienSuDung> danhSach = new ArrayList<>();
-        String sql = "SELECT * FROM phiensudung ORDER BY GioBatDau DESC";
+    public ArrayList<PhienSuDung> getAll() throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung ORDER BY gioBatDau DESC";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
 
             while (rs.next()) {
-                PhienSuDung phien = mapResultSetToPhienSuDung(rs);
-                danhSach.add(phien);
+                list.add(mapResultSetToPhienSuDung(rs));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return danhSach;
+        return list;
     }
 
     /**
-     * Lấy phiên sử dụng theo mã
-     * @param maPhien mã phiên cần tìm
+     * Lấy phiên sử dụng theo mã phiên
+     *
+     * @param maPhien Mã phiên cần tìm
      * @return PhienSuDung hoặc null nếu không tìm thấy
+     * @throws SQLException nếu có lỗi database
      */
-    public PhienSuDung getById(String maPhien) {
-        String sql = "SELECT * FROM phiensudung WHERE MaPhien = ?";
+    public PhienSuDung getByMaPhien(String maPhien) throws SQLException {
+        String sql = "SELECT * FROM phiensudung WHERE maPhien = ?";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, maPhien);
+            pst.setString(1, maPhien);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToPhienSuDung(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return null;
     }
 
     /**
-     * Lấy phiên sử dụng theo mã máy
-     * @param maMay mã máy
-     * @return List<PhienSuDung> danh sách phiên của máy
+     * Thêm phiên sử dụng mới
+     *
+     * @param phien PhienSuDung cần thêm
+     * @return true nếu thêm thành công
+     * @throws SQLException nếu có lỗi database
      */
-    public List<PhienSuDung> getByMay(String maMay) {
-        List<PhienSuDung> danhSach = new ArrayList<>();
-        String sql = "SELECT * FROM phiensudung WHERE MaMay = ? ORDER BY GioBatDau DESC";
+    public boolean insert(PhienSuDung phien) throws SQLException {
+        String sql = "INSERT INTO phiensudung (maPhien, maKH, maMay, maNV, maGoiKH, " +
+                "gioBatDau, gioKetThuc, tongGio, gioSuDungTuGoi, gioSuDungTuTaiKhoan, " +
+                "giaMoiGio, tienGioChoi, loaiThanhToan, trangThai) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, maMay);
+            setPhienSuDungParameters(pst, phien);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    PhienSuDung phien = mapResultSetToPhienSuDung(rs);
-                    danhSach.add(phien);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return pst.executeUpdate() > 0;
         }
-
-        return danhSach;
     }
 
     /**
-     * Lấy phiên đang chơi của máy
-     * @param maMay mã máy
-     * @return PhienSuDung đang chơi hoặc null
+     * Cập nhật phiên sử dụng
+     *
+     * @param phien PhienSuDung cần cập nhật
+     * @return true nếu cập nhật thành công
+     * @throws SQLException nếu có lỗi database
      */
-    public PhienSuDung getPhienDangChoiByMay(String maMay) {
-        String sql = "SELECT * FROM phiensudung WHERE MaMay = ? AND TrangThai = 'DANGCHOI'";
+    public boolean update(PhienSuDung phien) throws SQLException {
+        String sql = "UPDATE phiensudung SET maKH = ?, maMay = ?, maNV = ?, maGoiKH = ?, " +
+                "gioBatDau = ?, gioKetThuc = ?, tongGio = ?, gioSuDungTuGoi = ?, " +
+                "gioSuDungTuTaiKhoan = ?, giaMoiGio = ?, tienGioChoi = ?, " +
+                "loaiThanhToan = ?, trangThai = ? WHERE maPhien = ?";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, maMay);
+            setPhienSuDungParameters(pst, phien);
+            pst.setString(14, phien.getMaPhien());
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToPhienSuDung(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return pst.executeUpdate() > 0;
         }
-
-        return null;
     }
+
+    /**
+     * Xóa phiên sử dụng
+     *
+     * @param maPhien Mã phiên cần xóa
+     * @return true nếu xóa thành công
+     * @throws SQLException nếu có lỗi database
+     */
+    public boolean delete(String maPhien) throws SQLException {
+        String sql = "DELETE FROM phiensudung WHERE maPhien = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, maPhien);
+
+            return pst.executeUpdate() > 0;
+        }
+    }
+
+    // ============== BUSINESS QUERY METHODS ==============
 
     /**
      * Lấy phiên đang chơi của khách hàng
-     * @param maKH mã khách hàng
+     *
+     * @param maKH Mã khách hàng
      * @return PhienSuDung đang chơi hoặc null
+     * @throws SQLException nếu có lỗi database
      */
-    public PhienSuDung getPhienDangChoiByKH(String maKH) {
-        String sql = "SELECT * FROM phiensudung WHERE MaKH = ? AND TrangThai = 'DANGCHOI'";
+    public PhienSuDung getPhienDangChoiByKhachHang(String maKH) throws SQLException {
+        String sql = "SELECT * FROM phiensudung WHERE maKH = ? AND trangThai = 'DANGCHOI'";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, maKH);
+            pst.setString(1, maKH);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     return mapResultSetToPhienSuDung(rs);
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
         return null;
     }
 
     /**
-     * Mở phiên chơi mới (insert)
-     * Logic xử lý:
-     * 1. Validate tất cả các điều kiện
-     * 2. Kiểm tra máy phải đang TRONG (không ai dùng)
-     * 3. Kiểm tra khách hàng không có phiên DANGCHOI khác
-     * 4. Kiểm tra khách hàng có đủ tiền hoặc gói
-     * 5. Lấy giá máy tại thời điểm hiện tại (snapshot)
-     * 6. Xác định loại thanh toán (GOI/TAIKHOAN/KETHOP)
-     * 7. INSERT phiên mới
-     * 8. UPDATE trạng thái máy sang DANGDUNG
+     * Lấy phiên đang chơi trên máy
      *
-     * @param phien đối tượng phiên sử dụng
-     * @return true nếu mở phiên thành công
+     * @param maMay Mã máy tính
+     * @return PhienSuDung đang chơi hoặc null
+     * @throws SQLException nếu có lỗi database
      */
-    public boolean insert(PhienSuDung phien) {
-        Connection con = null;
-        PreparedStatement pstmtInsert = null;
-        PreparedStatement pstmtUpdateMay = null;
+    public PhienSuDung getPhienDangChoiByMay(String maMay) throws SQLException {
+        String sql = "SELECT * FROM phiensudung WHERE maMay = ? AND trangThai = 'DANGCHOI'";
 
-        try {
-            con = DBConnection.getConnection();
-            con.setAutoCommit(false);
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            // 1. Validate cơ bản
-            if (!validatePhienSuDung(phien)) {
-                con.rollback();
-                return false;
-            }
+            pst.setString(1, maMay);
 
-            // 2. Kiểm tra máy có trống không
-            if (!isMayTrong(con, phien.getMaMay())) {
-                System.err.println("Máy đang được sử dụng!");
-                con.rollback();
-                return false;
-            }
-
-            // 3. Kiểm tra khách hàng có phiên đang chơi không
-            if (hasPhienDangChoi(con, phien.getMaKH())) {
-                System.err.println("Khách hàng đang có phiên chơi khác!");
-                con.rollback();
-                return false;
-            }
-
-            // 4. Lấy giá máy hiện tại (snapshot)
-            double giaMay = getGiaMay(con, phien.getMaMay());
-            if (giaMay < 0) {
-                System.err.println("Không lấy được giá máy!");
-                con.rollback();
-                return false;
-            }
-            phien.setGiaMoiGio(giaMay);
-
-            // 5. Xác định loại thanh toán và kiểm tra điều kiện
-            String loaiTT = xacDinhLoaiThanhToan(con, phien);
-            if (loaiTT == null) {
-                con.rollback();
-                return false;
-            }
-            phien.setLoaiThanhToan(loaiTT);
-
-            // 6. Insert phiên mới
-            String sqlInsert = "INSERT INTO phiensudung " +
-                    "(MaKH, MaMay, MaNV, MaGoiKH, GioBatDau, TongGio, " +
-                    "GioSuDungTuGoi, GioSuDungTuTaiKhoan, GiaMoiGio, TienGioChoi, " +
-                    "LoaiThanhToan, TrangThai) " +
-                    "VALUES (?, ?, ?, ?, ?, 0, 0, 0, ?, 0, ?, 'DANGCHOI')";
-
-            pstmtInsert = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
-            pstmtInsert.setString(1, phien.getMaKH());
-            pstmtInsert.setString(2, phien.getMaMay());
-
-            if (phien.getMaNV() != null) {
-                pstmtInsert.setString(3, phien.getMaNV());
-            } else {
-                pstmtInsert.setNull(3, Types.VARCHAR);
-            }
-
-            if (phien.getMaGoiKH() != null) {
-                pstmtInsert.setString(4, phien.getMaGoiKH());
-            } else {
-                pstmtInsert.setNull(4, Types.VARCHAR);
-            }
-
-            pstmtInsert.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
-            pstmtInsert.setDouble(6, phien.getGiaMoiGio());
-            pstmtInsert.setString(7, phien.getLoaiThanhToan());
-
-            int affectedRows = pstmtInsert.executeUpdate();
-
-            if (affectedRows > 0) {
-                // Lấy MaPhien vừa tạo
-                try (ResultSet generatedKeys = pstmtInsert.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        phien.setMaPhien(generatedKeys.getString(1));
-                    }
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToPhienSuDung(rs);
                 }
-
-                // 7. Cập nhật trạng thái máy
-                String sqlUpdateMay = "UPDATE maytinh SET TrangThai = 'DANGDUNG' WHERE MaMay = ?";
-                pstmtUpdateMay = con.prepareStatement(sqlUpdateMay);
-                pstmtUpdateMay.setString(1, phien.getMaMay());
-                pstmtUpdateMay.executeUpdate();
-
-                con.commit();
-                return true;
-            }
-
-            con.rollback();
-            return false;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (con != null) {
-                try {
-                    con.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            return false;
-        } finally {
-            try {
-                if (pstmtInsert != null) pstmtInsert.close();
-                if (pstmtUpdateMay != null) pstmtUpdateMay.close();
-                if (con != null) {
-                    con.setAutoCommit(true);
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
+
+        return null;
     }
 
     /**
-     * Kết thúc phiên chơi
-     * Logic xử lý:
-     * 1. Kiểm tra phiên có tồn tại và đang DANGCHOI
-     * 2. Tính tổng giờ đã chơi
-     * 3. Phân bổ giờ: ưu tiên dùng gói trước (nếu có), sau đó dùng tiền
-     * 4. Tính tiền giờ chơi = giờ dùng từ tài khoản * giá
-     * 5. Cập nhật số dư khách hàng (trừ tiền)
-     * 6. Cập nhật số giờ còn lại trong gói (nếu có dùng)
-     * 7. UPDATE phiên: trạng thái, giờ kết thúc, các trường tính toán
-     * 8. UPDATE máy: trạng thái về TRONG
-     * 9. Tạo hóa đơn tự động
+     * Lấy tất cả phiên đang chơi
      *
-     * @param maPhien mã phiên cần kết thúc
-     * @return true nếu kết thúc thành công
+     * @return Danh sách các phiên đang chơi
+     * @throws SQLException nếu có lỗi database
      */
-    public boolean ketThucPhien(String maPhien) {
-        Connection con = null;
-        PreparedStatement pstmtUpdate = null;
-        PreparedStatement pstmtUpdateMay = null;
-        PreparedStatement pstmtUpdateKH = null;
-        PreparedStatement pstmtUpdateGoi = null;
+    public ArrayList<PhienSuDung> getAllPhienDangChoi() throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung WHERE trangThai = 'DANGCHOI' ORDER BY gioBatDau DESC";
 
-        try {
-            con = DBConnection.getConnection();
-            con.setAutoCommit(false);
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql);
+             ResultSet rs = pst.executeQuery()) {
 
-            // 1. Lấy thông tin phiên
-            PhienSuDung phien = getByIdWithConnection(con, maPhien);
-            if (phien == null) {
-                System.err.println("Không tìm thấy phiên!");
-                con.rollback();
-                return false;
-            }
-
-            if (!phien.isDangChoi()) {
-                System.err.println("Phiên không trong trạng thái DANGCHOI!");
-                con.rollback();
-                return false;
-            }
-
-            // 2. Tính tổng giờ đã chơi
-            LocalDateTime gioKetThuc = LocalDateTime.now();
-            long phut = ChronoUnit.MINUTES.between(phien.getGioBatDau(), gioKetThuc);
-            double tongGio = phut / 60.0;
-
-            // 3. Phân bổ giờ: ưu tiên dùng gói
-            double gioTuGoi = 0;
-            double gioTuTaiKhoan = 0;
-
-            if (phien.getMaGoiKH() != null) {
-                double gioConLaiTrongGoi = getSoGioConLaiTrongGoi(con, phien.getMaGoiKH());
-                gioTuGoi = Math.min(tongGio, gioConLaiTrongGoi);
-                gioTuTaiKhoan = tongGio - gioTuGoi;
-            } else {
-                gioTuTaiKhoan = tongGio;
-            }
-
-            // 4. Tính tiền giờ chơi
-            double tienGioChoi = gioTuTaiKhoan * phien.getGiaMoiGio();
-
-            // 5. Kiểm tra số dư khách hàng
-            double soDuKH = getSoDuKhachHang(con, phien.getMaKH());
-            if (soDuKH < tienGioChoi) {
-                System.err.println("Số dư không đủ! Cần: " + tienGioChoi + ", Có: " + soDuKH);
-                con.rollback();
-                return false;
-            }
-
-            // 6. Cập nhật số dư khách hàng
-            if (tienGioChoi > 0) {
-                String sqlUpdateKH = "UPDATE khachhang SET SoDu = SoDu - ? WHERE MaKH = ?";
-                pstmtUpdateKH = con.prepareStatement(sqlUpdateKH);
-                pstmtUpdateKH.setDouble(1, tienGioChoi);
-                pstmtUpdateKH.setString(2, phien.getMaKH());
-                pstmtUpdateKH.executeUpdate();
-            }
-
-            // 7. Cập nhật gói (nếu có dùng)
-            if (gioTuGoi > 0 && phien.getMaGoiKH() != null) {
-                String sqlUpdateGoi = "UPDATE goidichvu_khachhang " +
-                        "SET SoGioConLai = SoGioConLai - ? WHERE MaGoiKH = ?";
-                pstmtUpdateGoi = con.prepareStatement(sqlUpdateGoi);
-                pstmtUpdateGoi.setDouble(1, gioTuGoi);
-                pstmtUpdateGoi.setString(2, phien.getMaGoiKH());
-                pstmtUpdateGoi.executeUpdate();
-
-                // Cập nhật trạng thái gói nếu hết giờ
-                capNhatTrangThaiGoi(con, phien.getMaGoiKH());
-            }
-
-            // 8. Cập nhật phiên
-            String sqlUpdate = "UPDATE phiensudung SET " +
-                    "GioKetThuc = ?, TongGio = ?, GioSuDungTuGoi = ?, " +
-                    "GioSuDungTuTaiKhoan = ?, TienGioChoi = ?, TrangThai = 'DAKETTHUC' " +
-                    "WHERE MaPhien = ?";
-
-            pstmtUpdate = con.prepareStatement(sqlUpdate);
-            pstmtUpdate.setTimestamp(1, Timestamp.valueOf(gioKetThuc));
-            pstmtUpdate.setDouble(2, tongGio);
-            pstmtUpdate.setDouble(3, gioTuGoi);
-            pstmtUpdate.setDouble(4, gioTuTaiKhoan);
-            pstmtUpdate.setDouble(5, tienGioChoi);
-            pstmtUpdate.setString(6, maPhien);
-
-            pstmtUpdate.executeUpdate();
-
-            // 9. Cập nhật trạng thái máy
-            String sqlUpdateMay = "UPDATE maytinh SET TrangThai = 'TRONG' WHERE MaMay = ?";
-            pstmtUpdateMay = con.prepareStatement(sqlUpdateMay);
-            pstmtUpdateMay.setString(1, phien.getMaMay());
-            pstmtUpdateMay.executeUpdate();
-
-            con.commit();
-            return true;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            if (con != null) {
-                try {
-                    con.rollback();
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            }
-            return false;
-        } finally {
-            try {
-                if (pstmtUpdate != null) pstmtUpdate.close();
-                if (pstmtUpdateMay != null) pstmtUpdateMay.close();
-                if (pstmtUpdateKH != null) pstmtUpdateKH.close();
-                if (pstmtUpdateGoi != null) pstmtUpdateGoi.close();
-                if (con != null) {
-                    con.setAutoCommit(true);
-                    con.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+            while (rs.next()) {
+                list.add(mapResultSetToPhienSuDung(rs));
             }
         }
-    }
 
-    /**
-     * Lấy danh sách phiên đã kết thúc theo khoảng thời gian
-     */
-    public List<PhienSuDung> getByDateRange(LocalDateTime tuNgay, LocalDateTime denNgay) {
-        List<PhienSuDung> danhSach = new ArrayList<>();
-        String sql = "SELECT * FROM phiensudung " +
-                "WHERE GioBatDau BETWEEN ? AND ? ORDER BY GioBatDau DESC";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
-
-            pstmt.setTimestamp(1, Timestamp.valueOf(tuNgay));
-            pstmt.setTimestamp(2, Timestamp.valueOf(denNgay));
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    PhienSuDung phien = mapResultSetToPhienSuDung(rs);
-                    danhSach.add(phien);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return danhSach;
+        return list;
     }
 
     /**
      * Lấy lịch sử phiên của khách hàng
+     *
+     * @param maKH Mã khách hàng
+     * @return Danh sách phiên của khách hàng
+     * @throws SQLException nếu có lỗi database
      */
-    public List<PhienSuDung> getLichSuPhienByKH(String maKH) {
-        List<PhienSuDung> danhSach = new ArrayList<>();
-        String sql = "SELECT * FROM phiensudung WHERE MaKH = ? ORDER BY GioBatDau DESC";
+    public ArrayList<PhienSuDung> getPhienByKhachHang(String maKH) throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung WHERE maKH = ? ORDER BY gioBatDau DESC";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement pstmt = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, maKH);
+            pst.setString(1, maKH);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
+            try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
-                    PhienSuDung phien = mapResultSetToPhienSuDung(rs);
-                    danhSach.add(phien);
+                    list.add(mapResultSetToPhienSuDung(rs));
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return danhSach;
+        return list;
     }
 
-    // ==================== HELPER METHODS ====================
+    /**
+     * Lấy lịch sử phiên theo máy
+     *
+     * @param maMay Mã máy tính
+     * @return Danh sách phiên trên máy
+     * @throws SQLException nếu có lỗi database
+     */
+    public ArrayList<PhienSuDung> getPhienByMay(String maMay) throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung WHERE maMay = ? ORDER BY gioBatDau DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, maMay);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToPhienSuDung(rs));
+                }
+            }
+        }
+
+        return list;
+    }
 
     /**
-     * Map ResultSet sang PhienSuDung
+     * Lấy phiên theo khoảng thời gian
+     *
+     * @param tuNgay Từ ngày
+     * @param denNgay Đến ngày
+     * @return Danh sách phiên trong khoảng thời gian
+     * @throws SQLException nếu có lỗi database
+     */
+    public ArrayList<PhienSuDung> getPhienByDateRange(LocalDateTime tuNgay, LocalDateTime denNgay) throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung WHERE gioBatDau BETWEEN ? AND ? ORDER BY gioBatDau DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setTimestamp(1, Timestamp.valueOf(tuNgay));
+            pst.setTimestamp(2, Timestamp.valueOf(denNgay));
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToPhienSuDung(rs));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Lấy phiên đã kết thúc trong khoảng thời gian
+     *
+     * @param tuNgay Từ ngày
+     * @param denNgay Đến ngày
+     * @return Danh sách phiên đã kết thúc
+     * @throws SQLException nếu có lỗi database
+     */
+    public ArrayList<PhienSuDung> getPhienDaKetThucByDateRange(LocalDateTime tuNgay, LocalDateTime denNgay) throws SQLException {
+        ArrayList<PhienSuDung> list = new ArrayList<>();
+        String sql = "SELECT * FROM phiensudung WHERE trangThai = 'DAKETTHUC' " +
+                "AND gioKetThuc BETWEEN ? AND ? ORDER BY gioKetThuc DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setTimestamp(1, Timestamp.valueOf(tuNgay));
+            pst.setTimestamp(2, Timestamp.valueOf(denNgay));
+
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapResultSetToPhienSuDung(rs));
+                }
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Kết thúc phiên - cập nhật trạng thái và thời gian kết thúc
+     *
+     * @param maPhien Mã phiên cần kết thúc
+     * @param gioKetThuc Thời gian kết thúc
+     * @param tongGio Tổng giờ chơi
+     * @param gioSuDungTuGoi Giờ sử dụng từ gói
+     * @param gioSuDungTuTaiKhoan Giờ sử dụng từ tài khoản
+     * @param tienGioChoi Tiền giờ chơi
+     * @return true nếu kết thúc thành công
+     * @throws SQLException nếu có lỗi database
+     */
+    public boolean ketThucPhien(String maPhien, LocalDateTime gioKetThuc, double tongGio,
+                                double gioSuDungTuGoi, double gioSuDungTuTaiKhoan, double tienGioChoi) throws SQLException {
+        String sql = "UPDATE phiensudung SET gioKetThuc = ?, tongGio = ?, " +
+                "gioSuDungTuGoi = ?, gioSuDungTuTaiKhoan = ?, tienGioChoi = ?, " +
+                "trangThai = 'DAKETTHUC' WHERE maPhien = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setTimestamp(1, Timestamp.valueOf(gioKetThuc));
+            pst.setDouble(2, tongGio);
+            pst.setDouble(3, gioSuDungTuGoi);
+            pst.setDouble(4, gioSuDungTuTaiKhoan);
+            pst.setDouble(5, tienGioChoi);
+            pst.setString(6, maPhien);
+
+            return pst.executeUpdate() > 0;
+        }
+    }
+
+    // ============== STATISTICS METHODS ==============
+
+    /**
+     * Đếm số phiên theo trạng thái
+     *
+     * @param trangThai Trạng thái cần đếm
+     * @return Số lượng phiên
+     * @throws SQLException nếu có lỗi database
+     */
+    public int countByTrangThai(String trangThai) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM phiensudung WHERE trangThai = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, trangThai);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * Tính tổng giờ chơi của khách hàng
+     *
+     * @param maKH Mã khách hàng
+     * @return Tổng giờ chơi
+     * @throws SQLException nếu có lỗi database
+     */
+    public double getTongGioChoiByKhachHang(String maKH) throws SQLException {
+        String sql = "SELECT SUM(tongGio) FROM phiensudung WHERE maKH = ? AND trangThai = 'DAKETTHUC'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setString(1, maKH);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Tính tổng doanh thu từ giờ chơi trong khoảng thời gian
+     *
+     * @param tuNgay Từ ngày
+     * @param denNgay Đến ngày
+     * @return Tổng doanh thu
+     * @throws SQLException nếu có lỗi database
+     */
+    public double getTongDoanhThuGioChoi(LocalDateTime tuNgay, LocalDateTime denNgay) throws SQLException {
+        String sql = "SELECT SUM(tienGioChoi) FROM phiensudung " +
+                "WHERE trangThai = 'DAKETTHUC' AND gioKetThuc BETWEEN ? AND ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+
+            pst.setTimestamp(1, Timestamp.valueOf(tuNgay));
+            pst.setTimestamp(2, Timestamp.valueOf(denNgay));
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+            }
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Kiểm tra khách hàng có phiên đang chơi không
+     *
+     * @param maKH Mã khách hàng
+     * @return true nếu có phiên đang chơi
+     * @throws SQLException nếu có lỗi database
+     */
+    public boolean hasPhienDangChoi(String maKH) throws SQLException {
+        return getPhienDangChoiByKhachHang(maKH) != null;
+    }
+
+    /**
+     * Kiểm tra máy có phiên đang chơi không
+     *
+     * @param maMay Mã máy
+     * @return true nếu có phiên đang chơi
+     * @throws SQLException nếu có lỗi database
+     */
+    public boolean isMayDangSuDung(String maMay) throws SQLException {
+        return getPhienDangChoiByMay(maMay) != null;
+    }
+
+    /**
+     * Sinh mã phiên tự động
+     * Format: PS + timestamp
+     *
+     * @return Mã phiên mới
+     */
+    public String generateMaPhien() {
+        return "PS" + System.currentTimeMillis();
+    }
+
+    /**
+     * Kiểm tra mã phiên đã tồn tại chưa
+     *
+     * @param maPhien Mã phiên cần kiểm tra
+     * @return true nếu đã tồn tại
+     * @throws SQLException nếu có lỗi database
+     */
+    public boolean isMaPhienExists(String maPhien) throws SQLException {
+        return getByMaPhien(maPhien) != null;
+    }
+
+
+
+    /*
+
+     */
+    // ============== HELPER METHODS ==============
+
+    /**
+     * Map ResultSet sang PhienSuDung object
      */
     private PhienSuDung mapResultSetToPhienSuDung(ResultSet rs) throws SQLException {
         PhienSuDung phien = new PhienSuDung();
 
-        phien.setMaPhien(rs.getString("MaPhien"));
-        phien.setMaKH(rs.getString("MaKH"));
-        phien.setMaMay(rs.getString("MaMay"));
+        phien.setMaPhien(rs.getString("maPhien"));
+        phien.setMaKH(rs.getString("maKH"));
+        phien.setMaMay(rs.getString("maMay"));
+        phien.setMaNV(rs.getString("maNV"));
+        phien.setMaGoiKH(rs.getString("maGoiKH"));
 
-        String maNV = rs.getString("MaNV");
-        phien.setMaNV(rs.wasNull() ? null : maNV);
-
-        String maGoiKH = rs.getString("MaGoiKH");
-        phien.setMaGoiKH(rs.wasNull() ? null : maGoiKH);
-
-        Timestamp gioBD = rs.getTimestamp("GioBatDau");
-        if (gioBD != null) {
-            phien.setGioBatDau(gioBD.toLocalDateTime());
+        Timestamp gioBatDau = rs.getTimestamp("gioBatDau");
+        if (gioBatDau != null) {
+            phien.setGioBatDau(gioBatDau.toLocalDateTime());
         }
 
-        Timestamp gioKT = rs.getTimestamp("GioKetThuc");
-        if (gioKT != null) {
-            phien.setGioKetThuc(gioKT.toLocalDateTime());
+        Timestamp gioKetThuc = rs.getTimestamp("gioKetThuc");
+        if (gioKetThuc != null) {
+            phien.setGioKetThuc(gioKetThuc.toLocalDateTime());
         }
 
-        phien.setTongGio(rs.getDouble("TongGio"));
-        phien.setGioSuDungTuGoi(rs.getDouble("GioSuDungTuGoi"));
-        phien.setGioSuDungTuTaiKhoan(rs.getDouble("GioSuDungTuTaiKhoan"));
-        phien.setGiaMoiGio(rs.getDouble("GiaMoiGio"));
-        phien.setTienGioChoi(rs.getDouble("TienGioChoi"));
-        phien.setLoaiThanhToan(rs.getString("LoaiThanhToan"));
-        phien.setTrangThai(rs.getString("TrangThai"));
+        phien.setTongGio(rs.getDouble("tongGio"));
+        phien.setGioSuDungTuGoi(rs.getDouble("gioSuDungTuGoi"));
+        phien.setGioSuDungTuTaiKhoan(rs.getDouble("gioSuDungTuTaiKhoan"));
+        phien.setGiaMoiGio(rs.getDouble("giaMoiGio"));
+        phien.setTienGioChoi(rs.getDouble("tienGioChoi"));
+        phien.setLoaiThanhToan(rs.getString("loaiThanhToan"));
+        phien.setTrangThai(rs.getString("trangThai"));
 
         return phien;
     }
 
     /**
-     * Lấy phiên theo ID với connection có sẵn (dùng trong transaction)
+     * Set parameters cho PreparedStatement
      */
-    private PhienSuDung getByIdWithConnection(Connection con, String maPhien) throws SQLException {
-        String sql = "SELECT * FROM phiensudung WHERE MaPhien = ?";
+    private void setPhienSuDungParameters(PreparedStatement pst, PhienSuDung phien) throws SQLException {
+        pst.setString(1, phien.getMaPhien());
+        pst.setString(2, phien.getMaKH());
+        pst.setString(3, phien.getMaMay());
+        pst.setString(4, phien.getMaNV());
+        pst.setString(5, phien.getMaGoiKH());
 
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maPhien);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapResultSetToPhienSuDung(rs);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Validate phiên sử dụng
-     */
-    private boolean validatePhienSuDung(PhienSuDung phien) {
-        if (phien.getMaKH() == null || phien.getMaKH().trim().isEmpty()) {
-            System.err.println("Mã khách hàng không hợp lệ!");
-            return false;
-        }
-
-        if (phien.getMaMay() == null || phien.getMaMay().trim().isEmpty()) {
-            System.err.println("Mã máy không hợp lệ!");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Kiểm tra máy có trống không
-     */
-    private boolean isMayTrong(Connection con, String maMay) throws SQLException {
-        String sql = "SELECT TrangThai FROM maytinh WHERE MaMay = ?";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maMay);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    String trangThai = rs.getString("TrangThai");
-                    return "TRONG".equals(trangThai);
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Kiểm tra khách hàng có phiên đang chơi không
-     */
-    private boolean hasPhienDangChoi(Connection con, String maKH) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM phiensudung WHERE MaKH = ? AND TrangThai = 'DANGCHOI'";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maKH);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Lấy giá máy hiện tại
-     */
-    private double getGiaMay(Connection con, String maMay) throws SQLException {
-        String sql = "SELECT GiaMoiGio FROM maytinh WHERE MaMay = ?";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maMay);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble("GiaMoiGio");
-                }
-            }
-        }
-
-        return -1;
-    }
-
-    /**
-     * Xác định loại thanh toán và kiểm tra điều kiện
-     */
-    private String xacDinhLoaiThanhToan(Connection con, PhienSuDung phien) throws SQLException {
-        // Kiểm tra có gói không
-        boolean coGoi = false;
-        if (phien.getMaGoiKH() != null) {
-            double gioConLai = getSoGioConLaiTrongGoi(con, phien.getMaGoiKH());
-            coGoi = gioConLai > 0;
-        }
-
-        // Kiểm tra số dư
-        double soDu = getSoDuKhachHang(con, phien.getMaKH());
-
-        if (coGoi && soDu > 0) {
-            return "KETHOP";  // Có cả gói và tiền
-        } else if (coGoi) {
-            return "GOI";  // Chỉ có gói
-        } else if (soDu > 0) {
-            return "TAIKHOAN";  // Chỉ có tiền
+        if (phien.getGioBatDau() != null) {
+            pst.setTimestamp(6, Timestamp.valueOf(phien.getGioBatDau()));
         } else {
-            System.err.println("Khách hàng không có gói và số dư = 0!");
-            return null;
-        }
-    }
-
-    /**
-     * Lấy số giờ còn lại trong gói
-     */
-    private double getSoGioConLaiTrongGoi(Connection con, String maGoiKH) throws SQLException {
-        String sql = "SELECT SoGioConLai FROM goidichvu_khachhang " +
-                "WHERE MaGoiKH = ? AND TrangThai = 'CONHAN'";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maGoiKH);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble("SoGioConLai");
-                }
-            }
+            pst.setNull(6, Types.TIMESTAMP);
         }
 
-        return 0;
-    }
-
-    /**
-     * Lấy số dư khách hàng
-     */
-    private double getSoDuKhachHang(Connection con, String maKH) throws SQLException {
-        String sql = "SELECT SoDu FROM khachhang WHERE MaKH = ?";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maKH);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getDouble("SoDu");
-                }
-            }
+        if (phien.getGioKetThuc() != null) {
+            pst.setTimestamp(7, Timestamp.valueOf(phien.getGioKetThuc()));
+        } else {
+            pst.setNull(7, Types.TIMESTAMP);
         }
 
-        return 0;
-    }
-
-    /**
-     * Cập nhật trạng thái gói nếu hết giờ
-     */
-    private void capNhatTrangThaiGoi(Connection con, String maGoiKH) throws SQLException {
-        String sql = "UPDATE goidichvu_khachhang SET TrangThai = 'DAHETGIO' " +
-                "WHERE MaGoiKH = ? AND SoGioConLai <= 0";
-
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, maGoiKH);
-            pstmt.executeUpdate();
-        }
+        pst.setDouble(8, phien.getTongGio());
+        pst.setDouble(9, phien.getGioSuDungTuGoi());
+        pst.setDouble(10, phien.getGioSuDungTuTaiKhoan());
+        pst.setDouble(11, phien.getGiaMoiGio());
+        pst.setDouble(12, phien.getTienGioChoi());
+        pst.setString(13, phien.getLoaiThanhToan());
+        pst.setString(14, phien.getTrangThai());
     }
 }
