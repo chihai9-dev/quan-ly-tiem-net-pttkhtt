@@ -8,6 +8,7 @@ import entity.NhanVien;
 import dao.GoiDichVuKhachHangDAO;
 import dao.GoiDichVuDAO;
 import dao.KhachHangDAO;
+import dao.ConnectionManager;
 import untils.*;
 
 import java.sql.*;
@@ -69,34 +70,26 @@ public class GoiDichVuKhachHangBUS{
                 , "CONHAN");
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+            ConnectionManager.beginTransaction();
 
             // trừ tiền khách hàng
             kh.setSodu( kh.getSodu() - gdv.getGiagoi());
-            boolean truTien = this.khDAO.updateSoDuKhiMuaGoi(kh, conn);
+            boolean truTien = this.khDAO.updateSoDuKhiMuaGoi(kh);
 
             // thêm một dòng gói dịch vụ khách hàng
-            boolean isSucess = this.gdvkhDAO.insert(gdvkh, conn);
+            boolean isSucess = this.gdvkhDAO.insert(gdvkh);
             if(truTien && isSucess){
+                ConnectionManager.commit();
                 System.out.println("Mua gói dịch vụ thành công!!!");
             }else{
                 System.out.println("Mua gói dịch vụ không thành công!!!");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+                ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 

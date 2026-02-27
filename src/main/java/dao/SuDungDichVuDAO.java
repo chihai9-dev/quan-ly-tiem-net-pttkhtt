@@ -7,8 +7,8 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 /* CÁC METHOD.
-   1. List<SuDungDichVu> getByPhien(String maPhien, Connection conn1): lấy sử dụng dịch vụ bằng mã phiên.
-   2. boolean insert(SuDungDichVu sddv, Connection conn1): thêm một dòng sử dụng dịch vụ.
+   1. List<SuDungDichVu> getByPhien(String maPhien): lấy sử dụng dịch vụ bằng mã phiên.
+   2. boolean insert(SuDungDichVu sddv): thêm một dòng sử dụng dịch vụ.
    2.1 sinh mã tự động.
    3. boolean delete(String maSD): xóa dịch vụ sử dụng.
    4. List<SuDungDichVu> getALl(): lất tất cả các dòng dữ liệu.
@@ -22,7 +22,8 @@ public class SuDungDichVuDAO{
     ResultSet rs = null;
 
     // LẤY SỬ DỤNG DỊCH VỤ BẰNG MÃ PHIÊN
-    public List<SuDungDichVu> geyByPhien (String maPhien, Connection conn1){
+    public List<SuDungDichVu> geyByPhien (String maPhien) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "SELECT * FROM sudungdichvu WHERE MaPhien = ?";
         List<SuDungDichVu> listResult = new ArrayList<>();
         try{
@@ -34,20 +35,20 @@ public class SuDungDichVuDAO{
                         , rs.getString("MaDV"), rs.getInt("SoLuong"), rs.getDouble("DonGia")
                         , rs.getDouble("ThanhTien"), rs.getTimestamp("ThoiGian").toLocalDateTime()));
             }
-        }catch(Exception e){
-            System.err.println("[Lỗi getByPhien - SuDungDichVuDAO]: " + e.getMessage());
-            return null;
+            return listResult;
+        }catch(Exception e) {
+            throw new Exception("[Lỗi getByPhien - SuDungDichVuDAO]: " + e.getMessage());
         }
-        return listResult;
     }
 
     // THÊM MỘT DỊCH VỤ
-    public boolean insert(SuDungDichVu sddv, Connection conn1){
+    public boolean insert(SuDungDichVu sddv) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "Insert sudungdichvu (MaSD, MaPhien, MaDV, SoLuong, DonGia, ThanhTien, ThoiGian)"
                 + "VALUES( ?, ?, ?, ?, ?, ?, ?)";
         try{
             ps = conn1.prepareStatement(sql);
-            ps.setString(1, this.generateNextSuDungDichVu(conn1));
+            ps.setString(1, this.generateNextSuDungDichVu());
             ps.setString(2, sddv.getMaphien());
             ps.setString(3, sddv.getMadv());
             ps.setInt(4, sddv.getSoluong());
@@ -59,13 +60,13 @@ public class SuDungDichVuDAO{
 
             return rowAffected > 0; // Trả về true nếu chèn thành công ít nhất 1 dòng
         }catch(Exception e) {
-            System.err.println("[ LỖI insert - SuDungDichVuDAO: " + e.getMessage());
-            return false;
+            throw new Exception("[ LỖI insert - SuDungDichVuDAO: " + e.getMessage());
         }
     }
 
     // SINH MÃ TỰ ĐỘNG
-    private String generateNextSuDungDichVu(Connection conn1) {
+    private String generateNextSuDungDichVu() throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "SELECT MaSD FROM sudungdichvu ORDER BY MaSD DESC LIMIT 1";
         String nextID = "SD001"; // Mặc định nếu bảng trống
 
@@ -77,14 +78,15 @@ public class SuDungDichVuDAO{
                 number++;
                 nextID = String.format("SD%03d", number);
             }
+            return nextID;
         } catch (Exception e) {
-            System.err.println("[LỖI TỰ TĂNG MÃ - SuDungDichVuDAO]: " + e.getMessage());
+            throw new Exception("[LỖI TỰ TĂNG MÃ - SuDungDichVuDAO]: " + e.getMessage());
         }
-        return nextID;
     }
 
     // XÓA DÒNG SỬ DỤNG DỊCH VỤ ĐÓ.
-    public boolean delete(String maSD, Connection conn1) {
+    public boolean delete(String maSD) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "DELETE FROM sudungdichvu WHERE MaSD = ?";
         try {
             ps = conn1.prepareStatement(sql);
@@ -93,8 +95,7 @@ public class SuDungDichVuDAO{
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0; // Trả về true nếu xóa thành công
         } catch (Exception e) {
-            System.err.println("[ LỖI delete - SuDungDichVuDAO ]: " + e.getMessage());
-            return false;
+            throw new Exception("[ LỖI delete - SuDungDichVuDAO ]: " + e.getMessage());
         }
     }
 
