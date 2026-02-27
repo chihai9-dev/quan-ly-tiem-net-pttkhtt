@@ -3,6 +3,7 @@ import entity.DichVu;
 import dao.DichVuDAO;
 import dao.DBConnection;
 import dao.NhanVienDAO;
+import dao.ConnectionManager;
 import untils.*;
 
 import java.sql.*;
@@ -117,32 +118,23 @@ public class DichVuBUS{
         this.ValidationDichVu(newDichVu, "");
 
         // GỌI DAO ĐỂ THÊM DỊCH VỤ
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();    // Connect
-            conn.setAutoCommit(false);  // điều chỉnh commit thử công
+            ConnectionManager.beginTransaction();
 
-            boolean isSuccess = dvDAO.insert(newDichVu, conn);  // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.insert(newDichVu);  // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                conn.commit();
+                ConnectionManager.commit();
                 System.out.println("Thêm dịch vụ thành công");
             }
             else{
                 throw new Exception("Thêm dịch vụ không thành công");
             }
         }catch(Exception e){
-            if(conn != null){
-               try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 
@@ -164,32 +156,23 @@ public class DichVuBUS{
         this.ValidationDichVu(updateDV, check.getTendv());
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();    // Connect
-            conn.setAutoCommit(false);  // điều chỉnh commit thử công
+            ConnectionManager.beginTransaction();
 
-            boolean isSuccess = dvDAO.update(updateDV, conn);  // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.update(updateDV);  // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                conn.commit();
+                ConnectionManager.commit();
                 System.out.println("Sửa dịch vụ thành công");
             }
             else{
                 throw new Exception("Sửa dịch vụ không thành công");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 
@@ -206,32 +189,23 @@ public class DichVuBUS{
         if( dvDAO.getByID(maDV) == null ){ throw new Exception("Không tồn tại mã dịch vụ này!!!"); }
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();    // Connect
-            conn.setAutoCommit(false);  // điều chỉnh commit thử công
+            ConnectionManager.beginTransaction();
 
-            boolean isSuccess = dvDAO.delete(maDV, conn); // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.delete(maDV); // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                conn.commit();
+                ConnectionManager.commit();
                 System.out.println("Xóa dịch vụ thành công");
             }
             else{
                 throw new Exception("Xóa dịch vụ không thành công");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 
@@ -250,32 +224,23 @@ public class DichVuBUS{
         if( check == null ){ throw new Exception("Không tồn tại mã dịch vụ này!!!"); }
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();    // Connect
-            conn.setAutoCommit(false);  // điều chỉnh commit thử công
+            ConnectionManager.beginTransaction();
 
-            boolean isSuccess = dvDAO.cancelDelete(check, conn);
+            boolean isSuccess = dvDAO.cancelDelete(check);
 
             if(isSuccess){
-                conn.commit();
+                ConnectionManager.commit();
                 System.out.println("Khôi phục dịch vụ thành công");
             }
             else{
                 throw new Exception("Khôi phục dịch vụ không thành công");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 }

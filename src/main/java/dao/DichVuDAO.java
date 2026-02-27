@@ -75,13 +75,14 @@ public class DichVuDAO {
     }
 
     // THÊM DỊCH VỤ
-    public boolean insert(DichVu dv, Connection conn1) {
+    public boolean insert(DichVu dv) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "INSERT INTO dichvu (MaDV, TenDV, LoaiDV, DonGia, DonViTinh, SoLuongTon, TrangThai) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = conn1.prepareStatement(sql);
 
-            ps.setString(1, this.generateNextMaDV(conn1));   // tăng mã tự động
+            ps.setString(1, this.generateNextMaDV());   // tăng mã tự động
             ps.setString(2, dv.getTendv());
             ps.setString(3, dv.getLoaidv());
             ps.setDouble(4, dv.getDongia());
@@ -93,13 +94,13 @@ public class DichVuDAO {
 
             return rowAffected > 0; // Trả về true nếu chèn thành công ít nhất 1 dòng
         } catch (Exception e) {
-            System.err.println("[LỖI INSERT - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI INSERT - DichVuDAO]: " + e.getMessage());
         }
     }
 
     // SINH MÃ DỊCH VỤ TỰ ĐỘNG
-    private String generateNextMaDV(Connection conn1) {
+    private String generateNextMaDV() throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "SELECT MaDV FROM dichvu ORDER BY MaDV DESC LIMIT 1";
         String nextID = "DV001"; // Mặc định nếu bảng trống
 
@@ -111,14 +112,15 @@ public class DichVuDAO {
                 number++;
                 nextID = String.format("DV%03d", number);
             }
-        } catch (Exception e) {
-            System.err.println("[LỖI TỰ TĂNG MÃ - DichVuDAO]: " + e.getMessage());
+            return nextID;
+        }catch(Exception e){
+            throw new Exception("LỖI TẠO MÃ TỰ ĐỘNG - generateNextMaDV: " + e.getMessage());
         }
-        return nextID;
     }
 
     // CẬP NHẬP THÔNG TIN
-    public boolean update(DichVu dv, Connection conn1) {
+    public boolean update(DichVu dv) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "UPDATE dichvu SET TenDV = ?, LoaiDV = ?, DonGia = ?, DonViTinh = ?, SoLuongTon = ?, TrangThai = ? WHERE MaDV = ?";
         try {
             ps = conn1.prepareStatement(sql);
@@ -134,29 +136,29 @@ public class DichVuDAO {
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
         } catch (Exception e) {
-            System.err.println("[LỖI UPDATE - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI UPDATE - DichVuDAO]: " + e.getMessage());
         }
     }
 
     // HỦY DỊCH VỤ
-    public boolean delete(String maDichVu, Connection conn1){
-         String sql = "UPDATE dichvu SET TrangThai = ? WHERE MaDV = ?";
-         try{
-             ps = conn1.prepareStatement(sql);
-             ps.setString(1, "NGUNGBAN");
-             ps.setString(2, maDichVu);
+    public boolean delete(String maDichVu) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
+        String sql = "UPDATE dichvu SET TrangThai = ? WHERE MaDV = ?";
+        try{
+            ps = conn1.prepareStatement(sql);
+            ps.setString(1, "NGUNGBAN");
+            ps.setString(2, maDichVu);
 
-             int rowAffected = ps.executeUpdate();
-             return rowAffected > 0;
-         }catch(Exception e) {
-             System.err.println("[Lỗi DELETE - DichVuDAO]: " + e.getMessage());
-             return false;
-         }
+            int rowAffected = ps.executeUpdate();
+            return rowAffected > 0;
+        }catch(Exception e) {
+            throw new Exception("[Lỗi DELETE - DichVuDAO]: " + e.getMessage());
+        }
     }
 
     // KHÔI PHỤC DỊCH VỤ
-    public boolean cancelDelete(DichVu dv, Connection conn1){
+    public boolean cancelDelete(DichVu dv) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sql = "UPDATE dichvu SET TrangThai = ? WHERE MaDV = ?";
         try{
             ps = conn1.prepareStatement(sql);
@@ -169,13 +171,13 @@ public class DichVuDAO {
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
         }catch(Exception e){
-            System.err.println("Lỗi cancelDelete - DichVuDAO: " + e.getMessage());
-            return false;
+            throw new Exception("Lỗi cancelDelete - DichVuDAO: " + e.getMessage());
         }
     }
 
     // CẬP NHẬP SỐ LƯỢNG TỒN
-    public boolean updateSoLuongTon(String maDichVu, int soLuongCanTangGiam, Connection conn1 ) {
+    public boolean updateSoLuongTon(String maDichVu, int soLuongCanTangGiam) throws Exception{
+        Connection conn1 = ConnectionManager.getConnection();
         String sqlSelect = "SELECT SoLuongTon FROM dichvu WHERE MaDV = ?";
         String sqlUpdate = "UPDATE dichvu SET SoLuongTon = ?, TrangThai = ? WHERE MaDV = ?";
         try {
@@ -203,8 +205,7 @@ public class DichVuDAO {
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("[LỖI UPDATE SOLUONG - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI UPDATE SOLUONG - DichVuDAO]: " + e.getMessage());
         }
     }
 

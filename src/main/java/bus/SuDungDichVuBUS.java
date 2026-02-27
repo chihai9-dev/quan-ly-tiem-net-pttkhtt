@@ -7,6 +7,7 @@ import dao.DBConnection;
 import dao.DichVuDAO;
 import dao.SuDungDichVuDAO;
 import dao.PhienSuDungDAO;
+import dao.ConnectionManager;
 import untils.PermissionHelper;
 
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class SuDungDichVuBUS{
         // VALIDATION
         // check sự tồn tại của maPhien
         PhienSuDung psd = new PhienSuDung();
-        psd = this.psdDAO.getById(maPhien);
+        psd = this.psdDAO.getByMaPhien(maPhien);
         if(psd == null){ throw new Exception("Không tồn tại mã phiên này!!!"); }
         // check mã phiện này có đang chơi không
         if( !psd.getTrangThai().equals("DANGCHOI") ){ throw new Exception("Phiên này đang không chơi!!!"); }
@@ -55,33 +56,24 @@ public class SuDungDichVuBUS{
         SuDungDichVu sddv = new SuDungDichVu("", psd.getMaPhien(), dv.getMadv(), Math.abs(SoLuong), dv.getDongia()
                 , dv.getDongia()*Math.abs(SoLuong), LocalDateTime.now() );
 
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();    // Connect
-            conn.setAutoCommit(false);  // điều chỉnh commit thử công
+            ConnectionManager.beginTransaction();
 
-            boolean isUpdate = this.dvDAO.updateSoLuongTon(dv.getMadv(), (-1)*SoLuong, conn );
-            boolean isInsert = this.sddvDAO.insert(sddv, conn);
+            boolean isUpdate = this.dvDAO.updateSoLuongTon(dv.getMadv(), (-1)*SoLuong);
+            boolean isInsert = this.sddvDAO.insert(sddv);
 
             if(isUpdate && isInsert){
-                conn.commit();
+                ConnectionManager.commit();
                 System.out.println("Order dịch vụ thành công");
             }
             else{
                 throw new Exception("Order dịch vụ không thành công");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
         return sddv;
     }
@@ -99,32 +91,26 @@ public class SuDungDichVuBUS{
         sddv = this.sddvDAO.getByID(maSDDV);
         if(sddv==null){ throw new Exception("Mã sử dụng này không tồn tại!!!"); }
         // kiểm trạng thái 'DANGCHOI' của phiên
-        PhienSuDung psd = psdDAO.getById(sddv.getMaphien());
+        PhienSuDung psd = psdDAO.getByMaPhien(sddv.getMaphien());
         if(psd.getTrangThai().equals("DAKETTHUC")){ throw new Exception("Phiên này đã kết thức chơi!!!"); }
 
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+            ConnectionManager.beginTransaction();
 
-            boolean isSuccess = this.sddvDAO.delete(maSDDV, conn);
-            boolean isUpdate = this.dvDAO.updateSoLuongTon(sddv.getMadv(), sddv.getSoluong(), conn);
-            if(isSuccess && isUpdate){ System.out.println("Hủy dịch vụ thành công!!!"); }
+            boolean isSuccess = this.sddvDAO.delete(maSDDV);
+            boolean isUpdate = this.dvDAO.updateSoLuongTon(sddv.getMadv(), sddv.getSoluong());
+            if(isSuccess && isUpdate){
+                ConnectionManager.commit();
+                System.out.println("Hủy dịch vụ thành công!!!");
+            }
             else { System.out.println("Hủy dịch vụ không thành công!!!"); }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
     }
 
@@ -136,30 +122,23 @@ public class SuDungDichVuBUS{
 
         // VALIDATION
         PhienSuDung psd = new PhienSuDung();
-        psd = psdDAO.getById(maPhien);
+        psd = psdDAO.getByMaPhien(maPhien);
         // check mã phiên
         if(psd == null){ throw new Exception("Mã phiên này không tồn tại!!!"); }
 
         // gọi xuống DAO
         List<SuDungDichVu> result = new ArrayList<>();
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
+            ConnectionManager.beginTransaction();
 
-            result = this.sddvDAO.geyByPhien(maPhien, conn);
+            result = this.sddvDAO.geyByPhien(maPhien);
+
+            ConnectionManager.commit();
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
+            ConnectionManager.rollback();
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
+            ConnectionManager.close();
         }
         return result;
     }
