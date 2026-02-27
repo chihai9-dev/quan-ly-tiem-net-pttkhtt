@@ -2,14 +2,9 @@ package test.bus;
 
 import entity.NhanVien;
 import entity.KhachHang;
-import entity.ChuongTrinhKhuyenMai;
 import dao.NhanVienDAO;
-import dao.KhachHangDAO;
 import bus.KhuyenMaiBUS;
 import untils.SessionManager;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class TestKhuyenMaiBUS {
     public static void main(String[] args) {

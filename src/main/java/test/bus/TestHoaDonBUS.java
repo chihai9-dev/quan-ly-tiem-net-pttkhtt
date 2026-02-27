@@ -2,15 +2,9 @@ package test.bus;
 
 import entity.NhanVien;
 import entity.KhachHang;
-import entity.HoaDon;
-import entity.ChiTietHoaDon;
 import dao.NhanVienDAO;
-import dao.KhachHangDAO;
 import bus.HoaDonBUS;
 import untils.SessionManager;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class TestHoaDonBUS {
     public static void main(String[] args) {

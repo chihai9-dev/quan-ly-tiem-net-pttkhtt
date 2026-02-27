@@ -1,10 +1,8 @@
 package test.dao;
-import dao.GoiDichVuKhachHangDAO;
 import entity.GoiDichVuKhachHang;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.time.LocalDateTime;
 
 public class TestGoiDichVuKhachHangDAO {
     public static void main(String[] args ){

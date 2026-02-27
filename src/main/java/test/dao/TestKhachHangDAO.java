@@ -1,6 +1,5 @@
 package test.dao;
 
-import dao.KhachHangDAO;
 import entity.KhachHang;
 import java.util.List;
 

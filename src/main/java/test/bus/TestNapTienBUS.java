@@ -2,17 +2,10 @@ package test.bus;
 
 import entity.NhanVien;
 import entity.KhachHang;
-import entity.LichSuNapTien;
-import entity.ChuongTrinhKhuyenMai;
 import dao.NhanVienDAO;
-import dao.KhachHangDAO;
 import dao.LichSuNapTienDAO;
 import bus.NapTienBUS;
 import untils.SessionManager;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestNapTienBUS {
     public static void main(String[] args) {
