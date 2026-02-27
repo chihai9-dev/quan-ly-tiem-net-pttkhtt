@@ -3,7 +3,6 @@ import entity.DichVu;
 import dao.DichVuDAO;
 import dao.DBConnection;
 import dao.NhanVienDAO;
-import dao.ConnectionManager;
 import untils.*;
 
 import java.sql.*;
@@ -71,8 +70,8 @@ public class DichVuBUS{
 
     // KIỂM TRA TÊN KHI THÊM HOẶC SỬA KHÔNG ĐƯỢC TRÙNG VỚI CÁC TÊN DỊCH VỤ ĐÃ CÓ.
     private boolean checkTrungTenDichVu(String tenDV, String oldName){
-       List<DichVu> listCurrent = new ArrayList<>();
-       listCurrent = dvDAO.getAll();
+        List<DichVu> listCurrent = new ArrayList<>();
+        listCurrent = dvDAO.getAll();
         for( DichVu item : listCurrent ){
             if( oldName.equals(item.getTendv()) ){ continue; }
             if( chuanHoaTen(tenDV).equals(chuanHoaTen(item.getTendv())) ){
@@ -118,23 +117,32 @@ public class DichVuBUS{
         this.ValidationDichVu(newDichVu, "");
 
         // GỌI DAO ĐỂ THÊM DỊCH VỤ
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
+            conn = DBConnection.getConnection();    // Connect
+            conn.setAutoCommit(false);  // điều chỉnh commit thử công
 
-            boolean isSuccess = dvDAO.insert(newDichVu);  // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.insert(newDichVu, conn);  // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                ConnectionManager.commit();
+                conn.commit();
                 System.out.println("Thêm dịch vụ thành công");
             }
             else{
                 throw new Exception("Thêm dịch vụ không thành công");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -156,23 +164,32 @@ public class DichVuBUS{
         this.ValidationDichVu(updateDV, check.getTendv());
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
+            conn = DBConnection.getConnection();    // Connect
+            conn.setAutoCommit(false);  // điều chỉnh commit thử công
 
-            boolean isSuccess = dvDAO.update(updateDV);  // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.update(updateDV, conn);  // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                ConnectionManager.commit();
+                conn.commit();
                 System.out.println("Sửa dịch vụ thành công");
             }
             else{
                 throw new Exception("Sửa dịch vụ không thành công");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -189,23 +206,32 @@ public class DichVuBUS{
         if( dvDAO.getByID(maDV) == null ){ throw new Exception("Không tồn tại mã dịch vụ này!!!"); }
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
+            conn = DBConnection.getConnection();    // Connect
+            conn.setAutoCommit(false);  // điều chỉnh commit thử công
 
-            boolean isSuccess = dvDAO.delete(maDV); // insert sẽ trả về true/false
+            boolean isSuccess = dvDAO.delete(maDV, conn); // insert sẽ trả về true/false
 
             if(isSuccess){  // nếu insert thành công
-                ConnectionManager.commit();
+                conn.commit();
                 System.out.println("Xóa dịch vụ thành công");
             }
             else{
                 throw new Exception("Xóa dịch vụ không thành công");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -224,23 +250,32 @@ public class DichVuBUS{
         if( check == null ){ throw new Exception("Không tồn tại mã dịch vụ này!!!"); }
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
+            conn = DBConnection.getConnection();    // Connect
+            conn.setAutoCommit(false);  // điều chỉnh commit thử công
 
-            boolean isSuccess = dvDAO.cancelDelete(check);
+            boolean isSuccess = dvDAO.cancelDelete(check, conn);
 
             if(isSuccess){
-                ConnectionManager.commit();
+                conn.commit();
                 System.out.println("Khôi phục dịch vụ thành công");
             }
             else{
                 throw new Exception("Khôi phục dịch vụ không thành công");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 }

@@ -226,7 +226,7 @@ public class KhachHangDAO {
 
         if(kh.getSodu() > 0 ){
             warning.append("Khách hàng còn số dư : ")
-                    .append(String.format(java.util.Locale.GERMANY, "%,.0f", kh.getSodu()))
+                    .append(String.format("%,.0f",kh.getSodu()))
                     .append(" đồng. \n ");
 
         }
@@ -478,8 +478,8 @@ public class KhachHangDAO {
             Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
-           pstmt.setDouble(1,sodu);
-           pstmt.setString(2,makh);
+            pstmt.setDouble(1,sodu);
+            pstmt.setString(2,makh);
 
             pstmt.executeUpdate();
             pstmt.close();
@@ -534,15 +534,15 @@ public class KhachHangDAO {
     }
 
     // update lại số dư của khách hàng (dùng trong hàm insert của GoiDichVuKhachHangBUS)
-    public boolean updateSoDuKhiMuaGoi(KhachHang kh) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean updateSoDuKhiMuaGoi(KhachHang kh, Connection conn1){
         String sql = "UPDATE khachhang SET SoDu = ? WHERE MaKH = ?";
         try (PreparedStatement ps = conn1.prepareStatement(sql)) {
             ps.setDouble(1, kh.getSodu());
             ps.setString(2, kh.getMakh());
             return ps.executeUpdate() > 0;
         }catch(Exception e){
-            throw new Exception("Lỗi updateSoDuKhiMuaGoi - KhachHangDAO: " + e.getMessage());
+            System.err.println("Lỗi updateSoDuKhiMuaGoi - KhachHangDAO: " + e.getMessage());
+            return false;
         }
     }
 }

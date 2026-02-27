@@ -133,7 +133,7 @@ public class HoaDonBUS {
             conn = DBConnection.getConnection();
 
             // Đã sửa lỗi chính tả từ geyByPhien -> getByPhien
-            List<SuDungDichVu> danhSachDV = suDungDichVuDAO.getByPhien(maPhien);
+            List<SuDungDichVu> danhSachDV = suDungDichVuDAO.getByPhien(maPhien, conn);
 
             if (danhSachDV != null && !danhSachDV.isEmpty()) {
                 for (SuDungDichVu sdDV : danhSachDV) {

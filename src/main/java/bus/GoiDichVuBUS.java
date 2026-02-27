@@ -2,7 +2,6 @@ package bus;
 import entity.GoiDichVu;
 import dao.GoiDichVuDAO;
 import dao.DBConnection;
-import dao.ConnectionManager;
 import untils.PermissionHelper;
 
 import java.util.ArrayList;
@@ -118,22 +117,29 @@ public class GoiDichVuBUS{
         this.checkVALIDATION(newgdv);
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
-
-            boolean isSuccess = this.gdvDAO.insert(newgdv);
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            boolean isSuccess = this.gdvDAO.insert(newgdv, conn);
             if(isSuccess){
-                ConnectionManager.commit();
                 System.out.println("Thêm một gói dịch vụ thành công!");
             }
             else {
                 System.out.println("Thêm một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -157,22 +163,29 @@ public class GoiDichVuBUS{
         this.checkVALIDATION(updategdv);
 
         // gọi xuống DAO.
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
-
-            boolean isSuccess = this.gdvDAO.update(updategdv);
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            boolean isSuccess = this.gdvDAO.update(updategdv, conn);
             if(isSuccess){
-                ConnectionManager.commit();
                 System.out.println("Sửa một gói dịch vụ thành công!");
             }
             else {
                 System.out.println("Sửa một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -194,22 +207,29 @@ public class GoiDichVuBUS{
         }
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
-
-            boolean isSuccess = this.gdvDAO.delete(maGDV);
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            boolean isSuccess = this.gdvDAO.delete(maGDV, conn);
             if(isSuccess){
-                ConnectionManager.commit();
                 System.out.println("Xóa gói dịch vụ thành công!");
             }
             else {
                 System.out.println("Xóa một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 
@@ -231,22 +251,29 @@ public class GoiDichVuBUS{
         }
 
         // gọi xuống DAO
+        Connection conn = null;
         try{
-            ConnectionManager.beginTransaction();
-
-            boolean isSuccess = this.gdvDAO.cancelDelete(maGDV);
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+            boolean isSuccess = this.gdvDAO.cancelDelete(maGDV, conn);
             if(isSuccess){
-                ConnectionManager.commit();
                 System.out.println("Khôi phục gói dịch vụ thành công!");
             }
             else {
                 System.out.println("Khôi phục một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            ConnectionManager.rollback();
+            if(conn != null){
+                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
+            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }finally{
-            ConnectionManager.close();
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    DBConnection.closeConnection();
+                } catch (SQLException e) { e.printStackTrace(); }
+            }
         }
     }
 

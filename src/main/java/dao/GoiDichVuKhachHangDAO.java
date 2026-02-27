@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 
 /* CÁC METHOD.
     1. List<GoiDichVuKhachHang> getByKhachHang(String maKH): lấy tất cả các dịch vụ bằng mã khách hàng.
-    2. boolean insert(GoiDichVuKhachHang newGDVKH): thêm một gói dịch vụ khách hàng.
-    2.1 String generateNextMaGoiKH(): tăng mã tự động.
+    2. boolean insert(GoiDichVuKhachHang newGDVKH, Connection conn1): thêm một gói dịch vụ khách hàng.
+    2.1 String generateNextMaGoiKH(Connection conn1): tăng mã tự động.
     3. boolean update(GoiDichVuKhachHang updateGDVKH): chỉnh sửa thông tin gói dịch vụ khách hàng.
     4. boolean getConHieuLuc(String maGoiKH): kiểm tra gói còn hiệu lực không.
     5. GoiDichVuKhachHang getByID(String maGKH): lấy gói dịch vụ bằng mã.
@@ -107,14 +107,14 @@ public class GoiDichVuKhachHangDAO{
     paramter: GoiDichVuKhachHang newGDVKH.
     return: true/false
     */
-    public boolean insert(GoiDichVuKhachHang newGDVKH) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean insert(GoiDichVuKhachHang newGDVKH, Connection conn1) {
         String sql = "INSERT INTO goidichvu_khachhang (MaGoiKH, MaKH, MaGoi, MaNV, SoGioBanDau, SoGioConLai" +
                 ", NgayMua, NgayHetHan, GiaMua, TrangThai) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-            ps = conn1.prepareStatement(sql);
+            // Sử dụng conn1 được truyền từ BUS xuống thay vì tạo kết nối mới
+            PreparedStatement ps = conn1.prepareStatement(sql);
 
-            ps.setString(1, this.generateNextMaGoiKH());
+            ps.setString(1, this.generateNextMaGoiKH(conn1));
             ps.setString(2, newGDVKH.getMakh());
             ps.setString(3, newGDVKH.getMagoi());
             ps.setString(4, newGDVKH.getManv());
@@ -127,15 +127,17 @@ public class GoiDichVuKhachHangDAO{
 
             int rowAffected = ps.executeUpdate();
 
+            // Lưu ý: Không được đóng ps hoặc conn1 ở đây vì nó đang dùng chung Transaction với BUS
             return rowAffected > 0;
+
         } catch (SQLException e) {
-            throw new Exception("[LỖI INSERT - GoiDichVuKhachHangDAO]: " + e.getMessage());
+            System.err.println("[LỖI INSERT - GoiDichVuKhachHangDAO]: " + e.getMessage());
+            return false;
         }
     }
 
     // TĂNG MÃ TỰ ĐỘNG
-    private String generateNextMaGoiKH() throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    private String generateNextMaGoiKH(Connection conn1) {
         String sql = "SELECT MaGoiKH FROM goidichvu_khachhang ORDER BY MaGoiKH DESC LIMIT 1";
         String nextID = "GOIKH001";
 
@@ -149,10 +151,10 @@ public class GoiDichVuKhachHangDAO{
                 number++;
                 nextID = String.format("GOIKH%03d", number);
             }
-            return nextID;
         } catch (SQLException e) {
-            throw new Exception("[LỖI TỰ TĂNG MÃ - GoiDichVuKhachHangDAO]: " + e.getMessage());
+            System.err.println("[LỖI TỰ TĂNG MÃ - GoiDichVuKhachHangDAO]: " + e.getMessage());
         }
+        return nextID;
     }
 
     // CHỈNH SỬA THÔNG TIN

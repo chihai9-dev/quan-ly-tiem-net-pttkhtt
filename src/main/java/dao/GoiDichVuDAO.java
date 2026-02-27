@@ -1,5 +1,4 @@
 package dao;
-import com.mysql.cj.jdbc.ConnectionGroupManager;
 import entity.GoiDichVu;
 
 import dao.DBConnection;
@@ -91,15 +90,14 @@ public class GoiDichVuDAO{
     }
 
     // CHỨC NĂNG THÊM GÓI DỊCH VỤ
-    public boolean insert(GoiDichVu newGDV) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean insert(GoiDichVu newGDV, Connection conn1) {
         String sql = "INSERT INTO goidichvu (MaGoi, TenGoi, LoaiGoi, SoGio, SoNgayHieuLuc" +
                 ", GiaGoc, GiaGoi, ApDungChoKhu, TrangThai) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try {
             ps = conn1.prepareStatement(sql);
 
-            ps.setString(1, this.generateNextMaGoi());
+            ps.setString(1, this.generateNextMaGoi(conn1));
             ps.setString(2, newGDV.getTengoi());
             ps.setString(3, newGDV.getLoaigoi());
             ps.setDouble(4, newGDV.getSogio());
@@ -113,13 +111,13 @@ public class GoiDichVuDAO{
 
             return rowAffected > 0;
         } catch (SQLException e) {
-            throw new Exception("[LỖI INSERT - GoiDichVuDAO]: " + e.getMessage());
+            System.err.println("[LỖI INSERT - GoiDichVuDAO]: " + e.getMessage());
+            return false;
         }
     }
 
     // TĂNG MÃ TỰ ĐỘNG
-    private String generateNextMaGoi() throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    private String generateNextMaGoi(Connection conn1) {
         String sql = "SELECT MaGoi FROM goidichvu ORDER BY MaGoi DESC LIMIT 1";
         String nextID = "GDV001";
 
@@ -134,14 +132,13 @@ public class GoiDichVuDAO{
                 nextID = String.format("GOI%03d", number);
             }
         } catch (SQLException e) {
-            throw new Exception("[LỖI TỰ TĂNG MÃ - GoiDichVuDAO]: " + e.getMessage());
+            System.err.println("[LỖI TỰ TĂNG MÃ - GoiDichVuDAO]: " + e.getMessage());
         }
         return nextID;
     }
 
     // CHỨC NĂNG SỬA THÔNG TIN GÓI DỊCH VỤ
-    public boolean update(GoiDichVu updateGDV) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean update(GoiDichVu updateGDV, Connection conn1) {
         String sql = "UPDATE goidichvu SET TenGoi = ?, LoaiGoi = ?, SoGio = ?, SoNgayHieuLuc = ?, " +
                 "GiaGoc = ?, GiaGoi = ?, ApDungChoKhu = ?, TrangThai = ? WHERE MaGoi = ?";
         try {
@@ -161,13 +158,13 @@ public class GoiDichVuDAO{
 
             return rowAffected > 0;
         } catch (SQLException e) {
-            throw new Exception("[LỖI UPDATE - GoiDichVuDAO]: " + e.getMessage());
+            System.err.println("[LỖI UPDATE - GoiDichVuDAO]: " + e.getMessage());
+            return false;
         }
     }
 
     // CHỨC NĂNG XÓA MỘT GÓI DỊCH VỤ
-    public boolean delete(String maGDV) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean delete(String maGDV, Connection conn1) {
         String sql = "UPDATE goidichvu SET TrangThai = ? WHERE MaGoi = ?";
         try {
             ps = conn1.prepareStatement(sql);
@@ -179,13 +176,13 @@ public class GoiDichVuDAO{
 
             return rowAffected > 0;
         } catch (SQLException e) {
-            throw new Exception("[LỖI DELETE - GoiDichVuDAO]: " + e.getMessage());
+            System.err.println("[LỖI DELETE - GoiDichVuDAO]: " + e.getMessage());
+            return false;
         }
     }
 
     // CHỨC NĂNG KHÔI PHỤC MỘT GÓI DỊCH VỤ
-    public boolean cancelDelete(String maGDV) throws Exception{
-        Connection conn1 = ConnectionManager.getConnection();
+    public boolean cancelDelete(String maGDV, Connection conn1){
         String sql = "UPDATE goidichvu SET TrangThai = ? WHERE MaGoi = ?";
         try {
             ps = conn1.prepareStatement(sql);
@@ -197,7 +194,8 @@ public class GoiDichVuDAO{
 
             return rowAffected > 0;
         } catch (SQLException e) {
-            throw new Exception("[LỖI DELETE - GoiDichVuDAO]: " + e.getMessage());
+            System.err.println("[LỖI DELETE - GoiDichVuDAO]: " + e.getMessage());
+            return false;
         }
     }
 
