@@ -44,7 +44,7 @@ public class HoaDonBUS {
         }
 
         // 2. Kiểm tra phiên tồn tại
-        PhienSuDung phien = phienSuDungDAO.getById(maPhien);
+        PhienSuDung phien = phienSuDungDAO.getByMaPhien(maPhien);
         if (phien == null) {
             throw new Exception("Không tìm thấy phiên sử dụng");
         }
@@ -335,7 +335,7 @@ public class HoaDonBUS {
         // 4. Lấy thông tin phiên (nếu cần)
         PhienSuDung phien = null;
         if (hoaDon.getMaPhien() != null) {
-            phien = phienSuDungDAO.getById(hoaDon.getMaPhien());
+            phien = phienSuDungDAO.getByMaPhien(hoaDon.getMaPhien());
         }
 
         // 5. Tạo file PDF (sử dụng thư viện iText hoặc Apache PDFBox)
