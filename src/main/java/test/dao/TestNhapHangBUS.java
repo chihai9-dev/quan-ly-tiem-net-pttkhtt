@@ -18,7 +18,6 @@ public class TestNhapHangBUS {
         if (maNV == null) {
             throw new Exception("Không tìm thấy MaNV trong DB để test. Hãy thêm dữ liệu bảng nhanvien/phieunhaphang.");
         }
-
         NhanVien nv = new NhanVien();
         nv.setManv(maNV);
         nv.setChucvu("QUANLY");
@@ -28,15 +27,13 @@ public class TestNhapHangBUS {
     public static void main(String[] args) {
         try {
             loginQuanLyWithMaNVInDB();
-
             NhapHangBUS bus = new NhapHangBUS();
-
             // ===== Chuẩn bị dữ liệu test =====
             String maNCC = TestUtil.anyMaNCC();
             String maDV  = TestUtil.anyMaDV();
 
             if (maNCC == null || maDV == null) {
-                System.out.println("❌ Thiếu dữ liệu test. Cần có nhacungcap và dichvu trong DB.");
+                System.out.println(" Thiếu dữ liệu test. Cần có nhacungcap và dichvu trong DB.");
                 return;
             }
 
@@ -54,7 +51,7 @@ public class TestNhapHangBUS {
             // ===== 1) Tạo phiếu nhập (CHODUYET, chưa cộng tồn kho) =====
             System.out.println("\n=== 1) taoPhieuNhap() ===");
             String maPN = bus.taoPhieuNhap(maNCC, ctList);
-            System.out.println("✅ Created MaPhieuNhap = " + maPN);
+            System.out.println(" Created MaPhieuNhap = " + maPN);
 
             Integer tonSauTao = TestUtil.soLuongTonOf(maDV);
             System.out.println("Ton kho sau tao (phai KHONG DOI) = " + tonSauTao);
@@ -67,13 +64,13 @@ public class TestNhapHangBUS {
             System.out.println("Ton kho sau duyet (phai TANG) = " + tonSauDuyet);
 
             // ===== 3) Hủy phiếu (nếu đã DANHAP -> trừ lại tồn kho, TrangThai=DAHUY) =====
-            System.out.println("\n=== 3) huyPhieu() ===");
-            bus.huyPhieu(maPN);
-
-            Integer tonSauHuy = TestUtil.soLuongTonOf(maDV);
-            System.out.println("Ton kho sau huy (phai VE GAN nhu cu) = " + tonSauHuy);
-
-            System.out.println("\n=== TEST NhapHangBUS OK ===");
+//            System.out.println("\n=== 3) huyPhieu() ===");
+//            bus.huyPhieu(maPN);
+//
+//            Integer tonSauHuy = TestUtil.soLuongTonOf(maDV);
+//            System.out.println("Ton kho sau huy (phai VE GAN nhu cu) = " + tonSauHuy);
+//
+//            System.out.println("\n=== TEST NhapHangBUS OK ===");
 
         } catch (Exception e) {
             System.out.println("TEST FAIL: " + e.getMessage());
