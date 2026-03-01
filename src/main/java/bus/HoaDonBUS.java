@@ -44,7 +44,7 @@ public class HoaDonBUS {
         }
 
         // 2. Kiểm tra phiên tồn tại
-        PhienSuDung phien = phienSuDungDAO .getByMaPhien(maPhien);
+        PhienSuDung phien = phienSuDungDAO.getByMaPhien(maPhien);
         if (phien == null) {
             throw new Exception("Không tìm thấy phiên sử dụng");
         }
@@ -126,33 +126,20 @@ public class HoaDonBUS {
             danhSachChiTiet.add(ctGioChoi);
         }
 
-// 12.2. Chi tiết dịch vụ đã sử dụng
-        java.sql.Connection conn = null;
-        try {
-            // Mở kết nối đàng hoàng và gán vào biến
-            conn = DBConnection.getConnection();
+        // 12.2. Chi tiết dịch vụ đã sử dụng
+        List<SuDungDichVu> danhSachDV = suDungDichVuDAO.geyByPhien(maPhien, DBConnection.getConnection());
+        if (danhSachDV != null && !danhSachDV.isEmpty()) {
+            for (SuDungDichVu sdDV : danhSachDV) {
+                ChiTietHoaDon ctDV = new ChiTietHoaDon();
+                ctDV.setMaCTHD(chiTietHoaDonDAO.taoMaChiTietTuDong());
+                ctDV.setMaHD(maHD);
+                ctDV.setLoaiChiTiet("DICHVU");
+                ctDV.setMoTa("Dịch vụ: " + sdDV.getMadv());
+                ctDV.setSoLuong(sdDV.getSoluong());
+                ctDV.setDonGia(sdDV.getDongia());
+                ctDV.tinhThanhTien();
 
-            // Đã sửa lỗi chính tả từ geyByPhien -> getByPhien
-            List<SuDungDichVu> danhSachDV = suDungDichVuDAO.getByPhien(maPhien, conn);
-
-            if (danhSachDV != null && !danhSachDV.isEmpty()) {
-                for (SuDungDichVu sdDV : danhSachDV) {
-                    ChiTietHoaDon ctDV = new ChiTietHoaDon();
-                    ctDV.setMaCTHD(chiTietHoaDonDAO.taoMaChiTietTuDong());
-                    ctDV.setMaHD(maHD);
-                    ctDV.setLoaiChiTiet("DICHVU");
-                    ctDV.setMoTa("Dịch vụ: " + sdDV.getMadv());
-                    ctDV.setSoLuong(sdDV.getSoluong());
-                    ctDV.setDonGia(sdDV.getDongia());
-                    ctDV.tinhThanhTien();
-
-                    danhSachChiTiet.add(ctDV);
-                }
-            }
-        } finally {
-            // Bắt buộc phải đóng kết nối sau khi lấy xong dữ liệu
-            if (conn != null) {
-                conn.close();
+                danhSachChiTiet.add(ctDV);
             }
         }
 
