@@ -13,12 +13,12 @@ public class TestDichVuDAO {
         List<DichVu> ListDichVu = dvDAO.getAll();
         Integer stt = 0;
         for (DichVu item : ListDichVu) {
-            System.out.print(stt + 1);
+            System.out.print(stt + 1 + ": ");
             dvDAO.PrintDV(item);
             stt++;
         }
 
-        // Test phương thức getByID()
+//        // Test phương thức getByID()
 //        DichVu ketQua = dvDAO.getByID("DV005");
 //        if (ketQua != null) {
 //            dvDAO.PrintDV(ketQua);

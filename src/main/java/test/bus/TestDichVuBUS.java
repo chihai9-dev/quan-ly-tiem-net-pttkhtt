@@ -57,12 +57,12 @@ public class TestDichVuBUS {
 //        }
 
         // test phương thức insert
-//        DichVu newDichVu = new DichVu("", "Test nhé 111", "Kem", 11000);
-//        try{
-//            dv.themDichVu(newDichVu);
-//        }catch(Exception e){
-//            System.err.println("Có lỗi: " + e.getMessage());
-//        }
+        DichVu newDichVu = new DichVu("", "Test nhé 122", "Kem", 11000, "Que");
+        try{
+            dv.themDichVu(newDichVu);
+        }catch(Exception e){
+            System.err.println("Có lỗi: " + e.getMessage());
+        }
 
         // test phương thức update
 //        DichVu updateDV = new DichVu("DV012", "Test nhé", "Trứng", 11000);

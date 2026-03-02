@@ -7,11 +7,11 @@ import java.util.List;
 
 /* ========= CÁC METHOD ===========
     1. List<DichVu> getAll(): lấy toàn bộ dịch vụ.
-    2. boolean insert(DichVu dv, Connection conn1): thêm một dịch vụ.
-    2.1. String generateNextMaDV(Connection conn1): sinh mã dịch vụ tự động.
-    3. boolean update(DichVu dv, Connection conn1): cập nhập thông tin của một dịch vụ.
-    4. boolean delete(String maDichVu, Connection conn1): chuyển sang trạng thái "NGUNGBAN".
-    5. boolean cancelDelete(DichVu dv, Connection conn1): hủy bỏ trạng thái "NGUNGBAN" về "CONHANG" || "HETHANG"
+    2. boolean insert(DichVu dv): thêm một dịch vụ.
+    2.1. String generateNextMaDV(): sinh mã dịch vụ tự động.
+    3. boolean update(DichVu dv): cập nhập thông tin của một dịch vụ.
+    4. boolean delete(String maDichVu): chuyển sang trạng thái "NGUNGBAN".
+    5. boolean cancelDelete(DichVu dv): hủy bỏ trạng thái "NGUNGBAN" về "CONHANG" || "HETHANG"
     6. boolean updateSoLuongTon(String maDichVu, int soLuongCanTangGiam, Connection conn1): tăng giảm số lượng khi nhập hàng
 , mua hàng, hoàn hàng.
     7. int getSoLuongTon(String maDV): lấy số lượng tồn của dịch vụ đó.
@@ -75,13 +75,14 @@ public class DichVuDAO {
     }
 
     // THÊM DỊCH VỤ
-    public boolean insert(DichVu dv, Connection conn1) {
+    public boolean insert(DichVu dv) throws Exception{
+        conn = DBConnection.getConnection();
         String sql = "INSERT INTO dichvu (MaDV, TenDV, LoaiDV, DonGia, DonViTinh, SoLuongTon, TrangThai) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try {
-            ps = conn1.prepareStatement(sql);
+            ps = conn.prepareStatement(sql);
 
-            ps.setString(1, this.generateNextMaDV(conn1));   // tăng mã tự động
+            ps.setString(1, this.generateNextMaDV(conn));   // tăng mã tự động
             ps.setString(2, dv.getTendv());
             ps.setString(3, dv.getLoaidv());
             ps.setDouble(4, dv.getDongia());
@@ -93,13 +94,12 @@ public class DichVuDAO {
 
             return rowAffected > 0; // Trả về true nếu chèn thành công ít nhất 1 dòng
         } catch (Exception e) {
-            System.err.println("[LỖI INSERT - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI INSERT - DichVuDAO]: " + e.getMessage());
         }
     }
 
     // SINH MÃ DỊCH VỤ TỰ ĐỘNG
-    private String generateNextMaDV(Connection conn1) {
+    private String generateNextMaDV(Connection conn1) throws Exception{
         String sql = "SELECT MaDV FROM dichvu ORDER BY MaDV DESC LIMIT 1";
         String nextID = "DV001"; // Mặc định nếu bảng trống
 
@@ -111,17 +111,18 @@ public class DichVuDAO {
                 number++;
                 nextID = String.format("DV%03d", number);
             }
-        } catch (Exception e) {
-            System.err.println("[LỖI TỰ TĂNG MÃ - DichVuDAO]: " + e.getMessage());
+            return nextID;
+        }catch(Exception e){
+            throw new Exception("LỖI TẠO MÃ TỰ ĐỘNG - generateNextMaDV: " + e.getMessage());
         }
-        return nextID;
     }
 
     // CẬP NHẬP THÔNG TIN
-    public boolean update(DichVu dv, Connection conn1) {
+    public boolean update(DichVu dv) throws Exception{
+        conn = DBConnection.getConnection();
         String sql = "UPDATE dichvu SET TenDV = ?, LoaiDV = ?, DonGia = ?, DonViTinh = ?, SoLuongTon = ?, TrangThai = ? WHERE MaDV = ?";
         try {
-            ps = conn1.prepareStatement(sql);
+            ps = conn.prepareStatement(sql);
 
             ps.setString(1, dv.getTendv());
             ps.setString(2, dv.getLoaidv());
@@ -134,32 +135,32 @@ public class DichVuDAO {
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
         } catch (Exception e) {
-            System.err.println("[LỖI UPDATE - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI UPDATE - DichVuDAO]: " + e.getMessage());
         }
     }
 
     // HỦY DỊCH VỤ
-    public boolean delete(String maDichVu, Connection conn1){
+    public boolean delete(String maDichVu) throws Exception{
+        conn = DBConnection.getConnection();
         String sql = "UPDATE dichvu SET TrangThai = ? WHERE MaDV = ?";
         try{
-            ps = conn1.prepareStatement(sql);
+            ps = conn.prepareStatement(sql);
             ps.setString(1, "NGUNGBAN");
             ps.setString(2, maDichVu);
 
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
         }catch(Exception e) {
-            System.err.println("[Lỗi DELETE - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[Lỗi DELETE - DichVuDAO]: " + e.getMessage());
         }
     }
 
     // KHÔI PHỤC DỊCH VỤ
-    public boolean cancelDelete(DichVu dv, Connection conn1){
+    public boolean cancelDelete(DichVu dv) throws Exception{
+        conn = DBConnection.getConnection();
         String sql = "UPDATE dichvu SET TrangThai = ? WHERE MaDV = ?";
         try{
-            ps = conn1.prepareStatement(sql);
+            ps = conn.prepareStatement(sql);
 
             if( dv.getSoluongton() > 0){ ps.setString(1, "CONHANG");}
             if( dv.getSoluongton() == 0){ ps.setString(1, "HETHANG");}
@@ -169,18 +170,18 @@ public class DichVuDAO {
             int rowAffected = ps.executeUpdate();
             return rowAffected > 0;
         }catch(Exception e){
-            System.err.println("Lỗi cancelDelete - DichVuDAO: " + e.getMessage());
-            return false;
+            throw new Exception("Lỗi cancelDelete - DichVuDAO: " + e.getMessage());
         }
     }
 
     // CẬP NHẬP SỐ LƯỢNG TỒN
-    public boolean updateSoLuongTon(String maDichVu, int soLuongCanTangGiam, Connection conn1 ) {
+    public boolean updateSoLuongTon(String maDichVu, int soLuongCanTangGiam) throws Exception{
+        conn = DBConnection.getConnection();
         String sqlSelect = "SELECT SoLuongTon FROM dichvu WHERE MaDV = ?";
         String sqlUpdate = "UPDATE dichvu SET SoLuongTon = ?, TrangThai = ? WHERE MaDV = ?";
         try {
             // Bước 1: Lấy số lượng hiện có
-            ps = conn1.prepareStatement(sqlSelect);
+            ps = conn.prepareStatement(sqlSelect);
             ps.setString(1, maDichVu);
             rs = ps.executeQuery();
 
@@ -195,7 +196,7 @@ public class DichVuDAO {
             int soLuongMoi = soLuongHienCo + soLuongCanTangGiam;
             if (soLuongMoi < 0) return false; // Tránh trường hợp số lượng âm
 
-            ps = conn1.prepareStatement(sqlUpdate);
+            ps = conn.prepareStatement(sqlUpdate);
             ps.setInt(1, soLuongMoi);
             if( soLuongMoi == 0){ ps.setString(2, "HETHANG"); }
             else { ps.setString(2, "CONHANG"); }
@@ -203,8 +204,7 @@ public class DichVuDAO {
 
             return ps.executeUpdate() > 0;
         } catch (Exception e) {
-            System.err.println("[LỖI UPDATE SOLUONG - DichVuDAO]: " + e.getMessage());
-            return false;
+            throw new Exception("[LỖI UPDATE SOLUONG - DichVuDAO]: " + e.getMessage());
         }
     }
 

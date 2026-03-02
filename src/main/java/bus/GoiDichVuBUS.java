@@ -117,11 +117,8 @@ public class GoiDichVuBUS{
         this.checkVALIDATION(newgdv);
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-            boolean isSuccess = this.gdvDAO.insert(newgdv, conn);
+            boolean isSuccess = this.gdvDAO.insert(newgdv);
             if(isSuccess){
                 System.out.println("Thêm một gói dịch vụ thành công!");
             }
@@ -129,17 +126,7 @@ public class GoiDichVuBUS{
                 System.out.println("Thêm một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
-        }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
         }
     }
 
@@ -163,11 +150,8 @@ public class GoiDichVuBUS{
         this.checkVALIDATION(updategdv);
 
         // gọi xuống DAO.
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-            boolean isSuccess = this.gdvDAO.update(updategdv, conn);
+            boolean isSuccess = this.gdvDAO.update(updategdv);
             if(isSuccess){
                 System.out.println("Sửa một gói dịch vụ thành công!");
             }
@@ -175,17 +159,7 @@ public class GoiDichVuBUS{
                 System.out.println("Sửa một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
-        }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
         }
     }
 
@@ -207,11 +181,8 @@ public class GoiDichVuBUS{
         }
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-            boolean isSuccess = this.gdvDAO.delete(maGDV, conn);
+            boolean isSuccess = this.gdvDAO.delete(maGDV);
             if(isSuccess){
                 System.out.println("Xóa gói dịch vụ thành công!");
             }
@@ -219,17 +190,7 @@ public class GoiDichVuBUS{
                 System.out.println("Xóa một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
-        }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
         }
     }
 
@@ -251,11 +212,8 @@ public class GoiDichVuBUS{
         }
 
         // gọi xuống DAO
-        Connection conn = null;
         try{
-            conn = DBConnection.getConnection();
-            conn.setAutoCommit(false);
-            boolean isSuccess = this.gdvDAO.cancelDelete(maGDV, conn);
+            boolean isSuccess = this.gdvDAO.cancelDelete(maGDV);
             if(isSuccess){
                 System.out.println("Khôi phục gói dịch vụ thành công!");
             }
@@ -263,18 +221,7 @@ public class GoiDichVuBUS{
                 System.out.println("Khôi phục một gói dịch vụ thất bại!");
             }
         }catch(Exception e){
-            if(conn != null){
-                try { conn.rollback(); } catch(SQLException ex){ ex.printStackTrace(); }
-            }
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
-        }finally{
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    DBConnection.closeConnection();
-                } catch (SQLException e) { e.printStackTrace(); }
-            }
         }
     }
-
 }
