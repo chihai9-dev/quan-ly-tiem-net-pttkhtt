@@ -1,0 +1,6 @@
+# IntelliJIDEA
+.idea/
+*.iml
+#Build ouput
+out/
+target/

@@ -18,11 +18,11 @@ public class TestNhaCungCapDAO {
 
         System.out.println("\n=== TEST insert() ===");
         NhaCungCap newNcc = new NhaCungCap();
-        newNcc.setTenNCC("NCC Test DAO");
+        newNcc.setTenNCC("NCC Phở VIFON");
         newNcc.setSoDienThoai("0909999999");
-        newNcc.setEmail("testdao@ncc.com");
+        newNcc.setEmail("phugia@ncc.com");
         newNcc.setDiaChi("TP.HCM");
-        newNcc.setNguoiLienHe("Anh Test");
+        newNcc.setNguoiLienHe("CTY TNHH VIFON");
         // TrangThai sẽ auto HOATDONG theo nghiệp vụ
 
         String maMoi = dao.insert(newNcc);
@@ -33,7 +33,7 @@ public class TestNhaCungCapDAO {
         System.out.println(found == null ? "Khong tim thay" : found.toString());
 
         System.out.println("\n=== TEST update() ===");
-        found.setTenNCC("NCC Test DAO - Updated");
+        found.setTenNCC("NCC Phở VIFON");
         boolean updated = dao.update(found);
         System.out.println("Update = " + updated);
         System.out.println("After update: " + dao.getById(maMoi));

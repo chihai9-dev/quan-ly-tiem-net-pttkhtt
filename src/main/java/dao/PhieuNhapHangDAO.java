@@ -5,7 +5,6 @@ import entity.PhieuNhapHang;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,36 +13,33 @@ public class PhieuNhapHangDAO {
     private final ChiTietPhieuNhapDAO ctDAO = new ChiTietPhieuNhapDAO();
 
     /**
-     * Sinh mã phiếu nhập theo dạng timestamp để KHÔNG phụ thuộc dữ liệu cũ trong DB.
-     * Ví dụ: PN260201_154312
+     * Sinh mã phiếu nhập tăng dần: PN001, PN002, ...
      *
-     * Lý do: DB  đã có mã dạng PNyyMMdd_HHmmss nên cách tăng PN001 sẽ bị NumberFormatException.
+     * Lưu ý: DB có thể có mã kiểu timestamp (PNyyMMdd_HHmmss) hoặc PN_TEST_...
+     * => chỉ lấy MAX trong nhóm mã đúng regex ^PN[0-9]+$
+     * => dùng FOR UPDATE để hạn chế trùng mã khi tạo đồng thời
      */
     private String genMaPhieuNhap(Connection conn) {
-        String base = "PN" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMdd_HHmmss"));
+        String sql =
+                "SELECT MaPhieuNhap " +
+                        "FROM phieunhaphang " +
+                        "WHERE MaPhieuNhap REGEXP '^PN[0-9]+$' " +
+                        "ORDER BY CAST(SUBSTRING(MaPhieuNhap, 3) AS UNSIGNED) DESC " +
+                        "LIMIT 1 FOR UPDATE";
 
-        // nếu cực hiếm bị trùng trong cùng 1 giây, thêm suffix _01, _02...
-        String checkSql = "SELECT 1 FROM phieunhaphang WHERE MaPhieuNhap=? LIMIT 1";
-        try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
-            ps.setString(1, base);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return base;
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                String max = rs.getString(1);      // VD: PN004
+                int num = Integer.parseInt(max.substring(2)); // bỏ "PN"
+                return "PN" + String.format("%03d", num + 1);
             }
+            return "PN001";
 
-            for (int i = 1; i <= 99; i++) {
-                String candidate = base + "_" + String.format("%02d", i);
-                ps.setString(1, candidate);
-                try (ResultSet rs2 = ps.executeQuery()) {
-                    if (!rs2.next()) return candidate;
-                }
-            }
-
-            // fallback cuối cùng
-            return base + "_" + System.nanoTime();
-
-        } catch (SQLException e) {
-            // Nếu check lỗi thì vẫn trả base để không chặn nghiệp vụ
-            return base;
+        } catch (Exception e) {
+            // fallback để không chặn nghiệp vụ nếu DB lỗi/regex không hỗ trợ
+            return "PN001";
         }
     }
 
@@ -113,7 +109,7 @@ public class PhieuNhapHangDAO {
                 ps.setString(2, maNCC);
                 ps.setString(3, maNV);
 
-                // ✅ đổi sang LocalDateTime (logic vẫn là "thời điểm hiện tại")
+                // ✅ LocalDateTime (logic vẫn là "thời điểm hiện tại")
                 ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
 
                 ps.setDouble(5, 0.0);
@@ -129,9 +125,6 @@ public class PhieuNhapHangDAO {
                 // insert dùng cùng conn (DAO con sẽ tính & set ThanhTien)
                 ctDAO.insert(conn, ct);
 
-                // Giữ logic gần giống bản BigDecimal:
-                // - bản cũ: nếu tt == null mới tự tính
-                // - bản double: coi tt == 0 nhưng giaNhap != 0 và soLuong > 0 là "chưa set" -> tự tính fallback
                 double tt = ct.getThanhTien();
                 if (tt == 0.0 && ct.getGiaNhap() != 0.0 && ct.getSoLuong() > 0) {
                     tt = ct.getGiaNhap() * ct.getSoLuong();
@@ -152,18 +145,10 @@ public class PhieuNhapHangDAO {
             return maPN;
 
         } catch (Exception e) {
-            // rollback nếu lỗi
-            // (try-with-resources sẽ auto close connection)
             throw new RuntimeException("PhieuNhapHangDAO.createPhieuNhap error", e);
         }
     }
 
-    /**
-     * DUYỆT PHIẾU
-     * 1) kiểm tra TrangThai = "CHODUYET"
-     * 2) cộng tồn kho theo từng chi tiết
-     * 3) UPDATE TrangThai = "DANHAP"
-     */
     public void duyetPhieu(String maPN) {
         String lock = "SELECT TrangThai FROM phieunhaphang WHERE MaPhieuNhap=? FOR UPDATE";
         String updateTon = "UPDATE dichvu SET SoLuongTon = SoLuongTon + ? WHERE MaDV=?";
@@ -185,7 +170,6 @@ public class PhieuNhapHangDAO {
                 throw new IllegalStateException("Chỉ duyệt phiếu khi trạng thái = CHODUYET");
             }
 
-            // dùng cùng conn
             List<ChiTietPhieuNhap> cts = ctDAO.getByMaPhieuNhap(conn, maPN);
 
             try (PreparedStatement ps = conn.prepareStatement(updateTon)) {
@@ -209,11 +193,6 @@ public class PhieuNhapHangDAO {
         }
     }
 
-    /**
-     * HỦY PHIẾU
-     * - từ CHODUYET: không làm gì tồn kho, set DAHUY
-     * - từ DANHAP: trừ lại tồn kho, set DAHUY
-     */
     public void huyPhieu(String maPN) {
         String lock = "SELECT TrangThai FROM phieunhaphang WHERE MaPhieuNhap=? FOR UPDATE";
         String truTon = "UPDATE dichvu SET SoLuongTon = SoLuongTon - ? WHERE MaDV=?";
@@ -236,7 +215,6 @@ public class PhieuNhapHangDAO {
             }
 
             if ("DANHAP".equals(trangThai)) {
-                // dùng cùng conn
                 List<ChiTietPhieuNhap> cts = ctDAO.getByMaPhieuNhap(conn, maPN);
 
                 try (PreparedStatement ps = conn.prepareStatement(truTon)) {
@@ -263,7 +241,6 @@ public class PhieuNhapHangDAO {
         }
     }
 
-    // Không cho phép xóa
     public void deleteNotAllowed() {
         throw new UnsupportedOperationException("Phiếu nhập là chứng từ, KHÔNG được xóa.");
     }
@@ -273,7 +250,6 @@ public class PhieuNhapHangDAO {
         pn.setMaPhieuNhap(rs.getString("MaPhieuNhap"));
         pn.setMaNCC(rs.getString("MaNCC"));
         pn.setMaNV(rs.getString("MaNV"));
-
 
         Timestamp ts = rs.getTimestamp("NgayNhap");
         pn.setNgayNhap(ts == null ? null : ts.toLocalDateTime());
