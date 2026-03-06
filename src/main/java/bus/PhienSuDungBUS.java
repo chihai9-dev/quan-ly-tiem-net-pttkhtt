@@ -2,7 +2,7 @@ package bus;
 
 import dao.*;
 import entity.*;
-import untils.*;
+import utils.*;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

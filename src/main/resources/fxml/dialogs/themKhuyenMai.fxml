@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.dialog.ThemKhuyenMaiDialog"
+      stylesheets="@../../css/style.css"
+      spacing="0" style="-fx-min-width:460; -fx-max-width:520;">
+
+    <!-- Header -->
+    <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
+        <Label text="🎁" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblDialogTitle" text="Thêm / Sửa Khuyến Mãi" styleClass="dialog-title"/>
+    </HBox>
+
+    <!-- Body -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color:transparent; -fx-border-color:transparent; -fx-max-height:480;">
+        <VBox styleClass="dialog-body" spacing="12">
+            <VBox spacing="4">
+                <Label text="Mã KM *" styleClass="form-label"/>
+                <TextField fx:id="txtMaKM" promptText="VD: NOEL2026" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtMaKMError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Tên chương trình *" styleClass="form-label"/>
+                <TextField fx:id="txtTenKM" promptText="VD: Khuyến mãi Noel" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtTenKMError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Loại KM *" styleClass="form-label"/>
+                <ComboBox fx:id="cboLoai" promptText="Chọn loại (%, tiền)" styleClass="combo-box" maxWidth="Infinity"/>
+                <Label fx:id="lblcboLoaiError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Giá trị *" styleClass="form-label"/>
+                <TextField fx:id="txtGiaTri" promptText="VD: 20 (%) hoặc 50000 (VNĐ)" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtGiaTriError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Nạp tối thiểu (VNĐ)" styleClass="form-label"/>
+                <TextField fx:id="txtNapToiThieu" promptText="VD: 100000" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtNapToiThieuError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Từ ngày *" styleClass="form-label"/>
+                <DatePicker fx:id="datTuNgay" promptText="Chọn ngày bắt đầu" maxWidth="Infinity"/>
+                <Label fx:id="lbldatTuNgayError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Đến ngày *" styleClass="form-label"/>
+                <DatePicker fx:id="datDenNgay" promptText="Chọn ngày kết thúc" maxWidth="Infinity"/>
+                <Label fx:id="lbldatDenNgayError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Mô tả" styleClass="form-label"/>
+                <TextArea fx:id="txtMoTa" promptText="Mô tả chương trình..." styleClass="text-field" maxWidth="Infinity" prefRowCount="3" wrapText="true"/>
+                <Label fx:id="lbltxtMoTaError" styleClass="error-label" text=""/>
+            </VBox>
+
+            <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true"/>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER_RIGHT">
+        <Button text="✕  Hủy" styleClass="btn btn-secondary"
+                onAction="#handleCancel"/>
+        <Button fx:id="btnSave" text="💾  Lưu" styleClass="btn btn-primary"
+                onAction="#handleSave"/>
+    </HBox>
+
+</VBox>

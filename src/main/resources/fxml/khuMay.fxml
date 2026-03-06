@@ -2,59 +2,57 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
+<?import javafx.collections.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.KhuMayController"
-      spacing="14" style="-fx-padding:20;">
+      stylesheets="@../css/style.css"
+      spacing="16" style="-fx-padding: 0;">
 
-    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding:12 16;-fx-background-radius:8;">
-        <TextField fx:id="txtSearch" styleClass="search-field" promptText="🔍 Tìm tên khu máy..."/>
-        <Button text="Tìm" styleClass="btn-primary,btn-sm" onAction="#handleSearch"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Thêm Khu" styleClass="btn-success" onAction="#handleThem"/>
-        <Button fx:id="btnSua" text="✏ Sửa" styleClass="btn-warning" onAction="#handleSua"/>
-        <Button fx:id="btnXoa" text="✕ Xóa" styleClass="btn-danger" onAction="#handleXoa"/>
-    </HBox>
-
-    <HBox spacing="14" VBox.vgrow="ALWAYS">
-        <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:0;-fx-background-radius:8;">
-            <Label text="Danh Sách Khu Máy"
-                   style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;-fx-padding:12 16;"/>
-            <TableView fx:id="tableKhuMay" VBox.vgrow="ALWAYS" onMouseClicked="#handleRowSelect">
-                <columns>
-                    <TableColumn fx:id="colMaKhu" text="Mã Khu" prefWidth="100"/>
-                    <TableColumn fx:id="colTenKhu" text="Tên Khu" prefWidth="200"/>
-                    <TableColumn fx:id="colViTri" text="Vị Trí" prefWidth="150"/>
-                    <TableColumn fx:id="colSoMay" text="Số Máy" prefWidth="100"/>
-                    <TableColumn fx:id="colGhiChu" text="Ghi Chú" prefWidth="250"/>
-                </columns>
-            </TableView>
-        </VBox>
-
-        <VBox styleClass="card" minWidth="280" maxWidth="300" spacing="12">
-            <Label fx:id="lblFormTitle" text="Thông Tin Khu Máy"
-                   style="-fx-font-size:14px;-fx-font-weight:bold;"/>
-            <Separator/>
-            <GridPane hgap="8" vgap="10">
-                <columnConstraints>
-                    <ColumnConstraints minWidth="85"/>
-                    <ColumnConstraints hgrow="ALWAYS"/>
-                </columnConstraints>
-                <Label text="Mã khu:" styleClass="form-label" GridPane.rowIndex="0"/>
-                <TextField fx:id="txtMaKhu" editable="false" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                <Label text="Tên khu *:" styleClass="form-label" GridPane.rowIndex="1"/>
-                <TextField fx:id="txtTenKhu" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                <Label text="Vị trí:" styleClass="form-label" GridPane.rowIndex="2"/>
-                <TextField fx:id="txtViTri" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                <Label text="Ghi chú:" styleClass="form-label" GridPane.rowIndex="3"/>
-                <TextArea fx:id="txtGhiChu" prefRowCount="3" GridPane.rowIndex="3" GridPane.columnIndex="1" wrapText="true"/>
-            </GridPane>
-            <Region VBox.vgrow="ALWAYS"/>
-            <HBox spacing="8">
-                <Button text="💾 Lưu" styleClass="btn-primary" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleSave"/>
-                <Button text="✕ Hủy" styleClass="btn-secondary" maxWidth="Infinity" HBox.hgrow="ALWAYS" onAction="#handleCancel"/>
-            </HBox>
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-padding: 4 0 4 0;">
+        <Label text="🗂" style="-fx-font-size:26px;"/>
+        <VBox spacing="2">
+            <Label text="Quản Lý Khu Máy" styleClass="page-title"/>
+            <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
         </VBox>
     </HBox>
+
+    <!-- Toolbar -->
+    <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
+        <TextField fx:id="txtSearch" promptText="🔍  Tìm kiếm..." styleClass="search-bar"
+                   prefWidth="260" onKeyReleased="#handleSearch"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary"
+                onAction="#handleThem"/>
+        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning"
+                onAction="#handleSua" disable="true"/>
+        <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger"
+                onAction="#handleXoa" disable="true"/>
+        <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary"
+                onAction="#handleLamMoi"/>
+    </HBox>
+
+    <!-- Table -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
+        <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
+                   style="-fx-background-radius: 8;">
+            <TableColumn fx:id="colMaKhu" text="Mã khu" prefWidth="80"/>
+            <TableColumn fx:id="colTenKhu" text="Tên khu" prefWidth="200"/>
+            <TableColumn fx:id="colSoMay" text="Số máy" prefWidth="100"/>
+            <TableColumn fx:id="colMoTa" text="Mô tả" prefWidth="260"/>
+            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+        </TableView>
+
+        <!-- Footer -->
+        <HBox alignment="CENTER_RIGHT" spacing="12"
+              style="-fx-padding: 10 16 10 16; -fx-background-color:#FAFBFF;
+                     -fx-border-color:#E8EEF6 transparent transparent transparent;
+                     -fx-border-width: 1 0 0 0;">
+            <Label fx:id="lblTotal" text="Tổng: 0 bản ghi" styleClass="page-subtitle"/>
+        </HBox>
+    </VBox>
+
 </VBox>

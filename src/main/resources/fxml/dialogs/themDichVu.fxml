@@ -3,45 +3,67 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.dialog.ThemDichVuDialog"
-      stylesheets="@../../css/style.css,@../../css/button.css,@../../css/dialog.css"
-      spacing="0" style="-fx-min-width:460px;">
+      stylesheets="@../../css/style.css"
+      spacing="0" style="-fx-min-width:460; -fx-max-width:520;">
 
-    <HBox styleClass="dialog-header" alignment="CENTER_LEFT">
-        <Label fx:id="lblTitle" text="Thêm Dịch Vụ" styleClass="dialog-title"/>
+    <!-- Header -->
+    <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
+        <Label text="🥤" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblDialogTitle" text="Thêm / Sửa Dịch Vụ" styleClass="dialog-title"/>
     </HBox>
 
-    <VBox styleClass="dialog-body" spacing="12">
-        <GridPane hgap="14" vgap="12">
-            <columnConstraints>
-                <ColumnConstraints minWidth="110"/>
-                <ColumnConstraints hgrow="ALWAYS"/>
-            </columnConstraints>
-            <Label text="Mã DV:" styleClass="form-label" GridPane.rowIndex="0"/>
-            <TextField fx:id="txtMaDV" editable="false" promptText="Tự động"
-                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Label text="Tên DV *:" styleClass="form-label" GridPane.rowIndex="1"/>
-            <TextField fx:id="txtTenDV" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <Label text="Loại DV *:" styleClass="form-label" GridPane.rowIndex="2"/>
-            <ComboBox fx:id="cmbLoaiDV" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            <Label text="Giá (đ) *:" styleClass="form-label" GridPane.rowIndex="3"/>
-            <TextField fx:id="txtGia" promptText="0" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            <Label text="Đơn vị:" styleClass="form-label" GridPane.rowIndex="4"/>
-            <TextField fx:id="txtDonVi" promptText="VD: lon, cốc, phần"
-                       GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-            <Label text="Tồn kho:" styleClass="form-label" GridPane.rowIndex="5"/>
-            <TextField fx:id="txtTonKho" promptText="0" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-            <Label text="Mô tả:" styleClass="form-label" GridPane.rowIndex="6"/>
-            <TextArea fx:id="txtMoTa" prefRowCount="3" wrapText="true"
-                      GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-        </GridPane>
-        <Label fx:id="lblError" style="-fx-text-fill:#E53935;-fx-font-weight:bold;" text="" wrapText="true"/>
-    </VBox>
+    <!-- Body -->
+    <ScrollPane fitToWidth="true" style="-fx-background-color:transparent; -fx-border-color:transparent; -fx-max-height:480;">
+        <VBox styleClass="dialog-body" spacing="12">
+            <VBox spacing="4">
+                <Label text="Mã dịch vụ *" styleClass="form-label"/>
+                <TextField fx:id="txtMaDV" promptText="VD: DV001" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtMaDVError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Tên dịch vụ *" styleClass="form-label"/>
+                <TextField fx:id="txtTenDV" promptText="VD: Nước ngọt" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtTenDVError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Đơn giá (VNĐ) *" styleClass="form-label"/>
+                <TextField fx:id="txtGia" promptText="VD: 15000" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtGiaError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Đơn vị tính *" styleClass="form-label"/>
+                <TextField fx:id="txtDonVi" promptText="VD: Lon, Gói, Ly" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtDonViError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Tồn kho ban đầu" styleClass="form-label"/>
+                <TextField fx:id="txtTonKho" promptText="VD: 100" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtTonKhoError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Trạng thái" styleClass="form-label"/>
+                <ComboBox fx:id="cboTrangThai" promptText="Chọn trạng thái" styleClass="combo-box" maxWidth="Infinity"/>
+                <Label fx:id="lblcboTrangThaiError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Mô tả" styleClass="form-label"/>
+                <TextArea fx:id="txtMoTa" promptText="Mô tả thêm..." styleClass="text-field" maxWidth="Infinity" prefRowCount="3" wrapText="true"/>
+                <Label fx:id="lbltxtMoTaError" styleClass="error-label" text=""/>
+            </VBox>
 
-    <HBox styleClass="dialog-footer" spacing="10">
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Hủy" styleClass="btn-secondary" onAction="#handleCancel"/>
-        <Button text="💾 Lưu" styleClass="btn-primary" onAction="#handleSave" defaultButton="true"/>
+            <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true"/>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Footer -->
+    <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER_RIGHT">
+        <Button text="✕  Hủy" styleClass="btn btn-secondary"
+                onAction="#handleCancel"/>
+        <Button fx:id="btnSave" text="💾  Lưu" styleClass="btn btn-primary"
+                onAction="#handleSave"/>
     </HBox>
+
 </VBox>

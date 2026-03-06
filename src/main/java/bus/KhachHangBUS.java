@@ -2,9 +2,9 @@ package bus;
 
 import dao.KhachHangDAO;
 import entity.KhachHang;
-import untils.PermissionHelper;
-import untils.SessionManager;
-import untils.PasswordEncoder;
+import utils.PasswordEncoder;
+import utils.PermissionHelper;
+import utils.SessionManager;
 
 import java.util.Comparator;
 import java.util.List;

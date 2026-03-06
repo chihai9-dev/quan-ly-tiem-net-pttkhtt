@@ -1,66 +1,178 @@
 package gui.controller;
 
+import bus.KhachHangBUS;
+import entity.KhachHang;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import utils.ThongBaoDialogHelper;
+
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class KhachHangController implements Initializable {
 
+    @FXML private TableView<KhachHang> tableView;
+    @FXML private TableColumn<KhachHang, String> colMa;
+    @FXML private TableColumn<KhachHang, String> colHo;
+    @FXML private TableColumn<KhachHang, String> colTen;
+    @FXML private TableColumn<KhachHang, String> colSDT;
+    @FXML private TableColumn<KhachHang, String> colTDN;
+    @FXML private TableColumn<KhachHang, Double> colSoDu;
+    @FXML private TableColumn<KhachHang, String> colTrangThai;
+
     @FXML private TextField txtSearch;
-    @FXML private ComboBox<String> cmbLoaiTK;
-    @FXML private VBox advancedSearchPane;
-    @FXML private ComboBox<String> cmbOperatorSoDu;
-    @FXML private TextField txtSoDuFilter;
-    @FXML private DatePicker dpNgayTaoTu;
-    @FXML private DatePicker dpNgayTaoDen;
-    @FXML private Label lblTongKH;
+    @FXML private ComboBox<String> cboTrangThai;
+    @FXML private Label lblSubtitle;
+    @FXML private Label lblTotal;
     @FXML private Button btnSua;
     @FXML private Button btnXoa;
 
-    @FXML private TableView<?> tableKhachHang;
-    @FXML private TableColumn<?, ?> colMaKH;
-    @FXML private TableColumn<?, ?> colHoTen;
-    @FXML private TableColumn<?, ?> colSdt;
-    @FXML private TableColumn<?, ?> colEmail;
-    @FXML private TableColumn<?, ?> colSoDu;
-    @FXML private TableColumn<?, ?> colGioConLai;
-    @FXML private TableColumn<?, ?> colLoaiTK;
-    @FXML private TableColumn<?, ?> colNgayTao;
-    @FXML private TableColumn<?, ?> colTrangThai;
-
-    @FXML private VBox formPane;
-    @FXML private Label lblFormTitle;
-    @FXML private TextField txtMaKH;
-    @FXML private TextField txtHoTen;
-    @FXML private TextField txtSdt;
-    @FXML private TextField txtEmail;
-    @FXML private TextField txtDiaChi;
-    @FXML private TextField txtUsername;
-    @FXML private PasswordField txtPassword;
+    private final KhachHangBUS khachHangBUS = new KhachHangBUS();
+    private ObservableList<KhachHang> dataList = FXCollections.observableArrayList();
+    private FilteredList<KhachHang> filteredList;
+    private KhachHang selectedItem;
 
     @Override
-    public void initialize(URL url, ResourceBundle rb) {}
+    public void initialize(URL location, ResourceBundle resources) {
+        setupTableColumns();
+        setupTableSelection();
+        if (cboTrangThai != null) {
+            cboTrangThai.getItems().setAll("Tất cả", "HOATDONG", "NGUNG");
+            cboTrangThai.setValue("Tất cả");
+            cboTrangThai.setOnAction(e -> applyFilter());
+        }
+        loadData();
+    }
 
-    @FXML private void handleSearch() {}
+    private void setupTableColumns() {
+        if (colMa       != null) colMa.setCellValueFactory(new PropertyValueFactory<>("makh"));
+        if (colHo       != null) colHo.setCellValueFactory(new PropertyValueFactory<>("ho"));
+        if (colTen      != null) colTen.setCellValueFactory(new PropertyValueFactory<>("ten"));
+        if (colSDT      != null) colSDT.setCellValueFactory(new PropertyValueFactory<>("sodienthoai"));
+        if (colTDN      != null) colTDN.setCellValueFactory(new PropertyValueFactory<>("tendangnhap"));
+        if (colSoDu     != null) {
+            colSoDu.setCellValueFactory(new PropertyValueFactory<>("sodu"));
+            colSoDu.setCellFactory(col -> new TableCell<>() {
+                @Override protected void updateItem(Double v, boolean empty) {
+                    super.updateItem(v, empty);
+                    setText(empty || v == null ? null : String.format("%,.0f ₫", v));
+                }
+            });
+        }
+        if (colTrangThai!= null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
+    }
 
-    @FXML private void toggleAdvancedSearch() {}
+    private void setupTableSelection() {
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            selectedItem = n;
+            boolean has = n != null;
+            if (btnSua != null) btnSua.setDisable(!has);
+            if (btnXoa != null) btnXoa.setDisable(!has);
+        });
+        if (btnSua != null) btnSua.setDisable(true);
+        if (btnXoa != null) btnXoa.setDisable(true);
+    }
 
-    @FXML private void handleAdvancedSearch() {}
+    public void loadData() {
+        try {
+            List<KhachHang> list = khachHangBUS.getAllKhachHang();
+            dataList.setAll(list);
+            filteredList = new FilteredList<>(dataList, p -> true);
+            tableView.setItems(filteredList);
+            updateSubtitle();
+        } catch (Exception e) {
+            ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi tải dữ liệu: " + e.getMessage());
+        }
+    }
 
-    @FXML private void handleRowSelect() {}
+    @FXML
+    public void handleSearch() { applyFilter(); }
 
-    @FXML private void handleThem() {}
+    private void applyFilter() {
+        String keyword = txtSearch != null ? txtSearch.getText().toLowerCase().trim() : "";
+        String tt = cboTrangThai != null ? cboTrangThai.getValue() : "Tất cả";
+        if (filteredList == null) return;
+        filteredList.setPredicate(item -> {
+            boolean matchKw = keyword.isEmpty()
+                || (item.getMakh()         != null && item.getMakh().toLowerCase().contains(keyword))
+                || (item.getTen()          != null && item.getTen().toLowerCase().contains(keyword))
+                || (item.getHo()           != null && item.getHo().toLowerCase().contains(keyword))
+                || (item.getSodienthoai()  != null && item.getSodienthoai().contains(keyword))
+                || (item.getTendangnhap()  != null && item.getTendangnhap().toLowerCase().contains(keyword));
+            boolean matchTT = tt == null || "Tất cả".equals(tt) || tt.equals(item.getTrangthai());
+            return matchKw && matchTT;
+        });
+        updateSubtitle();
+    }
 
-    @FXML private void handleSua() {}
+    @FXML
+    public void handleThem() { openDialog(null); }
 
-    @FXML private void handleXoa() {}
+    @FXML
+    public void handleSua() {
+        if (selectedItem == null) return;
+        openDialog(selectedItem);
+    }
 
-    @FXML private void handleSave() {}
+    @FXML
+    public void handleXoa() {
+        if (selectedItem == null) return;
+        Stage owner = (Stage) tableView.getScene().getWindow();
+        String tenKH = (selectedItem.getHo() != null ? selectedItem.getHo() : "")
+                     + " " + (selectedItem.getTen() != null ? selectedItem.getTen() : "");
+        if (!gui.dialog.XacNhanDialog.showDelete(owner, tenKH.trim())) return;
+        try {
+            khachHangBUS.xoaKhachHang(selectedItem.getMakh());
+            ThongBaoDialogHelper.showSuccess(tableView.getScene(), "Đã xóa khách hàng!");
+            loadData();
+        } catch (Exception e) {
+            ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi xóa: " + e.getMessage());
+        }
+    }
 
-    @FXML private void handleCancel() {}
+    @FXML
+    public void handleLamMoi() {
+        if (txtSearch    != null) txtSearch.clear();
+        if (cboTrangThai != null) cboTrangThai.setValue("Tất cả");
+        loadData();
+    }
 
-    @FXML private void handleExport() {}
+    private void openDialog(KhachHang entity) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/themKhachHang.fxml"));
+            Parent root = loader.load();
+            // Dùng generic setEntity nếu dialog có (tương tự Them*Dialog pattern)
+            Object ctrl = loader.getController();
+            try {
+                ctrl.getClass().getMethod("setEntity", Object.class).invoke(ctrl, entity);
+                ctrl.getClass().getMethod("setOnSaveCallback", Runnable.class).invoke(ctrl, (Runnable) this::loadData);
+            } catch (NoSuchMethodException ignored) {}
+
+            Stage stage = new Stage(StageStyle.UNDECORATED);
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(tableView.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (Exception e) {
+            ThongBaoDialogHelper.showError(tableView.getScene(), "Không thể mở dialog: " + e.getMessage());
+        }
+    }
+
+    private void updateSubtitle() {
+        int total = filteredList != null ? filteredList.size() : 0;
+        if (lblSubtitle != null) lblSubtitle.setText("Tổng: " + total + " bản ghi");
+        if (lblTotal    != null) lblTotal.setText("Tổng: " + total + " bản ghi");
+    }
 }

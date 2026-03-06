@@ -4,7 +4,7 @@ import dao.KhuMayDAO;
 import dao.MayTinhDAO;
 import entity.KhuMay;
 import entity.MayTinh;
-import untils.PermissionHelper;
+import utils.PermissionHelper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
 package bus;
 import entity.DichVu;
+import utils.*;
 import dao.DichVuDAO;
 import dao.DBConnection;
 import dao.NhanVienDAO;
-import untils.*;
 
 import java.sql.*;
 import java.util.List;

@@ -3,58 +3,83 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<StackPane xmlns:fx="http://javafx.com/fxml"
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="gui.controller.RegisterController"
-           styleClass="login-root"
-           stylesheets="@../css/style.css,@../css/login.css"
-           prefWidth="900" prefHeight="660">
+           stylesheets="@../css/login.css, @../css/style.css"
+           styleClass="login-root">
 
-    <VBox alignment="CENTER">
-        <VBox styleClass="login-card" spacing="16"
-              style="-fx-min-width:460px;-fx-max-width:480px;-fx-padding:36 40;">
+    <ScrollPane fitToWidth="true" fitToHeight="true"
+                style="-fx-background-color:transparent; -fx-border-color:transparent;">
+        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 30 0 30 0;">
 
-            <Label text="📝 Đăng Ký Tài Khoản" styleClass="login-title"
-                   style="-fx-font-size:18px;"/>
+            <VBox styleClass="login-card" spacing="14"
+                  style="-fx-max-width: 480; -fx-min-width: 480;">
 
-            <GridPane hgap="12" vgap="12">
-                <columnConstraints>
-                    <ColumnConstraints minWidth="130" prefWidth="130"/>
-                    <ColumnConstraints hgrow="ALWAYS" prefWidth="250"/>
-                </columnConstraints>
+                <!-- Header -->
+                <VBox alignment="CENTER" spacing="6" style="-fx-padding: 0 0 10 0;">
+                    <Label text="📝" style="-fx-font-size: 36px;"/>
+                    <Label text="ĐĂNG KÝ TÀI KHOẢN" styleClass="login-title"/>
+                    <Label text="Tạo tài khoản khách hàng mới" styleClass="login-subtitle"/>
+                </VBox>
 
-                <Label text="Họ và tên *" styleClass="login-label" GridPane.rowIndex="0"/>
-                <TextField fx:id="txtHoTen" styleClass="login-field"
-                           promptText="Nhập họ tên đầy đủ" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                <Separator/>
 
-                <Label text="Số điện thoại *" styleClass="login-label" GridPane.rowIndex="1"/>
-                <TextField fx:id="txtSdt" styleClass="login-field"
-                           promptText="0xxxxxxxxx" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                <!-- Name row -->
+                <HBox spacing="12">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Họ *" styleClass="form-label"/>
+                        <TextField fx:id="txtHo" promptText="Nhập họ" styleClass="text-field" maxWidth="Infinity"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Tên *" styleClass="form-label"/>
+                        <TextField fx:id="txtTen" promptText="Nhập tên" styleClass="text-field" maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
 
-                <Label text="Email" styleClass="login-label" GridPane.rowIndex="2"/>
-                <TextField fx:id="txtEmail" styleClass="login-field"
-                           promptText="email@example.com" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                <!-- Phone -->
+                <VBox spacing="4">
+                    <Label text="Số điện thoại *" styleClass="form-label"/>
+                    <TextField fx:id="txtSoDienThoai" promptText="VD: 0912345678"
+                               styleClass="text-field" maxWidth="Infinity"/>
+                </VBox>
 
-                <Label text="Tên đăng nhập *" styleClass="login-label" GridPane.rowIndex="3"/>
-                <TextField fx:id="txtUsername" styleClass="login-field"
-                           promptText="username" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <!-- Username -->
+                <VBox spacing="4">
+                    <Label text="Tên đăng nhập *" styleClass="form-label"/>
+                    <TextField fx:id="txtTenDangNhap" promptText="Tối thiểu 6 ký tự"
+                               styleClass="text-field" maxWidth="Infinity"/>
+                    <Label fx:id="lblUserError" styleClass="error-label" text=""/>
+                </VBox>
 
-                <Label text="Mật khẩu *" styleClass="login-label" GridPane.rowIndex="4"/>
-                <PasswordField fx:id="txtPassword" styleClass="login-field"
-                               promptText="Tối thiểu 6 ký tự" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <!-- Password -->
+                <VBox spacing="4">
+                    <Label text="Mật khẩu *" styleClass="form-label"/>
+                    <PasswordField fx:id="txtMatKhau" promptText="Tối thiểu 6 ký tự"
+                                   styleClass="text-field" maxWidth="Infinity"/>
+                </VBox>
 
-                <Label text="Xác nhận MK *" styleClass="login-label" GridPane.rowIndex="5"/>
-                <PasswordField fx:id="txtConfirmPwd" styleClass="login-field"
-                               GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-            </GridPane>
+                <!-- Confirm Password -->
+                <VBox spacing="4">
+                    <Label text="Xác nhận mật khẩu *" styleClass="form-label"/>
+                    <PasswordField fx:id="txtXacNhanMk" promptText="Nhập lại mật khẩu"
+                                   styleClass="text-field" maxWidth="Infinity"/>
+                    <Label fx:id="lblPassError" styleClass="error-label" text=""/>
+                </VBox>
 
-            <Label fx:id="lblError" styleClass="login-error" text="" wrapText="true"/>
+                <!-- Error area -->
+                <Label fx:id="lblError" styleClass="login-error-label" text="" wrapText="true"/>
 
-            <HBox spacing="12">
-                <Button text="← Quay lại" styleClass="btn-secondary,btn-sm"
-                        onAction="#handleBack" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                <Button text="Đăng Ký" styleClass="btn-primary,btn-sm"
-                        onAction="#handleRegister" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-            </HBox>
+                <!-- Buttons -->
+                <VBox spacing="8" style="-fx-padding: 6 0 0 0;">
+                    <Button fx:id="btnDangKy" text="ĐĂNG KÝ" styleClass="login-btn"
+                            maxWidth="Infinity" onAction="#handleDangKy"/>
+                    <Button text="← Quay lại đăng nhập" styleClass="login-register-link"
+                            maxWidth="Infinity" style="-fx-alignment: CENTER;"
+                            onAction="#handleBackToLogin"/>
+                </VBox>
+
+            </VBox>
         </VBox>
-    </VBox>
+    </ScrollPane>
 </StackPane>

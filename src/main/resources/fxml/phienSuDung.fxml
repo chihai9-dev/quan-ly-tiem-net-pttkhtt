@@ -2,94 +2,76 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
+<?import javafx.collections.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.PhienSuDungController"
-      spacing="14" style="-fx-padding:20;">
+      stylesheets="@../css/style.css"
+      spacing="16" style="-fx-padding: 0;">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="⏱" style="-fx-font-size:26px;"/>
+        <VBox spacing="2">
+            <Label text="Quản Lý Phiên Sử Dụng" styleClass="page-title"/>
+            <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblLiveTime" text="🕐 00:00:00"
+               style="-fx-text-fill:#1565C0; -fx-font-size:16px; -fx-font-weight:bold;"/>
+    </HBox>
+
+    <!-- Stats -->
+    <HBox spacing="12">
+        <VBox styleClass="stat-card stat-card-blue" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblDangChoi" text="0" styleClass="stat-number" style="-fx-text-fill:#1565C0;"/>
+            <Label text="Phiên đang chơi" styleClass="stat-label"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-card-green" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblDoanhThuNgay" text="0 ₫" styleClass="stat-number" style="-fx-text-fill:#388E3C; -fx-font-size:18px;"/>
+            <Label text="Doanh thu hôm nay" styleClass="stat-label"/>
+        </VBox>
+        <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblPhienHomNay" text="0" styleClass="stat-number"/>
+            <Label text="Phiên hôm nay" styleClass="stat-label"/>
+        </VBox>
+    </HBox>
 
     <!-- Toolbar -->
-    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding:12 16;-fx-background-radius:8;">
-        <TextField fx:id="txtSearch" styleClass="search-field"
-                   promptText="🔍 Tìm theo mã KH, máy..."/>
-        <ComboBox fx:id="cmbTrangThai" promptText="Trạng thái"
-                  style="-fx-min-width:150px;"/>
-        <DatePicker fx:id="dpTu" promptText="Từ ngày"/>
-        <DatePicker fx:id="dpDen" promptText="Đến ngày"/>
-        <Button text="Tìm" styleClass="btn-primary,btn-sm" onAction="#handleSearch"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnMoPhien" text="▶ Mở Phiên" styleClass="btn-success" onAction="#handleMoPhien"/>
-        <Button fx:id="btnKetThuc" text="⏹ Kết Thúc" styleClass="btn-danger" onAction="#handleKetThucPhien"/>
+    <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
+        <TextField fx:id="txtSearch" promptText="🔍  Tìm KH, máy..." styleClass="search-bar"
+                   prefWidth="220" onKeyReleased="#handleSearch"/>
+        <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="150"
+                  onAction="#handleFilter">
+        </ComboBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnMoPhien" text="▶  Mở phiên mới" styleClass="btn btn-success"
+                onAction="#handleMoPhien"/>
+        <Button fx:id="btnKetThuc" text="■  Kết thúc" styleClass="btn btn-danger"
+                onAction="#handleKetThucPhien" disable="true"/>
+        <Button fx:id="btnOrderDV" text="🥤  Order DV" styleClass="btn btn-warning"
+                onAction="#handleOrderDichVu" disable="true"/>
+        <Button text="↺" styleClass="btn btn-secondary" onAction="#handleRefresh"/>
     </HBox>
 
-    <!-- Main: table + detail side by side -->
-    <HBox spacing="14" VBox.vgrow="ALWAYS">
+    <!-- Table -->
+    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding:0;">
+        <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+            <TableColumn fx:id="colMaPhien" text="Mã phiên" prefWidth="90"/>
+            <TableColumn fx:id="colMaMay" text="Máy" prefWidth="80"/>
+            <TableColumn fx:id="colKhachHang" text="Khách hàng" prefWidth="160"/>
+            <TableColumn fx:id="colNhanVien" text="NV mở" prefWidth="130"/>
+            <TableColumn fx:id="colGioBD" text="Giờ bắt đầu" prefWidth="140"/>
+            <TableColumn fx:id="colThoiGian" text="Thời gian" prefWidth="100"/>
+            <TableColumn fx:id="colTienTam" text="Tiền tạm (₫)" prefWidth="120"/>
+            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+        </TableView>
+        <HBox alignment="CENTER_RIGHT" spacing="12"
+              style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
+                     -fx-border-color:#E8EEF6 transparent transparent transparent; -fx-border-width:1 0 0 0;">
+            <Label fx:id="lblTotal" text="Tổng: 0 phiên" styleClass="page-subtitle"/>
+        </HBox>
+    </VBox>
 
-        <!-- Table -->
-        <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="0"
-              style="-fx-padding:0;-fx-background-radius:8;">
-            <Label text="Danh Sách Phiên Sử Dụng" style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;-fx-padding:14 16 10 16;"/>
-            <TableView fx:id="tablePhien" VBox.vgrow="ALWAYS"
-                       style="-fx-background-radius:0 0 8 8;" onMouseClicked="#handleTableClick">
-                <columns>
-                    <TableColumn fx:id="colMaPhien" text="Mã Phiên" prefWidth="90"/>
-                    <TableColumn fx:id="colMaMay" text="Máy" prefWidth="80"/>
-                    <TableColumn fx:id="colKhachHang" text="Khách Hàng" prefWidth="150"/>
-                    <TableColumn fx:id="colGioBatDau" text="Giờ Bắt Đầu" prefWidth="140"/>
-                    <TableColumn fx:id="colGioKetThuc" text="Giờ Kết Thúc" prefWidth="140"/>
-                    <TableColumn fx:id="colThoiGian" text="Thời Gian" prefWidth="100"/>
-                    <TableColumn fx:id="colTienPhi" text="Tiền Phí" prefWidth="110"/>
-                    <TableColumn fx:id="colTrangThai" text="Trạng Thái" prefWidth="110"/>
-                </columns>
-            </TableView>
-        </VBox>
-
-        <!-- Detail panel -->
-        <VBox styleClass="card" minWidth="280" maxWidth="300" spacing="14">
-            <Label text="Chi Tiết Phiên" style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;"/>
-            <Separator/>
-
-            <GridPane hgap="8" vgap="10">
-                <columnConstraints>
-                    <ColumnConstraints minWidth="90"/>
-                    <ColumnConstraints hgrow="ALWAYS"/>
-                </columnConstraints>
-
-                <Label text="Mã phiên:" styleClass="form-label" GridPane.rowIndex="0"/>
-                <Label fx:id="lblMaPhien" text="---" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-                <Label text="Máy:" styleClass="form-label" GridPane.rowIndex="1"/>
-                <Label fx:id="lblMaMay" text="---" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-                <Label text="Khách hàng:" styleClass="form-label" GridPane.rowIndex="2"/>
-                <Label fx:id="lblKhachHang" text="---" GridPane.rowIndex="2" GridPane.columnIndex="1" wrapText="true"/>
-
-                <Label text="Số dư KH:" styleClass="form-label" GridPane.rowIndex="3"/>
-                <Label fx:id="lblSoDu" text="0 đ" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                       style="-fx-text-fill:#43A047;-fx-font-weight:bold;"/>
-
-                <Label text="Bắt đầu:" styleClass="form-label" GridPane.rowIndex="4"/>
-                <Label fx:id="lblGioBatDau" text="---" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-                <Label text="Đã chạy:" styleClass="form-label" GridPane.rowIndex="5"/>
-                <Label fx:id="lblThoiGian" text="0 phút" GridPane.rowIndex="5" GridPane.columnIndex="1"
-                       style="-fx-text-fill:#1A73E8;-fx-font-weight:bold;"/>
-
-                <Label text="Tiền phí:" styleClass="form-label" GridPane.rowIndex="6"/>
-                <Label fx:id="lblTienPhi" text="0 đ" GridPane.rowIndex="6" GridPane.columnIndex="1"
-                       style="-fx-text-fill:#E53935;-fx-font-size:14px;-fx-font-weight:bold;"/>
-
-                <Label text="Trạng thái:" styleClass="form-label" GridPane.rowIndex="7"/>
-                <Label fx:id="lblTrangThai" text="---" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
-            </GridPane>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <VBox spacing="8">
-                <Button text="▶ Mở Phiên Mới" styleClass="btn-success" maxWidth="Infinity" onAction="#handleMoPhien"/>
-                <Button text="⏹ Kết Thúc &amp; Tính Tiền" styleClass="btn-danger" maxWidth="Infinity" onAction="#handleKetThucPhien"/>
-                <Button text="🔄 Làm Mới" styleClass="btn-secondary" maxWidth="Infinity" onAction="#handleRefresh"/>
-            </VBox>
-        </VBox>
-    </HBox>
 </VBox>

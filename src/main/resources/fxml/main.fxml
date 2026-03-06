@@ -3,104 +3,114 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-    fx:controller="gui.controller.MainController"
-    stylesheets="@../css/style.css,@../css/button.css,@../css/table.css"
-    prefWidth="1280" prefHeight="800">
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="gui.controller.MainController"
+            stylesheets="@../css/style.css"
+            prefWidth="1280" prefHeight="760">
 
-    <!-- ====== SIDEBAR LEFT ====== -->
+    <!-- ===== SIDEBAR ===== -->
     <left>
         <VBox styleClass="sidebar" spacing="0">
 
-            <!-- Logo Area -->
-            <VBox styleClass="sidebar-logo-area" spacing="3">
-                <Label text="🖥 NetManager" styleClass="sidebar-logo-text" />
-                <Label text="Quản Lý Tiệm Net" styleClass="sidebar-logo-sub" />
+            <!-- Logo -->
+            <VBox styleClass="sidebar-logo-area" spacing="4">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="🖥" style="-fx-font-size:26px; -fx-text-fill:#FFFFFF;"/>
+                    <VBox spacing="2">
+                        <Label text="TIỆM NET" styleClass="sidebar-logo-text"/>
+                        <Label text="Quản lý hệ thống" styleClass="sidebar-logo-sub"/>
+                    </VBox>
+                </HBox>
             </VBox>
 
-            <!-- User info -->
-            <VBox
-                style="-fx-padding:14 15 10 18; -fx-border-color:#2C3E50; -fx-border-width:0 0 1 0;">
-                <Label fx:id="lblUserName" text="Nhân Viên"
-                    style="-fx-text-fill:#ECEFF1;-fx-font-weight:bold;-fx-font-size:13px;" />
-                <Label fx:id="lblUserRole" text="QUANLY" styleClass="user-role-label"
-                    style="-fx-font-size:11px;-fx-text-fill:#64B5F6;" />
-            </VBox>
+            <!-- User info strip -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color:#1A3255; -fx-padding: 12 15 12 15;">
+                <StackPane styleClass="header-avatar">
+                    <Label fx:id="lblAvatarChar" text="A"
+                           style="-fx-text-fill:#FFFFFF; -fx-font-weight:bold; -fx-font-size:14px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label fx:id="lblUserName" text="Tên người dùng"
+                           style="-fx-text-fill:#FFFFFF; -fx-font-size:13px; -fx-font-weight:bold;"/>
+                    <Label fx:id="lblUserRole" text="Vai trò"
+                           style="-fx-text-fill:#90CAF9; -fx-font-size:11px;"/>
+                </VBox>
+            </HBox>
 
-            <!-- Menu Scrollable -->
-            <ScrollPane fitToWidth="true"
-                style="-fx-background:transparent;-fx-background-color:transparent;"
-                VBox.vgrow="ALWAYS">
-                <VBox spacing="0">
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background-color:transparent; -fx-border-color:transparent;">
+                <VBox spacing="2" style="-fx-padding: 8 0 8 0;">
 
-                    <!-- QUẢN LÝ MÁY -->
-                    <Label text="QUẢN LÝ MÁY" styleClass="sidebar-section-label" />
-                    <Button fx:id="btnSodoMay" text="🗺  Sơ Đồ Máy" styleClass="nav-button"
-                        onAction="#showSodoMay" />
-                    <Button fx:id="btnMayTinh" text="💻  Quản Lý Máy Tính" styleClass="nav-button"
-                        onAction="#showMayTinh" />
-                    <Button fx:id="btnKhuMay" text="📍  Khu Máy" styleClass="nav-button"
-                        onAction="#showKhuMay" />
-                    <Button fx:id="btnPhienSuDung" text="▶  Phiên Sử Dụng" styleClass="nav-button"
-                        onAction="#showPhienSuDung" />
+                    <!-- DASHBOARD -->
+                    <Label text="TỔNG QUAN" styleClass="sidebar-section-label"/>
+                    <Button fx:id="btnSoDoMay" text="🗺  Sơ đồ máy"
+                            styleClass="menu-button" onAction="#loadSoDoMay"/>
 
-                    <!-- DỊCH VỤ & GÓI -->
-                    <Label text="DỊCH VỤ - GÓI" styleClass="sidebar-section-label" />
-                    <Button fx:id="btnDichVu" text="🛒  Dịch Vụ" styleClass="nav-button"
-                        onAction="#showDichVu" />
-                    <Button fx:id="btnGoiDichVu" text="📦  Gói Dịch Vụ" styleClass="nav-button"
-                        onAction="#showGoiDichVu" />
-                    <Button fx:id="btnKhuyenMai" text="🎁  Khuyến Mãi" styleClass="nav-button"
-                        onAction="#showKhuyenMai" />
+                    <!-- VẬN HÀNH -->
+                    <Label text="VẬN HÀNH" styleClass="sidebar-section-label"/>
+                    <Button fx:id="btnPhienSuDung" text="⏱  Phiên sử dụng"
+                            styleClass="menu-button" onAction="#loadPhienSuDung"/>
+                    <Button fx:id="btnNapTien" text="💳  Nạp tiền"
+                            styleClass="menu-button" onAction="#loadNapTien"/>
+                    <Button fx:id="btnHoaDon" text="🧾  Hóa đơn"
+                            styleClass="menu-button" onAction="#loadHoaDon"/>
 
-                    <!-- KHÁCH HÀNG & NV -->
-                    <Label text="KHÁCH HÀNG &amp; NHÂN VIÊN" styleClass="sidebar-section-label" />
-                    <Button fx:id="btnKhachHang" text="👤  Khách Hàng" styleClass="nav-button"
-                        onAction="#showKhachHang" />
-                    <Button fx:id="btnNapTien" text="💰  Nạp Tiền" styleClass="nav-button"
-                        onAction="#showNapTien" />
-                    <Button fx:id="btnNhanVien" text="👔  Nhân Viên" styleClass="nav-button"
-                        onAction="#showNhanVien" />
+                    <!-- DỊCH VỤ -->
+                    <Label text="DỊCH VỤ" styleClass="sidebar-section-label"/>
+                    <Button fx:id="btnDichVu" text="🥤  Dịch vụ"
+                            styleClass="menu-button" onAction="#loadDichVu"/>
+                    <Button fx:id="btnGoiDichVu" text="📦  Gói dịch vụ"
+                            styleClass="menu-button" onAction="#loadGoiDichVu"/>
+                    <Button fx:id="btnKhuyenMai" text="🎁  Khuyến mãi"
+                            styleClass="menu-button" onAction="#loadKhuyenMai"/>
+                    <Button fx:id="btnNhapHang" text="📥  Nhập hàng"
+                            styleClass="menu-button" onAction="#loadNhapHang"/>
 
-                    <!-- TÀI CHÍNH -->
-                    <Label text="TÀI CHÍNH &amp; KHO" styleClass="sidebar-section-label" />
-                    <Button fx:id="btnHoaDon" text="🧾  Hóa Đơn" styleClass="nav-button"
-                        onAction="#showHoaDon" />
-                    <Button fx:id="btnNhapHang" text="📥  Nhập Hàng" styleClass="nav-button"
-                        onAction="#showNhapHang" />
+                    <!-- QUẢN LÝ -->
+                    <Label text="QUẢN LÝ" styleClass="sidebar-section-label"/>
+                    <Button fx:id="btnKhachHang" text="👥  Khách hàng"
+                            styleClass="menu-button" onAction="#loadKhachHang"/>
+                    <Button fx:id="btnNhanVien" text="🏢  Nhân viên"
+                            styleClass="menu-button" onAction="#loadNhanVien"/>
+                    <Button fx:id="btnMayTinh" text="💻  Máy tính"
+                            styleClass="menu-button" onAction="#loadMayTinh"/>
+                    <Button fx:id="btnKhuMay" text="🗂  Khu máy"
+                            styleClass="menu-button" onAction="#loadKhuMay"/>
 
-                    <!-- THỐNG KÊ -->
-                    <Label text="BÁO CÁO" styleClass="sidebar-section-label" />
-                    <Button fx:id="btnThongKe" text="📊  Thống Kê" styleClass="nav-button"
-                        onAction="#showThongKe" />
+                    <!-- BÁO CÁO -->
+                    <Label text="BÁO CÁO" styleClass="sidebar-section-label"/>
+                    <Button fx:id="btnThongKe" text="📊  Thống kê"
+                            styleClass="menu-button" onAction="#loadThongKe"/>
 
                 </VBox>
             </ScrollPane>
 
             <!-- Logout button -->
-            <Button text="⏏  Đăng Xuất" styleClass="nav-button"
-                onAction="#handleLogout"
-                style="-fx-text-fill:#EF9A9A; -fx-border-color:#2C3E50; -fx-border-width:1 0 0 0;" />
+            <VBox style="-fx-padding: 0 0 8 0;">
+                <Separator style="-fx-padding: 4 0 4 0;"/>
+                <Button text="🔓  Đăng xuất" styleClass="menu-button"
+                        style="-fx-text-fill:#FF8A80;" onAction="#handleLogout"/>
+            </VBox>
+
         </VBox>
     </left>
 
-    <!-- ====== MAIN CONTENT ====== -->
+    <!-- ===== CONTENT AREA ===== -->
     <center>
-        <VBox>
-            <!-- Top header -->
-            <HBox styleClass="top-header" alignment="CENTER_LEFT" spacing="12">
-                <Label fx:id="lblPageTitle" text="Sơ Đồ Máy" styleClass="header-title"
-                    HBox.hgrow="ALWAYS" />
-                <Region HBox.hgrow="ALWAYS" />
-                <VBox alignment="CENTER_RIGHT" spacing="2">
-                    <Label fx:id="lblCurrentUser" text="Admin" styleClass="user-info-label" />
-                    <Label fx:id="lblCurrentTime" text="--:--" styleClass="header-subtitle" />
-                </VBox>
+        <VBox spacing="0">
+            <!-- Header bar -->
+            <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="14">
+                <Label fx:id="lblPageTitle" text="Sơ đồ máy" styleClass="header-title"
+                       HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCurrentTime" text="00:00:00"
+                       style="-fx-text-fill:#888888; -fx-font-size:13px;"/>
             </HBox>
 
-            <!-- Content switcher -->
+            <!-- Dynamic content -->
             <StackPane fx:id="contentPane" VBox.vgrow="ALWAYS"
-                style="-fx-padding:0;" />
+                       styleClass="content-area"/>
         </VBox>
     </center>
 

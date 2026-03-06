@@ -2,7 +2,7 @@ package test.bus;
 
 import bus.NhanVienBUS;
 import entity.NhanVien;
-import untils.SessionManager;
+import utils.SessionManager;
 
 import java.util.List;
 

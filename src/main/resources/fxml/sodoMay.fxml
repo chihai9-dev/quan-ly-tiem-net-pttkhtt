@@ -3,71 +3,90 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="gui.controller.SodoMayController"
-      spacing="16" style="-fx-padding:20;">
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.controller.SoDoMayController"
+      stylesheets="@../css/style.css"
+      spacing="16" style="-fx-padding: 0;">
 
-    <!-- Header card -->
-    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="16"
-          style="-fx-padding:14 20;-fx-background-radius:8;">
-        <VBox spacing="3" HBox.hgrow="ALWAYS">
-            <Label text="Sơ Đồ Máy Tính" style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;"/>
-            <Label text="Trạng thái các máy trong tiệm theo thời gian thực" style="-fx-font-size:12px;-fx-text-fill:#757575;"/>
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="🗺" style="-fx-font-size:26px;"/>
+        <VBox spacing="2">
+            <Label text="Sơ Đồ Máy" styleClass="page-title"/>
+            <Label text="Trạng thái thời gian thực" styleClass="page-subtitle"/>
         </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+
         <!-- Legend -->
-        <HBox spacing="16" alignment="CENTER">
+        <HBox spacing="16" alignment="CENTER"
+              style="-fx-background-color:#FFFFFF; -fx-background-radius:8;
+                     -fx-padding: 8 16 8 16; -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),4,0,0,2);">
             <HBox spacing="6" alignment="CENTER">
-                <Label style="-fx-min-width:14px;-fx-min-height:14px;-fx-background-color:#43A047;-fx-background-radius:3;"/>
-                <Label text="Trống" style="-fx-font-size:12px;"/>
+                <Pane style="-fx-background-color:#4CAF50; -fx-background-radius:3; -fx-min-width:14; -fx-min-height:14;"/>
+                <Label text="Trống" style="-fx-font-size:12px; -fx-text-fill:#555555;"/>
             </HBox>
             <HBox spacing="6" alignment="CENTER">
-                <Label style="-fx-min-width:14px;-fx-min-height:14px;-fx-background-color:#E53935;-fx-background-radius:3;"/>
-                <Label text="Đang dùng" style="-fx-font-size:12px;"/>
+                <Pane style="-fx-background-color:#2196F3; -fx-background-radius:3; -fx-min-width:14; -fx-min-height:14;"/>
+                <Label text="Đang dùng" style="-fx-font-size:12px; -fx-text-fill:#555555;"/>
             </HBox>
             <HBox spacing="6" alignment="CENTER">
-                <Label style="-fx-min-width:14px;-fx-min-height:14px;-fx-background-color:#FB8C00;-fx-background-radius:3;"/>
-                <Label text="Bảo trì" style="-fx-font-size:12px;"/>
+                <Pane style="-fx-background-color:#FF9800; -fx-background-radius:3; -fx-min-width:14; -fx-min-height:14;"/>
+                <Label text="Bảo trì" style="-fx-font-size:12px; -fx-text-fill:#555555;"/>
+            </HBox>
+            <HBox spacing="6" alignment="CENTER">
+                <Pane style="-fx-background-color:#CCCCCC; -fx-background-radius:3; -fx-min-width:14; -fx-min-height:14;"/>
+                <Label text="Tắt máy" style="-fx-font-size:12px; -fx-text-fill:#555555;"/>
             </HBox>
         </HBox>
-        <Button text="🔄 Làm mới" styleClass="btn-secondary" onAction="#handleRefresh"/>
     </HBox>
 
-    <!-- Filter by khu -->
-    <HBox spacing="12" alignment="CENTER_LEFT">
-        <Label text="Khu máy:" styleClass="form-label"/>
-        <ComboBox fx:id="cmbKhuMay" promptText="Tất cả khu" style="-fx-min-width:180px;"/>
-        <Button text="Lọc" styleClass="btn-primary,btn-sm" onAction="#handleFilter"/>
+    <!-- Stats strip -->
+    <HBox spacing="12">
+        <VBox styleClass="stat-card stat-card-green" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblMayTrong" text="0" styleClass="stat-number" style="-fx-text-fill:#388E3C;"/>
+            <Label text="Máy trống" styleClass="stat-label"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-card-blue" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblMayDangDung" text="0" styleClass="stat-number" style="-fx-text-fill:#1565C0;"/>
+            <Label text="Đang dùng" styleClass="stat-label"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-card-orange" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblMayBaoTri" text="0" styleClass="stat-number" style="-fx-text-fill:#F57C00;"/>
+            <Label text="Bảo trì" styleClass="stat-label"/>
+        </VBox>
+        <VBox styleClass="stat-card stat-card-red" spacing="4" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblTongMay" text="0" styleClass="stat-number"/>
+            <Label text="Tổng máy" styleClass="stat-label"/>
+        </VBox>
+    </HBox>
+
+    <!-- Filter bar -->
+    <HBox styleClass="toolbar" spacing="10" alignment="CENTER_LEFT">
+        <Label text="Lọc theo khu:" style="-fx-text-fill:#555555; -fx-font-size:13px;"/>
+        <ComboBox fx:id="cboKhu" promptText="Tất cả khu" styleClass="combo-box" prefWidth="160"
+                  onAction="#handleFilterKhu"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="↺  Làm mới" styleClass="btn btn-secondary" onAction="#handleRefresh"/>
+        <Button fx:id="btnMoPhien" text="▶  Mở phiên" styleClass="btn btn-success"
+                onAction="#handleMoPhien" disable="true"/>
+        <Button fx:id="btnKetThuc" text="■  Kết thúc phiên" styleClass="btn btn-danger"
+                onAction="#handleKetThucPhien" disable="true"/>
     </HBox>
 
     <!-- Machine grid -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background:transparent;-fx-background-color:transparent;">
-        <FlowPane fx:id="machineGrid" hgap="14" vgap="14"
-                  style="-fx-padding:4;"/>
+    <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
+                style="-fx-background-color:transparent; -fx-border-color:transparent;">
+        <VBox fx:id="vboxKhuMay" spacing="16" style="-fx-padding: 4 4 4 4;"/>
     </ScrollPane>
 
-    <!-- Stats bar -->
-    <HBox styleClass="card" spacing="30" alignment="CENTER"
-          style="-fx-padding:12 20;-fx-background-radius:8;">
-        <VBox alignment="CENTER" spacing="2">
-            <Label fx:id="lblTong" text="0" style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#1A73E8;"/>
-            <Label text="Tổng máy" style="-fx-font-size:11px;-fx-text-fill:#757575;"/>
-        </VBox>
-        <Separator orientation="VERTICAL"/>
-        <VBox alignment="CENTER" spacing="2">
-            <Label fx:id="lblTrong" text="0" style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#43A047;"/>
-            <Label text="Đang trống" style="-fx-font-size:11px;-fx-text-fill:#757575;"/>
-        </VBox>
-        <Separator orientation="VERTICAL"/>
-        <VBox alignment="CENTER" spacing="2">
-            <Label fx:id="lblDangDung" text="0" style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#E53935;"/>
-            <Label text="Đang dùng" style="-fx-font-size:11px;-fx-text-fill:#757575;"/>
-        </VBox>
-        <Separator orientation="VERTICAL"/>
-        <VBox alignment="CENTER" spacing="2">
-            <Label fx:id="lblBaoTri" text="0" style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#FB8C00;"/>
-            <Label text="Bảo trì" style="-fx-font-size:11px;-fx-text-fill:#757575;"/>
-        </VBox>
+    <!-- Status bar -->
+    <HBox style="-fx-padding: 4 0 0 0;" alignment="CENTER_LEFT" spacing="16">
+        <Label fx:id="lblSelectedMay" text="Chưa chọn máy"
+               style="-fx-text-fill:#888888; -fx-font-size:12px;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblAutoRefresh" text="Tự động cập nhật: 30s"
+               style="-fx-text-fill:#AAAAAA; -fx-font-size:11px;"/>
     </HBox>
 
 </VBox>

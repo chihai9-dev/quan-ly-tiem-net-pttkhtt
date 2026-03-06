@@ -5,10 +5,10 @@ import entity.GoiDichVuKhachHang;
 import entity.GoiDichVu;
 import entity.KhachHang;
 import entity.NhanVien;
+import utils.*;
 import dao.GoiDichVuKhachHangDAO;
 import dao.GoiDichVuDAO;
 import dao.KhachHangDAO;
-import untils.*;
 
 import java.sql.*;
 import java.util.ArrayList;

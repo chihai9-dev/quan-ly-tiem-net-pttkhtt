@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.dialog.XacNhanDialog"
+      stylesheets="@../../css/style.css"
+      spacing="0" style="-fx-min-width:400; -fx-max-width:480;">
+
+    <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
+        <Label fx:id="lblHeaderIcon" text="❓" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblDialogTitle" text="Xác nhận" styleClass="dialog-title"/>
+    </HBox>
+
+    <VBox styleClass="dialog-body" spacing="16" alignment="CENTER">
+        <Label fx:id="lblIcon" text="❓" style="-fx-font-size:48px;" alignment="CENTER"/>
+        <Label fx:id="lblMessage" text="Bạn có chắc muốn thực hiện thao tác này?"
+               wrapText="true" style="-fx-text-fill:#333333; -fx-font-size:14px;
+               -fx-alignment:CENTER; -fx-text-alignment:CENTER;" maxWidth="400"/>
+        <Label fx:id="lblSubMessage" text="" wrapText="true"
+               style="-fx-text-fill:#888888; -fx-font-size:12px;
+               -fx-alignment:CENTER; -fx-text-alignment:CENTER;" maxWidth="400"/>
+    </VBox>
+
+    <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER">
+        <Button fx:id="btnCancel" text="✕  Không" styleClass="btn btn-secondary"
+                prefWidth="120" onAction="#handleCancel"/>
+        <Button fx:id="btnConfirm" text="✔  Xác nhận" styleClass="btn btn-primary"
+                prefWidth="120" onAction="#handleConfirm"/>
+    </HBox>
+
+</VBox>

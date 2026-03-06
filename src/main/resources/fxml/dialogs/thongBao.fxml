@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="gui.dialog.ThongBaoDialog"
+      stylesheets="@../../css/style.css"
+      spacing="0" style="-fx-min-width:380; -fx-max-width:460;">
+
+    <HBox fx:id="headerBox" styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
+        <Label fx:id="lblHeaderIcon" text="ℹ" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblTitle" text="Thông báo" styleClass="dialog-title"/>
+    </HBox>
+
+    <VBox styleClass="dialog-body" spacing="14" alignment="CENTER">
+        <Label fx:id="lblBigIcon" text="ℹ" style="-fx-font-size:52px;" alignment="CENTER"/>
+        <Label fx:id="lblMessage" text="" wrapText="true"
+               style="-fx-text-fill:#333333; -fx-font-size:14px;
+               -fx-alignment:CENTER; -fx-text-alignment:CENTER;" maxWidth="380"/>
+    </VBox>
+
+    <HBox styleClass="dialog-footer" alignment="CENTER">
+        <Button fx:id="btnOK" text="  OK  " styleClass="btn btn-primary"
+                prefWidth="120" onAction="#handleOK"/>
+    </HBox>
+
+</VBox>

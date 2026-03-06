@@ -3,7 +3,7 @@ package test.bus;
 import bus.KhuMayBUS;
 import entity.KhuMay;
 import entity.NhanVien;
-import untils.SessionManager;
+import utils.SessionManager;
 
 import java.util.List;
 

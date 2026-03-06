@@ -2,14 +2,13 @@ package test.bus;
 
 import entity.KhachHang;
 import entity.NhanVien;
+import utils.SessionManager;
 import dao.GoiDichVuDAO;
 import dao.KhachHangDAO;
 import dao.NhanVienDAO;
 import dao.GoiDichVuKhachHangDAO;
 import bus.GoiDichVuKhachHangBUS;
 import bus.GoiDichVuBUS;
-
-import untils.SessionManager;
 
 public class TestGoiDichVuKhachHangBUS {
     public static void main(String[] args){
