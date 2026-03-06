@@ -94,7 +94,7 @@ public class GoiDichVuController implements Initializable {
 
     public void loadData() {
         try {
-            List<GoiDichVu> list = goiDichVuBUS.getDanhSachGoiDV();
+            List<GoiDichVu> list = goiDichVuBUS.getGoiHoatDong();
             dataList.setAll(list);
             filteredList = new FilteredList<>(dataList, p -> true);
             tableView.setItems(filteredList);
@@ -109,8 +109,8 @@ public class GoiDichVuController implements Initializable {
         String keyword = txtSearch != null ? txtSearch.getText().toLowerCase().trim() : "";
         if (filteredList == null) return;
         filteredList.setPredicate(item -> keyword.isEmpty()
-            || item.getMaGoi().toLowerCase().contains(keyword)
-            || item.getTenGoi().toLowerCase().contains(keyword));
+            || item.getMagoi().toLowerCase().contains(keyword)
+            || item.getTengoi().toLowerCase().contains(keyword));
         updateSubtitle();
     }
 

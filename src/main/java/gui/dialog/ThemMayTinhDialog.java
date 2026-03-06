@@ -46,7 +46,7 @@ public class ThemMayTinhDialog implements Initializable {
         if (cboKhuMay == null) return;
         cboKhuMay.setConverter(new StringConverter<>() {
             @Override public String toString(KhuMay km) {
-                return km == null ? "" : km.getMaKhu() + " - " + km.getTenKhu();
+                return km == null ? "" : km.getMakhu() + " - " + km.getTenkhu();
             }
             @Override public KhuMay fromString(String s) { return null; }
         });
@@ -71,7 +71,7 @@ public class ThemMayTinhDialog implements Initializable {
             // Select khu
             if (cboKhuMay != null && mt.getMakhu() != null) {
                 cboKhuMay.getItems().stream()
-                    .filter(k -> mt.getMakhu().equals(k.getMaKhu()))
+                    .filter(k -> mt.getMakhu().equals(k.getMakhu()))
                     .findFirst()
                     .ifPresent(cboKhuMay::setValue);
             }
@@ -96,7 +96,7 @@ public class ThemMayTinhDialog implements Initializable {
         } catch (NumberFormatException e) { setError("Giá không hợp lệ"); return; }
 
         KhuMay khu = cboKhuMay != null ? cboKhuMay.getValue() : null;
-        String maKhu = khu != null ? khu.getMaKhu() : "";
+        String maKhu = khu != null ? khu.getMakhu() : "";
 
         MayTinh mt = isEditMode ? entity : new MayTinh();
         if (!isEditMode) mt.setMamay(maMay);

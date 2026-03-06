@@ -88,7 +88,7 @@ public class DichVuController implements Initializable {
 
     public void loadData() {
         try {
-            List<DichVu> list = dichVuBUS.getDanhSachDV();
+            List<DichVu> list = dichVuBUS.getDichVuConHang();
             dataList.setAll(list);
             filteredList = new FilteredList<>(dataList, p -> true);
             tableView.setItems(filteredList);
@@ -109,10 +109,10 @@ public class DichVuController implements Initializable {
         if (filteredList == null) return;
         filteredList.setPredicate(item -> {
             boolean matchKw = keyword.isEmpty()
-                || item.getMaDV().toLowerCase().contains(keyword)
-                || item.getTenDV().toLowerCase().contains(keyword);
+                || item.getMadv().toLowerCase().contains(keyword)
+                || item.getTendv().toLowerCase().contains(keyword);
             boolean matchTT = tt == null || "Tất cả".equals(tt)
-                || tt.equals(item.getTrangThai());
+                || tt.equals(item.getTrangthai());
             return matchKw && matchTT;
         });
         updateSubtitle();
