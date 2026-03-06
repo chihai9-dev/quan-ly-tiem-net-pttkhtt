@@ -122,10 +122,10 @@ public class ChonDichVuDialog implements Initializable {
     private void loadDichVu() {
         try {
             // getDanhSachDV() hoặc getAvailable() - dùng getDanhSachDV() an toàn hơn
-            List<DichVu> list = dichVuBUS.getDanhSachDV();
+            List<DichVu> list = dichVuBUS.getDichVuConHang();
             // Chỉ lấy dịch vụ DANGBAN và còn hàng
             list = list.stream()
-                .filter(d -> "DANGBAN".equals(d.getTrangThai()) && d.getSoLuongTon() > 0)
+                .filter(d -> "DANGBAN".equals(d.getTrangthai()) && d.getSoluongton() > 0)
                 .toList();
             dichVuList.setAll(list);
             if (tableDichVu != null) tableDichVu.setItems(dichVuList);
@@ -139,8 +139,8 @@ public class ChonDichVuDialog implements Initializable {
         tableDichVu.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             selectedDV = n;
             if (lblSelectedDV != null)
-                lblSelectedDV.setText(n != null ? n.getTenDV() + " - " +
-                    String.format("%,.0f ₫", n.getDonGia()) : "Chưa chọn dịch vụ");
+                lblSelectedDV.setText(n != null ? n.getTendv() + " - " +
+                    String.format("%,.0f ₫", n.getDongia()) : "Chưa chọn dịch vụ");
         });
     }
 
@@ -150,8 +150,8 @@ public class ChonDichVuDialog implements Initializable {
         String kw = txtSearch != null ? txtSearch.getText().toLowerCase().trim() : "";
         tableDichVu.setItems(dichVuList.filtered(d ->
             kw.isEmpty() ||
-            d.getTenDV().toLowerCase().contains(kw) ||
-            d.getMaDV().toLowerCase().contains(kw)));
+            d.getTendv().toLowerCase().contains(kw) ||
+            d.getMadv().toLowerCase().contains(kw)));
     }
 
     @FXML
@@ -188,7 +188,7 @@ public class ChonDichVuDialog implements Initializable {
 
         // String comparison (maDV là String trong DichVu entity)
         final int finalQty = qty;
-        final String maDV  = selectedDV.getMaDV();
+        final String maDV  = selectedDV.getMadv();
         cartList.stream()
             .filter(item -> maDV.equals(item.getMaDV()))
             .findFirst().ifPresentOrElse(
@@ -253,12 +253,12 @@ public class ChonDichVuDialog implements Initializable {
         }
 
         // maDV trả về String (khớp với DichVu entity)
-        public String getMaDV()        { return dichVu.getMaDV(); }
-        public String getTenDV()       { return dichVu.getTenDV(); }
+        public String getMaDV()        { return dichVu.getMadv(); }
+        public String getTenDV()       { return dichVu.getTendv(); }
         public int    getSoLuong()     { return soLuong; }
         public void   setSoLuong(int q){ this.soLuong = q; }
         // getDonGia() trả về double (khớp với DichVu entity)
-        public double getDonGia()      { return dichVu.getDonGia(); }
-        public double getThanhTien()   { return dichVu.getDonGia() * soLuong; }
+        public double getDonGia()      { return dichVu.getDongia(); }
+        public double getThanhTien()   { return dichVu.getDongia() * soLuong; }
     }
 }
