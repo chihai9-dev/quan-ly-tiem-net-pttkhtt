@@ -90,10 +90,10 @@ public class ThemNhanVienDialog implements Initializable {
         if (!isEditMode || !matKhau.isEmpty()) nv.setMatkhau(matKhau);
         nv.setChucvu(cboChucVu   != null ? cboChucVu.getValue()    : "NHANVIEN");
         nv.setTrangthai(cboTrangThai != null ? cboTrangThai.getValue() : "DANGLAMVIEC");
-        if (txtSDT != null) {
-            // NhanVien có thể có field sodienthoai - set nếu field tồn tại
-            try { nv.setSodienthoai(txtSDT.getText().trim()); } catch (Exception ignored) {}
-        }
+//        if (txtSDT != null) {
+//            // NhanVien có thể có field sodienthoai - set nếu field tồn tại
+//            try { nv.set(txtSDT.getText().trim()); } catch (Exception ignored) {}
+//        }
 
         try {
             if (isEditMode) {

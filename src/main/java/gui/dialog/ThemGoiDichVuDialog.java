@@ -47,13 +47,13 @@ public class ThemGoiDichVuDialog implements Initializable {
         this.isEditMode = (gdv != null);
         if (isEditMode) {
             if (lblTitle    != null) lblTitle.setText("Sửa Gói Dịch Vụ");
-            if (txtMaGoi    != null) { txtMaGoi.setText(gdv.getMaGoi()); txtMaGoi.setDisable(true); }
-            if (txtTenGoi   != null) txtTenGoi.setText(gdv.getTenGoi());
-            if (txtGia      != null) txtGia.setText(String.valueOf(gdv.getGiaGoi()));
-            if (txtSoGio    != null) txtSoGio.setText(String.valueOf(gdv.getSoGio()));
-            if (txtSoNgayHieuLuc != null) txtSoNgayHieuLuc.setText(String.valueOf(gdv.getSoNgayHieuLuc()));
-            if (cboLoaiGoi  != null) cboLoaiGoi.setValue(gdv.getLoaiGoi());
-            if (cboTrangThai != null) cboTrangThai.setValue(gdv.getTrangThai());
+            if (txtMaGoi    != null) { txtMaGoi.setText(gdv.getMagoi()); txtMaGoi.setDisable(true); }
+            if (txtTenGoi   != null) txtTenGoi.setText(gdv.getTengoi());
+            if (txtGia      != null) txtGia.setText(String.valueOf(gdv.getGiagoi()));
+            if (txtSoGio    != null) txtSoGio.setText(String.valueOf(gdv.getSogio()));
+            if (txtSoNgayHieuLuc != null) txtSoNgayHieuLuc.setText(String.valueOf(gdv.getSongayhieuluc()));
+            if (cboLoaiGoi  != null) cboLoaiGoi.setValue(gdv.getLoaigoi());
+            if (cboTrangThai != null) cboTrangThai.setValue(gdv.getTrangthai());
         } else {
             if (lblTitle != null) lblTitle.setText("Thêm Gói Dịch Vụ");
         }
@@ -82,13 +82,13 @@ public class ThemGoiDichVuDialog implements Initializable {
         } catch (NumberFormatException e) { soNgay = 30; }
 
         GoiDichVu gdv = isEditMode ? entity : new GoiDichVu();
-        if (!isEditMode && txtMaGoi != null) gdv.setMaGoi(txtMaGoi.getText().trim());
-        gdv.setTenGoi(tenGoi);
-        gdv.setGiaGoi(gia);
-        gdv.setSoGio(soGio);
-        gdv.setSoNgayHieuLuc(soNgay);
-        gdv.setLoaiGoi(cboLoaiGoi != null ? cboLoaiGoi.getValue() : "THUONG");
-        gdv.setTrangThai(cboTrangThai != null ? cboTrangThai.getValue() : "HOATDONG");
+        if (!isEditMode && txtMaGoi != null) gdv.setMagoi(txtMaGoi.getText().trim());
+        gdv.setTengoi(tenGoi);
+        gdv.setGiagoi(gia);
+        gdv.setSogio(soGio);
+        gdv.setSongayhieuluc(soNgay);
+        gdv.setLoaigoi(cboLoaiGoi != null ? cboLoaiGoi.getValue() : "THUONG");
+        gdv.setTrangthai(cboTrangThai != null ? cboTrangThai.getValue() : "HOATDONG");
 
         try {
             if (isEditMode) {

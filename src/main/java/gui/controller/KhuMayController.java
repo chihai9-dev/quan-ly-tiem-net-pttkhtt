@@ -49,7 +49,7 @@ public class KhuMayController implements Initializable {
     }
 
     private void setupTableColumns() {
-        if (colMa         != null) colMa.setCellValueFactory(new PropertyValueFactory<>("maKhu"));
+        if (colMa         != null) colMa.setCellValueFactory(new PropertyValueFactory<>("Makhu"));
         if (colTen        != null) colTen.setCellValueFactory(new PropertyValueFactory<>("tenKhu"));
         if (colGiaCoso    != null) {
             colGiaCoso.setCellValueFactory(new PropertyValueFactory<>("giacoso"));
@@ -92,8 +92,8 @@ public class KhuMayController implements Initializable {
         String keyword = txtSearch != null ? txtSearch.getText().toLowerCase().trim() : "";
         if (filteredList == null) return;
         filteredList.setPredicate(item -> keyword.isEmpty()
-            || (item.getMaKhu()   != null && item.getMaKhu().toLowerCase().contains(keyword))
-            || (item.getTenKhu()  != null && item.getTenKhu().toLowerCase().contains(keyword)));
+            || (item.getMakhu()   != null && item.getMakhu().toLowerCase().contains(keyword))
+            || (item.getTenkhu()  != null && item.getTenkhu().toLowerCase().contains(keyword)));
         updateSubtitle();
     }
 
@@ -110,9 +110,9 @@ public class KhuMayController implements Initializable {
     public void handleXoa() {
         if (selectedItem == null) return;
         Stage owner = (Stage) tableView.getScene().getWindow();
-        if (!gui.dialog.XacNhanDialog.showDelete(owner, selectedItem.getTenKhu())) return;
+        if (!gui.dialog.XacNhanDialog.showDelete(owner, selectedItem.getTenkhu())) return;
         try {
-            khuMayBUS.xoaKhuMay(selectedItem.getMaKhu());
+            khuMayBUS.xoaKhuMay(selectedItem.getMakhu());
             ThongBaoDialogHelper.showSuccess(tableView.getScene(), "Đã xóa khu máy!");
             loadData();
         } catch (Exception e) {

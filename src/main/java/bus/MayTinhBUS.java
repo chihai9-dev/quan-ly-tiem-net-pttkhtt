@@ -4,7 +4,7 @@ import dao.KhuMayDAO;
 import dao.MayTinhDAO;
 import entity.KhuMay;
 import entity.MayTinh;
-import untils.PermissionHelper;
+import utils.PermissionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class MayTinhBUS {
         PermissionHelper.requireLogin();
         // 1. Kiểm tra phân quyền (QUANLY hoặc NHANVIEN)
         PermissionHelper.requireNhanVien();
-d
+
         // 2. Gọi DAO lấy tất cả máy
         List<MayTinh> allMayTinh = mayTinhDAO.getAll();
 
