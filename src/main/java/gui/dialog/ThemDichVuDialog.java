@@ -42,12 +42,12 @@ public class ThemDichVuDialog implements Initializable {
         this.isEditMode = (dv != null);
         if (isEditMode) {
             if (lblTitle    != null) lblTitle.setText("Sửa Dịch Vụ");
-            if (txtMaDV     != null) { txtMaDV.setText(dv.getMaDV()); txtMaDV.setDisable(true); }
-            if (txtTenDV    != null) txtTenDV.setText(dv.getTenDV());
-            if (txtGia      != null) txtGia.setText(String.valueOf(dv.getDonGia()));
-            if (txtDonVi    != null) txtDonVi.setText(dv.getDonViTinh());
-            if (txtTonKho   != null) txtTonKho.setText(String.valueOf(dv.getSoLuongTon()));
-            if (cboTrangThai != null) cboTrangThai.setValue(dv.getTrangThai());
+            if (txtMaDV     != null) { txtMaDV.setText(dv.getMadv()); txtMaDV.setDisable(true); }
+            if (txtTenDV    != null) txtTenDV.setText(dv.getTendv());
+            if (txtGia      != null) txtGia.setText(String.valueOf(dv.getDongia()));
+            if (txtDonVi    != null) txtDonVi.setText(dv.getDonvitinh());
+            if (txtTonKho   != null) txtTonKho.setText(String.valueOf(dv.getSoluongton()));
+            if (cboTrangThai != null) cboTrangThai.setValue(dv.getTrangthai());
         } else {
             if (lblTitle != null) lblTitle.setText("Thêm Dịch Vụ");
         }
@@ -73,12 +73,12 @@ public class ThemDichVuDialog implements Initializable {
         } catch (NumberFormatException e) { setError("Tồn kho không hợp lệ"); return; }
 
         DichVu dv = isEditMode ? entity : new DichVu();
-        if (!isEditMode && txtMaDV != null) dv.setMaDV(txtMaDV.getText().trim());
-        dv.setTenDV(tenDV);
-        dv.setDonGia(gia);
-        dv.setDonViTinh(txtDonVi != null ? txtDonVi.getText().trim() : "");
-        dv.setSoLuongTon(tonKho);
-        dv.setTrangThai(cboTrangThai != null ? cboTrangThai.getValue() : "DANGBAN");
+        if (!isEditMode && txtMaDV != null) dv.setMadv(txtMaDV.getText().trim());
+        dv.setTendv(tenDV);
+        dv.setDongia(gia);
+        dv.setDonvitinh(txtDonVi != null ? txtDonVi.getText().trim() : "");
+        dv.setSoluongton(tonKho);
+        dv.setTrangthai(cboTrangThai != null ? cboTrangThai.getValue() : "DANGBAN");
 
         try {
             if (isEditMode) {
