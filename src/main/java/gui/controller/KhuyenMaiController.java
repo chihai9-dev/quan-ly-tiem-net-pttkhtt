@@ -18,6 +18,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import utils.SessionManager;
 import utils.ThongBaoDialogHelper;
 
 import java.net.URL;
@@ -40,13 +41,17 @@ public class KhuyenMaiController implements Initializable {
     @FXML private ComboBox<String> cboTrangThai;
     @FXML private Label lblSubtitle;
     @FXML private Label lblTotal;
+    @FXML private Button btnThem;
     @FXML private Button btnSua;
     @FXML private Button btnXoa;
+    @FXML private Button btnLamMoi;
 
     private final KhuyenMaiBUS khuyenMaiBUS = new KhuyenMaiBUS();
     private ObservableList<ChuongTrinhKhuyenMai> dataList = FXCollections.observableArrayList();
     private FilteredList<ChuongTrinhKhuyenMai> filteredList;
     private ChuongTrinhKhuyenMai selectedItem;
+
+    private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,13 +62,22 @@ public class KhuyenMaiController implements Initializable {
             cboTrangThai.setValue("Tất cả");
             cboTrangThai.setOnAction(e -> applyFilter());
         }
+        updateMenuVisibility();
         loadData();
     }
 
-    private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private void updateMenuVisibility() {
+        boolean isQuanLy = SessionManager.isQuanLy();
+        if (btnThem != null) btnThem.setVisible(isQuanLy);
+        if (btnThem != null) btnThem.setManaged(isQuanLy);
+        if (btnSua  != null) btnSua.setVisible(isQuanLy);
+        if (btnSua  != null) btnSua.setManaged(isQuanLy);
+        if (btnXoa  != null) btnXoa.setVisible(isQuanLy);
+        if (btnXoa  != null) btnXoa.setManaged(isQuanLy);
+    }
 
     private void setupTableColumns() {
-        if (colMa != null) colMa.setCellValueFactory(new PropertyValueFactory<>("maCTKM"));
+        if (colMa  != null) colMa.setCellValueFactory(new PropertyValueFactory<>("maCTKM"));
         if (colTen != null) colTen.setCellValueFactory(new PropertyValueFactory<>("tenCT"));
         if (colLoai != null) colLoai.setCellValueFactory(c -> {
             String loai = c.getValue().getLoaiKM();
@@ -75,9 +89,9 @@ public class KhuyenMaiController implements Initializable {
             });
         });
         if (colGiaTri != null) colGiaTri.setCellValueFactory(c -> {
-            var km = c.getValue();
+            var km  = c.getValue();
             String loai = km.getLoaiKM();
-            double val = km.getGiaTriKM();
+            double val  = km.getGiaTriKM();
             return new SimpleStringProperty(switch (loai != null ? loai : "") {
                 case "PHANTRAM" -> String.format("%.0f%%", val);
                 case "TANGGIO"  -> String.format("%.1f giờ", val);
@@ -85,7 +99,7 @@ public class KhuyenMaiController implements Initializable {
             });
         });
         if (colDieuKien != null) colDieuKien.setCellValueFactory(c ->
-            new SimpleStringProperty(String.format("%,.0f ₫", c.getValue().getDieuKienToiThieu())));
+                new SimpleStringProperty(String.format("%,.0f ₫", c.getValue().getDieuKienToiThieu())));
         if (colNgayBD != null) colNgayBD.setCellValueFactory(c -> {
             var d = c.getValue().getNgayBatDau();
             return new SimpleStringProperty(d != null ? d.format(FMT_DATE) : "");
@@ -109,9 +123,10 @@ public class KhuyenMaiController implements Initializable {
     private void setupTableSelection() {
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             selectedItem = n;
-            boolean has = n != null;
-            if (btnSua != null) btnSua.setDisable(!has);
-            if (btnXoa != null) btnXoa.setDisable(!has);
+            boolean has = (n != null);
+            boolean canEdit = has && SessionManager.isQuanLy();
+            if (btnSua != null) btnSua.setDisable(!canEdit);
+            if (btnXoa != null) btnXoa.setDisable(!canEdit);
         });
         if (btnSua != null) btnSua.setDisable(true);
         if (btnXoa != null) btnXoa.setDisable(true);
@@ -133,13 +148,13 @@ public class KhuyenMaiController implements Initializable {
     public void handleSearch() { applyFilter(); }
 
     private void applyFilter() {
-        String keyword = txtSearch != null ? txtSearch.getText().toLowerCase().trim() : "";
-        String tt = cboTrangThai != null ? cboTrangThai.getValue() : "Tất cả";
+        String keyword = txtSearch  != null ? txtSearch.getText().toLowerCase().trim() : "";
+        String tt      = cboTrangThai != null ? cboTrangThai.getValue() : "Tất cả";
         if (filteredList == null) return;
         filteredList.setPredicate(item -> {
             boolean matchKw = keyword.isEmpty()
-                || (item.getMaCTKM() != null && item.getMaCTKM().toLowerCase().contains(keyword))
-                || (item.getTenCT()  != null && item.getTenCT().toLowerCase().contains(keyword));
+                    || (item.getMaCTKM() != null && item.getMaCTKM().toLowerCase().contains(keyword))
+                    || (item.getTenCT()  != null && item.getTenCT().toLowerCase().contains(keyword));
             boolean matchTT = tt == null || "Tất cả".equals(tt) || tt.equals(item.getTrangThai());
             return matchKw && matchTT;
         });
@@ -147,22 +162,36 @@ public class KhuyenMaiController implements Initializable {
     }
 
     @FXML
-    public void handleThem() { openDialog(null); }
+    public void handleThem() {
+        if (!SessionManager.isQuanLy()) {
+            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền thêm chương trình khuyến mãi.");
+            return;
+        }
+        openDialog(null);
+    }
 
     @FXML
     public void handleSua() {
         if (selectedItem == null) return;
+        if (!SessionManager.isQuanLy()) {
+            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền sửa chương trình khuyến mãi.");
+            return;
+        }
         openDialog(selectedItem);
     }
 
     @FXML
     public void handleXoa() {
         if (selectedItem == null) return;
+        if (!SessionManager.isQuanLy()) {
+            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền xóa chương trình khuyến mãi.");
+            return;
+        }
         Stage owner = (Stage) tableView.getScene().getWindow();
         if (!gui.dialog.XacNhanDialog.showDelete(owner, selectedItem.getTenCT())) return;
         try {
             khuyenMaiBUS.xoaKhuyenMai(selectedItem.getMaCTKM());
-            ThongBaoDialogHelper.showSuccess(tableView.getScene(), "Đã xóa chương trình khuyến mãi!");
+            ThongBaoDialogHelper.showSuccess(tableView.getScene(), "Đã xóa (ngưng) chương trình khuyến mãi!");
             loadData();
         } catch (Exception e) {
             ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi xóa: " + e.getMessage());

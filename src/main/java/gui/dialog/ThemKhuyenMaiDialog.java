@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ResourceBundle;
 
 public class ThemKhuyenMaiDialog implements Initializable {
@@ -69,9 +71,16 @@ public class ThemKhuyenMaiDialog implements Initializable {
             if (cboLoai     != null) cboLoai.setValue(km.getLoaiKM());
             if (txtGiaTri   != null) txtGiaTri.setText(String.valueOf(km.getGiaTriKM()));
             if (txtNapToiThieu != null) txtNapToiThieu.setText(String.valueOf(km.getDieuKienToiThieu()));
-            if (datTuNgay   != null) datTuNgay.setValue(km.getNgayBatDau());
-            if (datDenNgay  != null) datDenNgay.setValue(km.getNgayKetThuc());
+            if (datTuNgay != null) {
+                LocalDateTime ngayBD = km.getNgayBatDau();
+                datTuNgay.setValue(ngayBD != null ? ngayBD.toLocalDate() : LocalDate.now());
+            }
+            if (datDenNgay != null) {
+                LocalDateTime ngayKT = km.getNgayKetThuc();
+                datDenNgay.setValue(ngayKT != null ? ngayKT.toLocalDate() : LocalDate.now().plusMonths(1));
+            }
             if (cboTrangThai != null) cboTrangThai.setValue(km.getTrangThai());
+            if (txtMoTa      != null) txtMoTa.setText(""); // Nếu entity có getMoTa() thì set ở đây
             updateUnit();
         } else {
             if (lblTitle != null) lblTitle.setText("Thêm Khuyến Mãi");
@@ -87,28 +96,39 @@ public class ThemKhuyenMaiDialog implements Initializable {
         if (tenKM.isEmpty()) { setError("Tên khuyến mãi không được để trống"); return; }
         double giaTri;
         try {
-            giaTri = Double.parseDouble(txtGiaTri != null ? txtGiaTri.getText().replace(",","").trim() : "0");
+            String rawGT = txtGiaTri != null ? txtGiaTri.getText().replace(",", "").trim() : "0";
+            giaTri = Double.parseDouble(rawGT);
             if (giaTri <= 0) { setError("Giá trị KM phải > 0"); return; }
         } catch (NumberFormatException e) { setError("Giá trị không hợp lệ"); return; }
         double napMin = 0;
         try {
-            napMin = Double.parseDouble(txtNapToiThieu != null ? txtNapToiThieu.getText().replace(",","").trim() : "0");
+            String rawMin = txtNapToiThieu != null ? txtNapToiThieu.getText().replace(",", "").trim() : "0";
+            napMin = Double.parseDouble(rawMin.isEmpty() ? "0" : rawMin);
         } catch (NumberFormatException ignored) {}
 
-        LocalDate tuNgay  = datTuNgay  != null ? datTuNgay.getValue()  : LocalDate.now();
-        LocalDate denNgay = datDenNgay != null ? datDenNgay.getValue() : LocalDate.now().plusMonths(1);
-        if (tuNgay == null) tuNgay = LocalDate.now();
-        if (denNgay == null) denNgay = tuNgay.plusMonths(1);
-        if (!denNgay.isAfter(tuNgay)) { setError("Ngày kết thúc phải sau ngày bắt đầu"); return; }
+        LocalDate tuNgayDate  = datTuNgay  != null ? datTuNgay.getValue()  : LocalDate.now();
+        LocalDate denNgayDate = datDenNgay != null ? datDenNgay.getValue() : LocalDate.now().plusMonths(1);
+        if (tuNgayDate  == null) tuNgayDate  = LocalDate.now();
+        if (denNgayDate == null) denNgayDate = tuNgayDate.plusMonths(1);
+        if (!denNgayDate.isAfter(tuNgayDate)) {
+            setError("Ngày kết thúc phải sau ngày bắt đầu");
+            return;
+        }
+
+        LocalDateTime tuNgayDT  = tuNgayDate.atStartOfDay();
+        LocalDateTime denNgayDT = denNgayDate.atTime(LocalTime.of(23, 59, 59));
 
         ChuongTrinhKhuyenMai km = isEditMode ? entity : new ChuongTrinhKhuyenMai();
-        if (!isEditMode && txtMaKM != null) km.setMaCTKM(txtMaKM.getText().trim());
+        if (!isEditMode && txtMaKM != null) {
+            String maKM = txtMaKM.getText().trim();
+            if (!maKM.isEmpty()) km.setMaCTKM(maKM);
+        }
         km.setTenCT(tenKM);
         km.setLoaiKM(cboLoai != null ? cboLoai.getValue() : "PHANTRAM");
         km.setGiaTriKM(giaTri);
         km.setDieuKienToiThieu(napMin);
-        km.setNgayBatDau(tuNgay);
-        km.setNgayKetThuc(denNgay);
+        km.setNgayBatDau(tuNgayDT);   // ✅ LocalDateTime
+        km.setNgayKetThuc(denNgayDT); // ✅ LocalDateTime
         km.setTrangThai(cboTrangThai != null ? cboTrangThai.getValue() : "HOATDONG");
 
         try {
@@ -130,8 +150,12 @@ public class ThemKhuyenMaiDialog implements Initializable {
 
     private void setError(String msg)  { if (lblError != null) lblError.setText(msg); }
     private void clearError()          { if (lblError != null) lblError.setText(""); }
-    private void closeDialog()         { if (btnCancel != null && btnCancel.getScene() != null)
-                                            ((Stage) btnCancel.getScene().getWindow()).close(); }
-    private Stage getStage()           { return btnSave != null && btnSave.getScene() != null
-                                            ? (Stage) btnSave.getScene().getWindow() : null; }
+    private void closeDialog() {
+        if (btnCancel != null && btnCancel.getScene() != null)
+            ((Stage) btnCancel.getScene().getWindow()).close();
+    }
+    private Stage getStage() {
+        return btnSave != null && btnSave.getScene() != null
+                ? (Stage) btnSave.getScene().getWindow() : null;
+    }
 }
