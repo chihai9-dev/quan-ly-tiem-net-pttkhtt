@@ -127,7 +127,7 @@ public class HoaDonBUS {
         }
 
         // 12.2. Chi tiết dịch vụ đã sử dụng
-        List<SuDungDichVu> danhSachDV = suDungDichVuDAO.getByPhien(maPhien, DBConnection.getConnection());
+        List<SuDungDichVu> danhSachDV = suDungDichVuDAO.geyByPhien(maPhien);
         if (danhSachDV != null && !danhSachDV.isEmpty()) {
             for (SuDungDichVu sdDV : danhSachDV) {
                 ChiTietHoaDon ctDV = new ChiTietHoaDon();
