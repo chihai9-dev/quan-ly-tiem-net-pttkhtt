@@ -3,109 +3,141 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.NapTienController"
-      spacing="16" style="-fx-padding:20;">
+      stylesheets="@../css/style.css"
+      spacing="16" style="-fx-padding: 0;">
 
-    <!-- Nạp tiền card -->
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="💳" style="-fx-font-size:26px;"/>
+        <VBox spacing="2">
+            <Label text="Nạp Tiền Tài Khoản" styleClass="page-title"/>
+            <Label text="Nạp tiền cho khách hàng và áp dụng khuyến mãi" styleClass="page-subtitle"/>
+        </VBox>
+    </HBox>
+
     <HBox spacing="16" VBox.vgrow="ALWAYS">
 
-        <!-- Form nạp tiền -->
-        <VBox styleClass="card" minWidth="400" spacing="16">
-            <Label text="💰 Nạp Tiền Tài Khoản" style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;"/>
+        <!-- Left: Input form -->
+        <VBox spacing="14" styleClass="page-card" prefWidth="420" minWidth="360">
+            <Label text="Thông tin nạp tiền" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#1565C0;"/>
             <Separator/>
 
-            <!-- Tìm khách hàng -->
-            <VBox spacing="6">
-                <Label text="Tìm Khách Hàng" styleClass="form-label"/>
-                <HBox spacing="8">
-                    <TextField fx:id="txtTimKH" styleClass="search-field" promptText="Nhập mã KH hoặc SĐT..."
-                               HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-                    <Button text="Tìm" styleClass="btn-primary" onAction="#handleTimKH"/>
-                    <Button text="..." styleClass="btn-secondary" onAction="#handleChonKH"
-                            tooltip="Chọn khách hàng từ danh sách"/>
+            <!-- Find customer -->
+            <VBox spacing="4">
+                <Label text="Tìm khách hàng *" styleClass="form-label"/>
+                <HBox spacing="6">
+                    <TextField fx:id="txtTimKH" promptText="Mã KH hoặc tên đăng nhập"
+                               styleClass="text-field" HBox.hgrow="ALWAYS"/>
+                    <Button text="🔍  Tìm" styleClass="btn btn-outline" onAction="#handleTimKH"/>
                 </HBox>
             </VBox>
 
-            <!-- Thông tin KH (hiện sau khi tìm) -->
-            <VBox fx:id="infoKHPane" styleClass="card" spacing="10"
-                  style="-fx-background-color:#F0F7FF;-fx-border-color:#90CAF9;-fx-border-width:1;-fx-border-radius:6;-fx-background-radius:6;"
-                  managed="false" visible="false">
-                <Label text="Thông Tin Khách Hàng" styleClass="form-label"/>
-                <GridPane hgap="12" vgap="8">
-                    <columnConstraints>
-                        <ColumnConstraints minWidth="100"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints minWidth="100"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                    </columnConstraints>
-                    <Label text="Mã KH:" styleClass="form-label" GridPane.rowIndex="0"/>
-                    <Label fx:id="lblMaKH" text="---" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                    <Label text="Họ tên:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-                    <Label fx:id="lblHoTen" text="---" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-                    <Label text="Số dư hiện tại:" styleClass="form-label" GridPane.rowIndex="1"/>
-                    <Label fx:id="lblSoDu" text="0 đ" GridPane.rowIndex="1" GridPane.columnIndex="1"
-                           style="-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#1A73E8;"/>
-                    <Label text="Điểm thưởng:" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-                    <Label fx:id="lblDiem" text="0 điểm" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-                </GridPane>
-            </VBox>
-
-            <!-- Số tiền nạp -->
-            <VBox spacing="6">
-                <Label text="Số Tiền Nạp (đ) *" styleClass="form-label"/>
-                <TextField fx:id="txtSoTienNap" promptText="Nhập số tiền..."/>
-            </VBox>
-
-            <!-- Quick amount -->
-            <VBox spacing="6">
-                <Label text="Chọn Nhanh" styleClass="form-label"/>
-                <HBox spacing="8">
-                    <Button text="50.000đ" styleClass="btn-secondary,btn-sm" onAction="#handleQuickAmount" userData="50000"/>
-                    <Button text="100.000đ" styleClass="btn-secondary,btn-sm" onAction="#handleQuickAmount" userData="100000"/>
-                    <Button text="200.000đ" styleClass="btn-secondary,btn-sm" onAction="#handleQuickAmount" userData="200000"/>
-                    <Button text="500.000đ" styleClass="btn-secondary,btn-sm" onAction="#handleQuickAmount" userData="500000"/>
+            <!-- Customer info display -->
+            <VBox fx:id="vboxKHInfo" spacing="8" style="-fx-background-color:#EBF5FB;
+                  -fx-background-radius:8; -fx-padding:14; -fx-border-color:#BBDEFB;
+                  -fx-border-width:1; -fx-border-radius:8;" visible="false" managed="false">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <StackPane styleClass="header-avatar">
+                        <Label fx:id="lblKHAvatar" text="K"
+                               style="-fx-text-fill:#FFFFFF; -fx-font-weight:bold;"/>
+                    </StackPane>
+                    <VBox spacing="3">
+                        <Label fx:id="lblKHTen" text="" style="-fx-font-weight:bold; -fx-font-size:14px;"/>
+                        <Label fx:id="lblKHSDT" text="" styleClass="page-subtitle"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Số dư hiện tại:" style="-fx-text-fill:#555555;"/>
+                    <Label fx:id="lblKHSoDu" text="0 ₫" styleClass="currency-label"/>
                 </HBox>
             </VBox>
 
-            <!-- Ghi chú -->
-            <VBox spacing="6">
-                <Label text="Ghi Chú" styleClass="form-label"/>
-                <TextField fx:id="txtGhiChu" promptText="Ghi chú giao dịch..."/>
+            <!-- Amount -->
+            <VBox spacing="4">
+                <Label text="Số tiền nạp (VNĐ) *" styleClass="form-label"/>
+                <TextField fx:id="txtSoTien" promptText="VD: 100000"
+                           styleClass="text-field" onKeyReleased="#handleSoTienChanged"/>
+                <!-- Quick amounts -->
+                <HBox spacing="6" style="-fx-padding: 4 0 0 0;">
+                    <Button text="50.000" styleClass="btn btn-outline"
+                            style="-fx-font-size:11px; -fx-padding:4 8;"
+                            onAction="#handleQuickAmount50"/>
+                    <Button text="100.000" styleClass="btn btn-outline"
+                            style="-fx-font-size:11px; -fx-padding:4 8;"
+                            onAction="#handleQuickAmount100"/>
+                    <Button text="200.000" styleClass="btn btn-outline"
+                            style="-fx-font-size:11px; -fx-padding:4 8;"
+                            onAction="#handleQuickAmount200"/>
+                    <Button text="500.000" styleClass="btn btn-outline"
+                            style="-fx-font-size:11px; -fx-padding:4 8;"
+                            onAction="#handleQuickAmount500"/>
+                </HBox>
             </VBox>
 
-            <!-- Nhân viên thu -->
-            <VBox spacing="6">
-                <Label text="Nhân Viên Thu" styleClass="form-label"/>
-                <TextField fx:id="txtNhanVien" editable="false"
-                           style="-fx-background-color:#F5F6FA;"/>
+            <!-- CTKM -->
+            <VBox spacing="4">
+                <Label text="Chương trình khuyến mãi" styleClass="form-label"/>
+                <ComboBox fx:id="cboCTKM" promptText="Không áp dụng" styleClass="combo-box"
+                          maxWidth="Infinity" onAction="#handleCTKMChanged"/>
             </VBox>
 
-            <Label fx:id="lblError" style="-fx-text-fill:#E53935;-fx-font-weight:bold;" text="" wrapText="true"/>
+            <!-- Calculated bonus -->
+            <VBox fx:id="vboxKM" spacing="6" style="-fx-background-color:#F1F8E9;
+                  -fx-background-radius:6; -fx-padding:12; -fx-border-color:#C5E1A5;
+                  -fx-border-width:1; -fx-border-radius:6;" visible="false" managed="false">
+                <HBox>
+                    <Label text="Tiền KM thêm:" style="-fx-text-fill:#555555;" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblTienKM" text="0 ₫" style="-fx-text-fill:#388E3C; -fx-font-weight:bold;"/>
+                </HBox>
+            </VBox>
 
-            <Button text="💰 XÁC NHẬN NẠP TIỀN" styleClass="btn-success"
-                    maxWidth="Infinity" onAction="#handleNapTien"
-                    style="-fx-pref-height:42px;-fx-font-size:14px;"/>
+            <!-- Summary -->
+            <VBox spacing="6" style="-fx-background-color:#EBF2FA; -fx-background-radius:8;
+                  -fx-padding:14; -fx-border-color:#BBDEFB; -fx-border-width:1; -fx-border-radius:8;">
+                <HBox>
+                    <Label text="Tiền nạp:" style="-fx-text-fill:#555555;" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblSoTienFmt" text="0 ₫" style="-fx-font-weight:bold;"/>
+                </HBox>
+                <HBox>
+                    <Label text="Tiền khuyến mãi:" style="-fx-text-fill:#555555;" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblTienKMFmt" text="0 ₫" style="-fx-text-fill:#388E3C;"/>
+                </HBox>
+                <Separator/>
+                <HBox>
+                    <Label text="Tổng cộng nhận được:" style="-fx-font-weight:bold;" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblTongCong" text="0 ₫" styleClass="currency-label" style="-fx-font-size:16px;"/>
+                </HBox>
+            </VBox>
+
+            <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true"/>
+
+            <Button fx:id="btnNapTien" text="💳  XÁC NHẬN NẠP TIỀN" styleClass="btn btn-primary"
+                    maxWidth="Infinity" style="-fx-font-size:14px; -fx-padding:12;"
+                    onAction="#handleNapTien"/>
         </VBox>
 
-        <!-- Lịch sử nạp tiền -->
-        <VBox styleClass="card" HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:0;-fx-background-radius:8;">
-            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:12 16;">
-                <Label text="Lịch Sử Nạp Tiền"
-                       style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;" HBox.hgrow="ALWAYS"/>
-                <DatePicker fx:id="dpFilter" promptText="Lọc theo ngày"/>
-                <Button text="Lọc" styleClass="btn-primary,btn-sm" onAction="#handleFilter"/>
+        <!-- Right: History -->
+        <VBox spacing="12" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS" styleClass="page-card" style="-fx-padding:0;">
+            <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:16 16 12 16;
+                  -fx-border-color:transparent transparent #E8EEF6 transparent; -fx-border-width:0 0 1 0;">
+                <Label text="Lịch sử nạp tiền" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#1565C0;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <DatePicker fx:id="dateFilter" promptText="Từ ngày" prefWidth="140"/>
+                <Button text="🔍  Lọc" styleClass="btn btn-outline" onAction="#handleFilterHistory"/>
             </HBox>
-            <TableView fx:id="tableLichSu" VBox.vgrow="ALWAYS">
-                <columns>
-                    <TableColumn fx:id="colMaNap" text="Mã GD" prefWidth="90"/>
-                    <TableColumn fx:id="colMaKH" text="Khách Hàng" prefWidth="150"/>
-                    <TableColumn fx:id="colSoTien" text="Số Tiền (đ)" prefWidth="130"/>
-                    <TableColumn fx:id="colNgayNap" text="Ngày Nạp" prefWidth="150"/>
-                    <TableColumn fx:id="colNhanVien" text="Nhân Viên" prefWidth="130"/>
-                    <TableColumn fx:id="colGhiChu" text="Ghi Chú" prefWidth="200"/>
-                </columns>
+            <TableView fx:id="tableHistory" VBox.vgrow="ALWAYS" style="-fx-background-radius:0;">
+                <TableColumn fx:id="colMaNT" text="Mã NT" prefWidth="80"/>
+                <TableColumn fx:id="colKHHist" text="Khách hàng" prefWidth="160"/>
+                <TableColumn fx:id="colSoTienHist" text="Số tiền" prefWidth="110"/>
+                <TableColumn fx:id="colKMHist" text="KM" prefWidth="80"/>
+                <TableColumn fx:id="colTongHist" text="Tổng nhận" prefWidth="110"/>
+                <TableColumn fx:id="colNVHist" text="Nhân viên" prefWidth="130"/>
+                <TableColumn fx:id="colNgayHist" text="Ngày nạp" prefWidth="130"/>
             </TableView>
         </VBox>
     </HBox>
+
 </VBox>

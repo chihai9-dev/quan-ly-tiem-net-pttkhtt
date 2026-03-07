@@ -2,101 +2,61 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
+<?import javafx.collections.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.KhachHangController"
-      spacing="14" style="-fx-padding:20;">
+      stylesheets="@../css/style.css"
+      spacing="16" style="-fx-padding: 0;">
 
-    <!-- Toolbar -->
-    <HBox styleClass="card" alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding:12 16;-fx-background-radius:8;">
-        <TextField fx:id="txtSearch" styleClass="search-field" promptText="🔍 Tìm theo mã, tên, SĐT..."/>
-        <ComboBox fx:id="cmbLoaiTK" promptText="Loại tài khoản" style="-fx-min-width:160px;"/>
-        <Button text="Tìm" styleClass="btn-primary,btn-sm" onAction="#handleSearch"/>
-        <Button text="Nâng cao ▾" styleClass="btn-secondary,btn-sm" onAction="#toggleAdvancedSearch"/>
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="+ Thêm KH" styleClass="btn-success" onAction="#handleThem"/>
-        <Button fx:id="btnSua" text="✏ Sửa" styleClass="btn-warning" onAction="#handleSua"/>
-        <Button fx:id="btnXoa" text="✕ Xóa" styleClass="btn-danger" onAction="#handleXoa"/>
-        <Button text="📤 Xuất Excel" styleClass="btn-secondary" onAction="#handleExport"/>
+    <!-- Page Header -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-padding: 4 0 4 0;">
+        <Label text="👥" style="-fx-font-size:26px;"/>
+        <VBox spacing="2">
+            <Label text="Quản Lý Khách Hàng" styleClass="page-title"/>
+            <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
+        </VBox>
     </HBox>
 
-    <!-- Advanced search (hidden by default) -->
-    <VBox fx:id="advancedSearchPane" styleClass="card" spacing="10" managed="false" visible="false"
-          style="-fx-padding:14 16;-fx-background-radius:8;">
-        <Label text="Tìm kiếm nâng cao" style="-fx-font-weight:bold;-fx-text-fill:#1E2A3A;"/>
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="Số dư:" styleClass="form-label"/>
-            <ComboBox fx:id="cmbOperatorSoDu" style="-fx-min-width:80px;"/>
-            <TextField fx:id="txtSoDuFilter" promptText="Số tiền" style="-fx-max-width:120px;"/>
-            <Label text="Ngày tạo từ:" styleClass="form-label"/>
-            <DatePicker fx:id="dpNgayTaoTu"/>
-            <Label text="đến:" styleClass="form-label"/>
-            <DatePicker fx:id="dpNgayTaoDen"/>
-            <Button text="Áp dụng" styleClass="btn-primary,btn-sm" onAction="#handleAdvancedSearch"/>
-        </HBox>
-    </VBox>
+    <!-- Toolbar -->
+    <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
+        <TextField fx:id="txtSearch" promptText="🔍  Tìm kiếm..." styleClass="search-bar"
+                   prefWidth="260" onKeyReleased="#handleSearch"/>
+                <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140">
+                </ComboBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary"
+                onAction="#handleThem"/>
+        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning"
+                onAction="#handleSua" disable="true"/>
+        <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger"
+                onAction="#handleXoa" disable="true"/>
+        <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary"
+                onAction="#handleLamMoi"/>
+    </HBox>
 
     <!-- Table -->
-    <VBox styleClass="card" VBox.vgrow="ALWAYS" spacing="0"
-          style="-fx-padding:0;-fx-background-radius:8;">
-        <HBox alignment="CENTER_LEFT" style="-fx-padding:12 16;">
-            <Label text="Danh Sách Khách Hàng" style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#1E2A3A;" HBox.hgrow="ALWAYS"/>
-            <Label fx:id="lblTongKH" text="Tổng: 0" style="-fx-font-size:12px;-fx-text-fill:#757575;"/>
-        </HBox>
-        <TableView fx:id="tableKhachHang" VBox.vgrow="ALWAYS" onMouseClicked="#handleRowSelect">
-            <columns>
-                <TableColumn fx:id="colMaKH" text="Mã KH" prefWidth="90"/>
-                <TableColumn fx:id="colHoTen" text="Họ Tên" prefWidth="160"/>
-                <TableColumn fx:id="colSdt" text="Điện Thoại" prefWidth="120"/>
-                <TableColumn fx:id="colEmail" text="Email" prefWidth="160"/>
-                <TableColumn fx:id="colSoDu" text="Số Dư (đ)" prefWidth="120"/>
-                <TableColumn fx:id="colGioConLai" text="Giờ Còn" prefWidth="90"/>
-                <TableColumn fx:id="colLoaiTK" text="Loại TK" prefWidth="110"/>
-                <TableColumn fx:id="colNgayTao" text="Ngày Tạo" prefWidth="120"/>
-                <TableColumn fx:id="colTrangThai" text="Trạng Thái" prefWidth="110"/>
-            </columns>
+    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
+        <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
+                   style="-fx-background-radius: 8;">
+            <TableColumn fx:id="colMaKH" text="Mã KH" prefWidth="80"/>
+            <TableColumn fx:id="colHoTen" text="Họ tên" prefWidth="180"/>
+            <TableColumn fx:id="colSDT" text="Điện thoại" prefWidth="120"/>
+            <TableColumn fx:id="colTenDN" text="Tên đăng nhập" prefWidth="140"/>
+            <TableColumn fx:id="colSoDu" text="Số dư (VNĐ)" prefWidth="120"/>
+            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+            <TableColumn fx:id="colNgayTao" text="Ngày tạo" prefWidth="120"/>
         </TableView>
-    </VBox>
 
-    <!-- Form add/edit -->
-    <VBox fx:id="formPane" styleClass="card" spacing="12"
-          style="-fx-padding:16 20;-fx-background-radius:8;" managed="false" visible="false">
-        <Label fx:id="lblFormTitle" text="Thêm Khách Hàng" style="-fx-font-size:14px;-fx-font-weight:bold;"/>
-        <GridPane hgap="16" vgap="10">
-            <columnConstraints>
-                <ColumnConstraints minWidth="120"/>
-                <ColumnConstraints hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="120"/>
-                <ColumnConstraints hgrow="ALWAYS"/>
-            </columnConstraints>
-
-            <Label text="Mã KH:" styleClass="form-label" GridPane.rowIndex="0"/>
-            <TextField fx:id="txtMaKH" promptText="Tự động" editable="false"
-                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Label text="Họ và tên *:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtHoTen" promptText="Nhập họ tên"
-                       GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-
-            <Label text="Điện thoại *:" styleClass="form-label" GridPane.rowIndex="1"/>
-            <TextField fx:id="txtSdt" promptText="0xxxxxxxxx"
-                       GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <Label text="Email:" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtEmail" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-
-            <Label text="Tên đăng nhập *:" styleClass="form-label" GridPane.rowIndex="2"/>
-            <TextField fx:id="txtUsername" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            <Label text="Mật khẩu:" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-            <PasswordField fx:id="txtPassword" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-
-            <Label text="Địa chỉ:" styleClass="form-label" GridPane.rowIndex="3"/>
-            <TextField fx:id="txtDiaChi" GridPane.rowIndex="3" GridPane.columnIndex="1"
-                       GridPane.columnSpan="3"/>
-        </GridPane>
-
-        <HBox spacing="10">
-            <Button text="💾 Lưu" styleClass="btn-primary" onAction="#handleSave"/>
-            <Button text="✕ Hủy" styleClass="btn-secondary" onAction="#handleCancel"/>
+        <!-- Footer -->
+        <HBox alignment="CENTER_RIGHT" spacing="12"
+              style="-fx-padding: 10 16 10 16; -fx-background-color:#FAFBFF;
+                     -fx-border-color:#E8EEF6 transparent transparent transparent;
+                     -fx-border-width: 1 0 0 0;">
+            <Label fx:id="lblTotal" text="Tổng: 0 bản ghi" styleClass="page-subtitle"/>
         </HBox>
     </VBox>
+
 </VBox>

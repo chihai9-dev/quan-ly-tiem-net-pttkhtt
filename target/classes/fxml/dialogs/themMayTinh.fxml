@@ -3,68 +3,62 @@
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.dialog.ThemMayTinhDialog"
-      stylesheets="@../../css/style.css,@../../css/button.css,@../../css/dialog.css"
-      spacing="0" style="-fx-min-width:500px;">
+      stylesheets="@../../css/style.css"
+      spacing="0" style="-fx-min-width:460; -fx-max-width:520;">
 
     <!-- Header -->
-    <HBox styleClass="dialog-header" alignment="CENTER_LEFT">
-        <Label fx:id="lblTitle" text="Thêm Máy Tính" styleClass="dialog-title"/>
+    <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
+        <Label text="💻" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblDialogTitle" text="Thêm / Sửa Máy Tính" styleClass="dialog-title"/>
     </HBox>
 
     <!-- Body -->
-    <VBox styleClass="dialog-body" spacing="12">
-        <GridPane hgap="14" vgap="12">
-            <columnConstraints>
-                <ColumnConstraints minWidth="110"/>
-                <ColumnConstraints hgrow="ALWAYS"/>
-                <ColumnConstraints minWidth="110"/>
-                <ColumnConstraints hgrow="ALWAYS"/>
-            </columnConstraints>
+    <ScrollPane fitToWidth="true" style="-fx-background-color:transparent; -fx-border-color:transparent; -fx-max-height:480;">
+        <VBox styleClass="dialog-body" spacing="12">
+            <VBox spacing="4">
+                <Label text="Mã máy *" styleClass="form-label"/>
+                <TextField fx:id="txtMaMay" promptText="VD: PC001" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtMaMayError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Tên máy *" styleClass="form-label"/>
+                <TextField fx:id="txtTenMay" promptText="VD: Máy 01" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtTenMayError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Cấu hình *" styleClass="form-label"/>
+                <TextArea fx:id="txtCauHinh" promptText="VD: i5-10400F, 16GB RAM, GTX 1060" styleClass="text-field" maxWidth="Infinity" prefRowCount="3" wrapText="true"/>
+                <Label fx:id="lbltxtCauHinhError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Khu máy *" styleClass="form-label"/>
+                <ComboBox fx:id="cboKhuMay" promptText="Chọn khu máy" styleClass="combo-box" maxWidth="Infinity"/>
+                <Label fx:id="lblcboKhuMayError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Giá mỗi giờ (VNĐ) *" styleClass="form-label"/>
+                <TextField fx:id="txtGiaMoiGio" promptText="VD: 10000" styleClass="text-field" maxWidth="Infinity"/>
+                <Label fx:id="lbltxtGiaMoiGioError" styleClass="error-label" text=""/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Trạng thái" styleClass="form-label"/>
+                <ComboBox fx:id="cboTrangThai" promptText="Chọn trạng thái" styleClass="combo-box" maxWidth="Infinity"/>
+                <Label fx:id="lblcboTrangThaiError" styleClass="error-label" text=""/>
+            </VBox>
 
-            <Label text="Mã máy:" styleClass="form-label" GridPane.rowIndex="0"/>
-            <TextField fx:id="txtMaMay" editable="false" promptText="Tự động"
-                       GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-            <Label text="Tên máy *:" styleClass="form-label" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtTenMay" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
-
-            <Label text="Khu máy *:" styleClass="form-label" GridPane.rowIndex="1"/>
-            <ComboBox fx:id="cmbKhuMay" maxWidth="Infinity"
-                      GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-            <Label text="Giá/giờ (đ) *:" styleClass="form-label" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtGiaMoiGio" promptText="VD: 5000"
-                       GridPane.rowIndex="1" GridPane.columnIndex="3"/>
-
-            <Label text="CPU:" styleClass="form-label" GridPane.rowIndex="2"/>
-            <TextField fx:id="txtCPU" promptText="VD: Core i5-10400F"
-                       GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-            <Label text="RAM:" styleClass="form-label" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtRAM" promptText="VD: 16GB DDR4"
-                       GridPane.rowIndex="2" GridPane.columnIndex="3"/>
-
-            <Label text="VGA:" styleClass="form-label" GridPane.rowIndex="3"/>
-            <TextField fx:id="txtVGA" promptText="VD: GTX 1060 6GB"
-                       GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-            <Label text="Màn hình:" styleClass="form-label" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
-            <TextField fx:id="txtManHinh" promptText="VD: 24 inch Full HD"
-                       GridPane.rowIndex="3" GridPane.columnIndex="3"/>
-
-            <Label text="Trạng thái:" styleClass="form-label" GridPane.rowIndex="4"/>
-            <ComboBox fx:id="cmbTrangThai" maxWidth="Infinity"
-                      GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-            <Label text="Ghi chú:" styleClass="form-label" GridPane.rowIndex="5"/>
-            <TextArea fx:id="txtGhiChu" prefRowCount="2" wrapText="true"
-                      GridPane.rowIndex="5" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
-        </GridPane>
-        <Label fx:id="lblError" style="-fx-text-fill:#E53935;-fx-font-weight:bold;" text="" wrapText="true"/>
-    </VBox>
+            <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true"/>
+        </VBox>
+    </ScrollPane>
 
     <!-- Footer -->
-    <HBox styleClass="dialog-footer" spacing="10">
-        <Region HBox.hgrow="ALWAYS"/>
-        <Button text="Hủy" styleClass="btn-secondary" onAction="#handleCancel"/>
-        <Button text="💾 Lưu" styleClass="btn-primary" onAction="#handleSave" defaultButton="true"/>
+    <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER_RIGHT">
+        <Button text="✕  Hủy" styleClass="btn btn-secondary"
+                onAction="#handleCancel"/>
+        <Button fx:id="btnSave" text="💾  Lưu" styleClass="btn btn-primary"
+                onAction="#handleSave"/>
     </HBox>
+
 </VBox>
