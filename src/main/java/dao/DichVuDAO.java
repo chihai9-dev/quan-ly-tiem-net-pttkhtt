@@ -215,9 +215,12 @@ public class DichVuDAO {
         try{
             conn = DBConnection.getConnection();
             ps = conn.prepareStatement(sql);
-            ps.setString(1, "maDV");
+            // SỬA: Dùng biến maDV thay vì chuỗi "maDV"
+            ps.setString(1, maDV);
             rs = ps.executeQuery();
-            soLuongTon = rs.getInt("SoLuongTon");
+            if(rs.next()){
+                soLuongTon = rs.getInt("SoLuongTon");
+            }
         }catch(Exception e){
             System.err.println("Lỗi getSoLuongTon - DichVuDAO: " + e.getMessage());
         }finally{
