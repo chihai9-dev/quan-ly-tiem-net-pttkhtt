@@ -2,60 +2,97 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.geometry.*?>
-<?import javafx.collections.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
+<HBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.DichVuController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" style="-fx-padding: 16;">
 
-    <!-- Page Header -->
-    <HBox alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding: 4 0 4 0;">
-        <Label text="🥤" style="-fx-font-size:26px;"/>
-        <VBox spacing="2">
-            <Label text="Quản Lý Dịch Vụ" styleClass="page-title"/>
-            <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
+    <!-- LEFT: Danh sách -->
+    <VBox spacing="12" HBox.hgrow="ALWAYS">
+
+        <!-- Header -->
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <Label text="🥤" style="-fx-font-size:26px;"/>
+            <VBox spacing="2">
+                <Label text="Quản Lý Dịch Vụ" styleClass="page-title"/>
+                <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
+            </VBox>
+        </HBox>
+
+        <!-- Toolbar -->
+        <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="txtSearch" promptText="🔍  Tìm theo tên, mã..." styleClass="search-bar"
+                       prefWidth="220" onKeyReleased="#handleSearch"/>
+            <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" prefWidth="140"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnThem"      text="＋  Thêm"     styleClass="btn,btn-primary"   onAction="#handleThem"/>
+            <Button fx:id="btnXoa"       text="✕  Xóa"       styleClass="btn,btn-danger"    onAction="#handleXoa"      disable="true"/>
+            <Button fx:id="btnKhoiPhuc"  text="↩  Khôi phục" styleClass="btn,btn-warning"   onAction="#handleKhoiPhuc" disable="true"/>
+            <Button fx:id="btnLamMoi"    text="↺  Làm mới"   styleClass="btn,btn-secondary" onAction="#handleLamMoi"/>
+        </HBox>
+
+        <!-- Table -->
+        <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding:0;">
+            <TableView fx:id="tableView" VBox.vgrow="ALWAYS" onMouseClicked="#handleRowSelect"
+                       style="-fx-background-radius:8;">
+                <columns>
+                    <TableColumn fx:id="colMaDV"      text="Mã DV"       prefWidth="80"/>
+                    <TableColumn fx:id="colTenDV"     text="Tên dịch vụ" prefWidth="200"/>
+                    <TableColumn fx:id="colGia"       text="Đơn giá"     prefWidth="120"/>
+                    <TableColumn fx:id="colTonKho"    text="Tồn kho"     prefWidth="80"/>
+                    <TableColumn fx:id="colDonVi"     text="Đơn vị"      prefWidth="90"/>
+                    <TableColumn fx:id="colTrangThai" text="Trạng thái"  prefWidth="110"/>
+                </columns>
+            </TableView>
+            <HBox alignment="CENTER_RIGHT" spacing="12"
+                  style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
+                         -fx-border-color:#E8EEF6 transparent transparent transparent; -fx-border-width:1 0 0 0;">
+                <Label fx:id="lblTotal" text="Tổng: 0 bản ghi" styleClass="page-subtitle"/>
+            </HBox>
         </VBox>
-    </HBox>
 
-    <!-- Toolbar -->
-    <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
-        <TextField fx:id="txtSearch" promptText="🔍  Tìm kiếm..." styleClass="search-bar"
-                   prefWidth="260" onKeyReleased="#handleSearch"/>
-                <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140">
-                </ComboBox>
-        <Pane HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary"
-                onAction="#handleThem"/>
-        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning"
-                onAction="#handleSua" disable="true"/>
-        <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger"
-                onAction="#handleXoa" disable="true"/>
-        <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary"
-                onAction="#handleLamMoi"/>
-    </HBox>
+    </VBox>
 
-    <!-- Table -->
-    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
-        <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
-                   style="-fx-background-radius: 8;">
-            <TableColumn fx:id="colMaDV" text="Mã DV" prefWidth="80"/>
-            <TableColumn fx:id="colTenDV" text="Tên dịch vụ" prefWidth="200"/>
-            <TableColumn fx:id="colGia" text="Đơn giá" prefWidth="120"/>
-            <TableColumn fx:id="colTonKho" text="Tồn kho" prefWidth="100"/>
-            <TableColumn fx:id="colDonVi" text="Đơn vị" prefWidth="100"/>
-            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
-        </TableView>
+    <!-- RIGHT: Form thông tin -->
+    <VBox styleClass="page-card" spacing="14" prefWidth="280"
+          style="-fx-padding:20; -fx-min-width:260;">
+        <Label text="Thông tin dịch vụ" style="-fx-font-size:15px; -fx-font-weight:bold;"/>
 
-        <!-- Footer -->
-        <HBox alignment="CENTER_RIGHT" spacing="12"
-              style="-fx-padding: 10 16 10 16; -fx-background-color:#FAFBFF;
-                     -fx-border-color:#E8EEF6 transparent transparent transparent;
-                     -fx-border-width: 1 0 0 0;">
-            <Label fx:id="lblTotal" text="Tổng: 0 bản ghi" styleClass="page-subtitle"/>
+        <Label text="Mã dịch vụ"/>
+        <TextField fx:id="txtMaDV" promptText="Tự động" editable="false"
+                   style="-fx-opacity:0.7; -fx-background-color:#f0f0f0;"/>
+
+        <Label text="Tên dịch vụ"/>
+        <TextField fx:id="txtTenDV" promptText="Nhập tên dịch vụ"/>
+
+        <Label text="Loại dịch vụ"/>
+        <ComboBox fx:id="cboLoaiDV" prefWidth="240"/>
+
+        <Label text="Đơn giá (VNĐ)"/>
+        <TextField fx:id="txtGia" promptText="Nhập đơn giá"/>
+
+        <Label text="Đơn vị tính"/>
+        <TextField fx:id="txtDonVi" promptText="Ví dụ: ly, phần, cái..."/>
+
+        <Label text="Số lượng tồn"/>
+        <TextField fx:id="txtTonKho" promptText="0" editable="false"
+                   style="-fx-opacity:0.7; -fx-background-color:#f0f0f0;"/>
+
+        <Pane VBox.vgrow="ALWAYS"/>
+
+        <!-- Nút Sửa (hiện khi chọn dòng, ở chế độ NONE) -->
+        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn,btn-warning"
+                maxWidth="Infinity" onAction="#handleSua" visible="false"/>
+
+        <!-- Nút Lưu / Hủy (hiện khi đang thêm hoặc sửa) -->
+        <HBox spacing="8">
+            <Button fx:id="btnLuu" text="💾  Lưu" styleClass="btn,btn-primary"
+                    HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#handleLuu" visible="false"/>
+            <Button fx:id="btnHuy" text="✕  Hủy" styleClass="btn,btn-secondary"
+                    HBox.hgrow="ALWAYS" maxWidth="Infinity" onAction="#handleHuy" visible="false"/>
         </HBox>
     </VBox>
 
-</VBox>
+</HBox>
