@@ -1,4 +1,5 @@
 package bus;
+
 import entity.GoiDichVu;
 import utils.PermissionHelper;
 import dao.GoiDichVuDAO;
@@ -10,55 +11,47 @@ import java.sql.*;
 import java.util.Iterator;
 
 /* CÁC METHOD.
-    1. List<GoiDichVu> DichVuBUS(): lấy tất cả các gói dịch vụ (phân quyền: quản lý, nhân viên)
+    1. List<GoiDichVu> getAll(): lấy tất cả các gói dịch vụ (phân quyền: quản lý, nhân viên)
     2. List<GoiDichVu> getGoiHoatDong(): lấy các gói có trạng thái là hoạt động. (phân quyền: quản lý, nhân viên)'
     3. void themGoiDichVu(GoiDichVu newgdv): thêm một gói dịch vụ. (phân quyền: quản lý)
     4. void suaGoiDichVu(GoiDichVu updategdv): sửa lại thông tin của gói dịch vụ. (phân quyền: quản lý)
     5. void XoaGoiDichVu(String maGDV): xóa một gói dịch vụ. (phân quyền: quản lý)
     6. void khoiPhucGDV(String maGDV): khôi phục lại một gói dịch vụ.(phân quyền: quản lý).
 */
-public class GoiDichVuBUS{
+public class GoiDichVuBUS {
 
     private final GoiDichVuDAO gdvDAO = new GoiDichVuDAO();
 
     // CHỨC NĂNG getAll
-    public List<GoiDichVu> getAll() throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
+    public List<GoiDichVu> getAll() throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireNhanVien();
 
-        // check phân quyền( quản lý/ nhân viên)
-        PermissionHelper.requireNhanVien();
-
-        // gọi xuống DAO
         List<GoiDichVu> result = new ArrayList<>();
-        try{
+        try {
             result = gdvDAO.getAll();
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception(e);
         }
         return result;
     }
 
     // CHỨC NĂNG getGoiHoatDong
-    public List<GoiDichVu> getGoiHoatDong() throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
+    public List<GoiDichVu> getGoiHoatDong() throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireNhanVien();
 
-        // check phân quyền( quản lý/ nhân viên)
-        PermissionHelper.requireNhanVien();
-
-        // gọi xuống DAO
         List<GoiDichVu> result = new ArrayList<>();
-        try{
+        try {
             result = gdvDAO.getAll();
             Iterator<GoiDichVu> list = result.iterator();
-            while(list.hasNext()){
+            while (list.hasNext()) {
                 GoiDichVu item = list.next();
-                if(item.getTrangthai().equals("NGUNG")){
+                if (item.getTrangthai().equals("NGUNG")) {
                     list.remove();
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception(e);
         }
         return result;
@@ -95,7 +88,7 @@ public class GoiDichVuBUS{
         }
 
         // Kiểm tra Giá Gói (phải > 0)
-        if (gdv.getGiagoc() <= 0) {
+        if (gdv.getGiagoi() <= 0) {
             throw new Exception("Giá gói phải lớn hơn 0!");
         }
 
@@ -106,121 +99,105 @@ public class GoiDichVuBUS{
     }
 
     // CHỨC NĂNG THÊM GÓI DỊCH VỤ
-    public void themGoiDichVu(GoiDichVu newgdv) throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
-
-        // kiểm tra phân quyền.
-        PermissionHelper.requireQuanLy();
+    public void themGoiDichVu(GoiDichVu newgdv) throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
 
         // check VALIDATION
         this.checkVALIDATION(newgdv);
 
         // gọi xuống DAO
-        try{
+        try {
             boolean isSuccess = this.gdvDAO.insert(newgdv);
-            if(isSuccess){
+            if (isSuccess) {
                 System.out.println("Thêm một gói dịch vụ thành công!");
-            }
-            else {
+            } else {
                 System.out.println("Thêm một gói dịch vụ thất bại!");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }
     }
 
     // CHỨC NĂNG SỬA GÓI DỊCH VỤ
-    public void suaGoiDichVu(GoiDichVu updategdv) throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
-
-        // kiểm tra phân quyền.
-        PermissionHelper.requireQuanLy();
+    public void suaGoiDichVu(GoiDichVu updategdv) throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
 
         // kiểm tra mã gói dịch vụ không được để trống.
-        if( updategdv.getMagoi() == null){
+        if (updategdv.getMagoi() == null) {
             throw new Exception("Mã gói dịch vụ không được để trống!!!");
         }
         // kiểm tra sự tồn tại của mã đó
-        if( this.gdvDAO.getByID(updategdv.getMagoi()) == null ){
+        if (this.gdvDAO.getByID(updategdv.getMagoi()) == null) {
             throw new Exception("Mã gói dịch vụ này không tồn tại!!!");
         }
         // check VALIDATION
         this.checkVALIDATION(updategdv);
 
         // gọi xuống DAO.
-        try{
+        try {
             boolean isSuccess = this.gdvDAO.update(updategdv);
-            if(isSuccess){
+            if (isSuccess) {
                 System.out.println("Sửa một gói dịch vụ thành công!");
-            }
-            else {
+            } else {
                 System.out.println("Sửa một gói dịch vụ thất bại!");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }
     }
 
     // CHỨC NĂNG XÓA GÓI DỊCH VỤ
-    public void xoaGoiDichVu(String maGDV) throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
-
-        // kiểm tra phân quyền.
-        PermissionHelper.requireQuanLy();
+    public void xoaGoiDichVu(String maGDV) throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
 
         // kiểm tra mã gói dịch vụ không được để trống.
-        if( maGDV == null){
+        if (maGDV == null) {
             throw new Exception("Mã gói dịch vụ không được để trống!!!");
         }
         // kiểm tra sự tồn tại của mã đó
-        if( this.gdvDAO.getByID(maGDV) ==  null){
+        if (this.gdvDAO.getByID(maGDV) == null) {
             throw new Exception("Mã gói dịch vụ này không tồn tại!!!");
         }
 
         // gọi xuống DAO
-        try{
+        try {
             boolean isSuccess = this.gdvDAO.delete(maGDV);
-            if(isSuccess){
+            if (isSuccess) {
                 System.out.println("Xóa gói dịch vụ thành công!");
-            }
-            else {
+            } else {
                 System.out.println("Xóa một gói dịch vụ thất bại!");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }
     }
 
     // CHỨC NĂNG KHÔI PHỤC LẠI GÓI DỊCH VỤ
-    public void khoiPhucGDV(String maGDV) throws Exception{
-        // check login
-        PermissionHelper.requireLogin();
-
-        // kiểm tra phân quyền.
-        PermissionHelper.requireQuanLy();
+    public void khoiPhucGDV(String maGDV) throws Exception {
+        // [KIỂM TRA]: PermissionHelper.requireLogin();
+        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
 
         // kiểm tra mã gói dịch vụ không được để trống.
-        if( maGDV == null){
+        if (maGDV == null) {
             throw new Exception("Mã gói dịch vụ không được để trống!!!");
         }
         // kiểm tra sự tồn tại của mã đó
-        if( this.gdvDAO.getByID(maGDV) ==  null){
+        if (this.gdvDAO.getByID(maGDV) == null) {
             throw new Exception("Mã gói dịch vụ này không tồn tại!!!");
         }
 
         // gọi xuống DAO
-        try{
+        try {
             boolean isSuccess = this.gdvDAO.cancelDelete(maGDV);
-            if(isSuccess){
+            if (isSuccess) {
                 System.out.println("Khôi phục gói dịch vụ thành công!");
-            }
-            else {
+            } else {
                 System.out.println("Khôi phục một gói dịch vụ thất bại!");
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new Exception("Lỗi hệ thống: " + e.getMessage());
         }
     }
