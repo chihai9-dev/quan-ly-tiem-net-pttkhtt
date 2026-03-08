@@ -52,7 +52,7 @@ public class KhachHangBUS {
             throw new Exception("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ Quản lý!");
         }
 
-        boolean isMatch = PasswordEncoder.matches(matKhau, kh.getMatkhau());
+        boolean isMatch = matKhau.equals(kh.getMatkhau());
         if (!isMatch) {
             throw new Exception("Mật khẩu không chính xác!");
         }

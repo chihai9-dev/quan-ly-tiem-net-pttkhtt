@@ -34,7 +34,7 @@ public class NhanVienBUS {
             throw new Exception("Tài khoản nhân viên này đã bị vô hiệu hóa!");
         }
 
-        if (!PasswordEncoder.matches(matKhau, nv.getMatkhau())) {
+        if (!matKhau.equals(nv.getMatkhau())) {
             throw new Exception("Mật khẩu không chính xác!");
         }
 
