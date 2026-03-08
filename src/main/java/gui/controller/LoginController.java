@@ -52,7 +52,7 @@ public class LoginController implements Initializable {
     @FXML
     private void handleLogin() {
         String username = txtUsername.getText();
-        String password = txtPassword.getText();
+        String password = txtPassword.getText().trim();
 
         // Kiểm tra xem nút Khách hàng có đang được nhấn không
         boolean isKhachHang = btnRoleKhachHang.isSelected();
