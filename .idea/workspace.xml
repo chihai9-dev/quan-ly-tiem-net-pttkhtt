@@ -6,41 +6,37 @@
   <component name="ChangeListManager">
     <list default="true" id="3837fdc6-0be4-46f9-86ef-c626431d4f44" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/button.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/dialog.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/css/login.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/table.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/dao/DBConnection.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themDichVu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/dialogs/themDichVu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themMayTinh.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/dialogs/themMayTinh.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themNhanVien.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/dialogs/themNhanVien.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dichVu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/dichVu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/goiDichVu.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/goiDichVu.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/hoaDon.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/hoaDon.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khachHang.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/khachHang.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuMay.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/khuMay.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuyenMai.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/khuyenMai.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/login.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/login.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/main.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/main.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/mayTinh.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/mayTinh.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/napTien.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/napTien.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhanVien.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/nhanVien.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhapHang.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/nhapHang.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/phienSuDung.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/phienSuDung.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/register.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/register.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/sodoMay.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/sodoMay.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/thongKe.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/fxml/thongKe.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/controller/GoiDichVuController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/controller/KhuMayController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/controller/MainController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/controller/NhapHangController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/controller/ThongKeController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/gui/dialog/ThemDichVuDialog.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/bus/TestGoIDichVuBUS.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/TestChuongTrinhKhuyenMaiDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/TestDichVuDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/TestUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/LoginController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/config.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/css/login.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/dao/DichVuDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/dao/ThongkeDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/entity/DichVu.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/entity/KhuMay.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/entity/ThongkeDoanhThu.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themDichVu.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themMayTinh.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themNhanVien.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dichVu.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/goiDichVu.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/hoaDon.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khachHang.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuMay.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuyenMai.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/login.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/main.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/mayTinh.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/napTien.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhanVien.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhapHang.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/phienSuDung.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/register.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/sodoMay.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/fxml/thongKe.fxml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/DBConnectionTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/TestSuDungDichVuDAO.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,32 +79,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DichVuLauncher.executor": "Run",
-    "Application.DichVuTest.executor": "Run",
-    "Application.LoginLauncher.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.NhanVienLauncher.executor": "Run",
-    "Application.TestChuongTrinhKhuyenMaiDAO.executor": "Run",
-    "Application.TestDichVuDAO.executor": "Run",
-    "Application.TestKhachHangDAO.executor": "Run",
-    "Application.TestNhanVienDAO.executor": "Run",
-    "Application.TestPhienSuDungDAO.executor": "Run",
-    "Application.Unnamed.executor": "Run",
-    "Maven.DataBase_Java [clean].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "chihainew",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/Downloads/quan-ly-tiem-net-pttkhtt",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.JavaFX"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DichVuLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.DichVuTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.LoginLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NhanVienLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestChuongTrinhKhuyenMaiDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestDichVuDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestKhachHangDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestNhanVienDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestPhienSuDungDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.DataBase_Java [clean].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;chihainew&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Downloads/quan-ly-tiem-net-pttkhtt&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.JavaFX&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Main" />

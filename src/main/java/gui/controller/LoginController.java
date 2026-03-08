@@ -4,6 +4,7 @@ import bus.KhachHangBUS;
 import bus.NhanVienBUS;
 import entity.KhachHang;
 import entity.NhanVien;
+import utils.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -17,55 +18,49 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    @FXML private TextField txtUsername;
-    @FXML private PasswordField txtPassword;
-    @FXML private ComboBox<String> cmbRole;
-    @FXML private Label lblError;
+    @FXML private TextField txtTenDangNhap; // Đổi từ txtUsername
+    @FXML private PasswordField pfMatKhau;  // Đổi từ txtPassword
+    @FXML private ComboBox<String> cbLoaiTaiKhoan;
+    @FXML private Label lblThongBao;
+    @FXML private Button btnDangNhap;
 
-    private KhachHangBUS khachHangBUS = new KhachHangBUS();
-    private NhanVienBUS nhanVienBUS = new NhanVienBUS();
+    private final KhachHangBUS khachHangBUS = new KhachHangBUS();
+    private final NhanVienBUS nhanVienBUS = new NhanVienBUS();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Khởi tạo ComboBox loại đăng nhập
-        cmbRole.getItems().addAll("Nhân viên", "Khách hàng");
-        cmbRole.getSelectionModel().selectFirst();
-        lblError.setText("");
+        cbLoaiTaiKhoan.getItems().addAll("Nhân viên", "Khách hàng");
+        cbLoaiTaiKhoan.getSelectionModel().selectFirst();
+        lblThongBao.setText("");
     }
 
     @FXML
-    private void handleLogin() {
-        String username = txtUsername.getText();
-        String password = txtPassword.getText();
-        String role = cmbRole.getValue();
+    private void handleDangNhap() {
+        String username = txtTenDangNhap.getText();
+        String password = pfMatKhau.getText();
+        String role = cbLoaiTaiKhoan.getValue();
 
         try {
             if ("Khách hàng".equals(role)) {
                 KhachHang kh = khachHangBUS.dangNhap(username, password);
-                if (kh != null) {
-                    chuyenHuongMain("Khách hàng");
-                }
+                if (kh != null) chuyenHuongMain("Khách hàng");
             } else {
                 NhanVien nv = nhanVienBUS.dangNhap(username, password);
-                if (nv != null) {
-                    chuyenHuongMain("Nhân viên");
-                }
+                if (nv != null) chuyenHuongMain("Nhân viên");
             }
         } catch (Exception e) {
-            lblError.setText(e.getMessage());
-            lblError.setStyle("-fx-text-fill: red;");
+            lblThongBao.setText(e.getMessage());
+            lblThongBao.setStyle("-fx-text-fill: red;");
         }
     }
 
     @FXML
-    private void handleRegister() {
-        // Logic mở màn hình Register theo tài liệu
+    private void handleDangKy() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/register-view.fxml"));
-            Parent root = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/register.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Đăng ký tài khoản");
-            stage.setScene(new Scene(root));
+            stage.setScene(new Scene(loader.load()));
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
@@ -73,14 +68,14 @@ public class LoginController implements Initializable {
     }
 
     private void chuyenHuongMain(String role) throws Exception {
-        Stage currentStage = (Stage) txtUsername.getScene().getWindow();
+        Stage currentStage = (Stage) btnDangNhap.getScene().getWindow();
         currentStage.close();
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/main-view.fxml"));
-        Parent root = loader.load();
+        // Load đúng tên file main.fxml theo docx
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/main.fxml"));
         Stage stage = new Stage();
         stage.setTitle("Hệ Thống Quản Lý Tiệm Net - " + role);
-        stage.setScene(new Scene(root, 1200, 800));
+        stage.setScene(new Scene(loader.load(), 1280, 800));
         stage.setMaximized(true);
         stage.show();
     }
