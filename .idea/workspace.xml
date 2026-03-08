@@ -7,36 +7,7 @@
     <list default="true" id="3837fdc6-0be4-46f9-86ef-c626431d4f44" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/LoginController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/LoginController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/config.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/login.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/css/style.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/dao/DichVuDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/dao/ThongkeDAO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/entity/DichVu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/entity/KhuMay.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/entity/ThongkeDoanhThu.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themDichVu.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themMayTinh.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dialogs/themNhanVien.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/dichVu.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/goiDichVu.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/hoaDon.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khachHang.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuMay.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/khuyenMai.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/login.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/main.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/mayTinh.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/napTien.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhanVien.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/nhapHang.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/phienSuDung.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/register.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/sodoMay.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/fxml/thongKe.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/DBConnectionTest.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/test/dao/TestSuDungDichVuDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/NhanVienController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/NhanVienController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
