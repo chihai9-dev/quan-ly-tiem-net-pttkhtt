@@ -3,6 +3,7 @@ package gui.controller;
 import bus.NhanVienBUS;
 import entity.NhanVien;
 import gui.dialog.ThemNhanVienDialog;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,13 +23,20 @@ import java.util.ResourceBundle;
 
 public class NhanVienController implements Initializable {
 
-    @FXML private TextField txtTimKiem; // Đã đổi ID theo chuẩn tiếng Việt
-    @FXML private ComboBox<String> cmbChucVu;
+    // --- CÁC ID KHỚP 100% VỚI NHANVIEN.FXML ---
+    @FXML private TextField txtSearch;
+    @FXML private ComboBox<String> cboChucVu;
+    @FXML private ComboBox<String> cboTrangThai;
+
+    @FXML private Button btnThem;
     @FXML private Button btnSua;
     @FXML private Button btnXoa;
+    @FXML private Button btnLamMoi;
 
-    @FXML private TableView<NhanVien> tableNhanVien;
-    @FXML private TableColumn<NhanVien, String> colMaNV, colHoTen, colChucVu, colTrangThai;
+    @FXML private TableView<NhanVien> tableView;
+    @FXML private TableColumn<NhanVien, String> colMaNV, colHoTen, colSDT, colTenDN, colChucVu, colTrangThai, colNgayVaoLam;
+
+    @FXML private Label lblTotal;
 
     private final NhanVienBUS nhanVienBUS = new NhanVienBUS();
     private final ObservableList<NhanVien> listNhanVien = FXCollections.observableArrayList();
@@ -36,61 +44,106 @@ public class NhanVienController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         setupTable();
-        if (cmbChucVu != null) {
-            cmbChucVu.getItems().addAll("TATC", "QUANLY", "NHANVIEN", "THUNGAN");
-            cmbChucVu.getSelectionModel().selectFirst();
+        setupComboBoxes();
+
+        // Lắng nghe sự kiện click vào bảng để bật/tắt nút Sửa, Xóa
+        if (tableView != null) {
+            tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                boolean hasSelection = (newSelection != null);
+                if (btnSua != null) btnSua.setDisable(!hasSelection);
+                if (btnXoa != null) btnXoa.setDisable(!hasSelection);
+            });
         }
+
         loadData();
     }
 
     private void setupTable() {
         if (colMaNV != null) colMaNV.setCellValueFactory(new PropertyValueFactory<>("manv"));
-        if (colHoTen != null) colHoTen.setCellValueFactory(new PropertyValueFactory<>("ten"));
+
+        // Nối cột Họ và Tên lại với nhau cho đẹp
+        if (colHoTen != null) {
+            colHoTen.setCellValueFactory(cellData -> {
+                NhanVien nv = cellData.getValue();
+                String hoTen = (nv.getHo() != null ? nv.getHo() + " " : "") + (nv.getTen() != null ? nv.getTen() : "");
+                return new SimpleStringProperty(hoTen.trim());
+            });
+        }
+
+        if (colSDT != null) colSDT.setCellValueFactory(new PropertyValueFactory<>("sodienthoai"));
+        if (colTenDN != null) colTenDN.setCellValueFactory(new PropertyValueFactory<>("tendangnhap"));
         if (colChucVu != null) colChucVu.setCellValueFactory(new PropertyValueFactory<>("chucvu"));
         if (colTrangThai != null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
+        if (colNgayVaoLam != null) colNgayVaoLam.setCellValueFactory(new PropertyValueFactory<>("ngayvaolam"));
+    }
+
+    private void setupComboBoxes() {
+        if (cboChucVu != null) {
+            cboChucVu.getItems().addAll("TATC", "QUANLY", "NHANVIEN", "THUNGAN");
+            cboChucVu.getSelectionModel().selectFirst();
+        }
+        if (cboTrangThai != null) {
+            cboTrangThai.getItems().addAll("TATC", "DANGLAMVIEC", "NGHIVIEC");
+            cboTrangThai.getSelectionModel().selectFirst();
+        }
     }
 
     public void loadData() {
         try {
+            // Tạm thời hiển thị nhân viên đang làm việc, bạn có thể chỉnh filter sau
             List<NhanVien> list = nhanVienBUS.getAllNhanVienDangLamViec();
             listNhanVien.setAll(list);
-            if (tableNhanVien != null) tableNhanVien.setItems(listNhanVien);
+
+            if (tableView != null) tableView.setItems(listNhanVien);
+            if (lblTotal != null) lblTotal.setText("Tổng: " + listNhanVien.size() + " bản ghi");
+
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Lỗi tải dữ liệu", e.getMessage());
         }
     }
 
+    // --- CÁC HÀM XỬ LÝ SỰ KIỆN NÚT BẤM VÀ TÌM KIẾM ---
+
     @FXML
     private void handleSearch() {
         try {
-            String keyword = txtTimKiem != null ? txtTimKiem.getText() : "";
+            String keyword = txtSearch != null ? txtSearch.getText() : "";
             List<NhanVien> list = nhanVienBUS.timKiemNhanVien(keyword);
             listNhanVien.setAll(list);
+            if (lblTotal != null) lblTotal.setText("Tổng: " + listNhanVien.size() + " bản ghi");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Lỗi tìm kiếm", e.getMessage());
         }
     }
 
     @FXML
+    private void handleLamMoi() {
+        if (txtSearch != null) txtSearch.clear();
+        if (cboChucVu != null) cboChucVu.getSelectionModel().selectFirst();
+        if (cboTrangThai != null) cboTrangThai.getSelectionModel().selectFirst();
+        loadData();
+    }
+
+    @FXML
     private void handleThem() {
-        openDialog(null); // Truyền null để báo là thêm mới
+        openDialog(null); // null tức là trạng thái Thêm mới
     }
 
     @FXML
     private void handleSua() {
-        if (tableNhanVien == null) return;
-        NhanVien selected = tableNhanVien.getSelectionModel().getSelectedItem();
+        if (tableView == null) return;
+        NhanVien selected = tableView.getSelectionModel().getSelectedItem();
         if (selected == null) {
             showAlert(Alert.AlertType.WARNING, "Cảnh báo", "Vui lòng chọn nhân viên cần sửa!");
             return;
         }
-        openDialog(selected); // Truyền đối tượng đã chọn để sửa
+        openDialog(selected); // Chuyển đối tượng vào để Sửa
     }
 
     @FXML
     private void handleXoa() {
-        if (tableNhanVien == null) return;
-        NhanVien selected = tableNhanVien.getSelectionModel().getSelectedItem();
+        if (tableView == null) return;
+        NhanVien selected = tableView.getSelectionModel().getSelectedItem();
         if (selected == null) return;
 
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Khóa tài khoản nhân viên này?", ButtonType.YES, ButtonType.NO);
@@ -106,23 +159,25 @@ public class NhanVienController implements Initializable {
         }
     }
 
+    // --- XỬ LÝ MỞ POPUP (DIALOG) ---
     private void openDialog(NhanVien nv) {
         try {
-            // Đảm bảo file FXML Dialog đặt đúng vị trí này
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("src/main/resources/fxml/dialogs/themNhanVien.fxml"));
+            // Đã sửa lại đường dẫn chuẩn, loại bỏ chữ src/main/resources
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/themNhanVien.fxml"));
             Parent root = loader.load();
 
             ThemNhanVienDialog ctrl = loader.getController();
             ctrl.setEntity(nv);
-            ctrl.setOnSaveCallback(this::loadData); // Callback xịn của bạn
+            ctrl.setOnSaveCallback(this::loadData); // Gọi hàm loadData() tự động làm mới bảng sau khi Lưu
 
-            Stage stage = new Stage(StageStyle.UNDECORATED);
+            Stage stage = new Stage(StageStyle.UNDECORATED); // Bỏ thanh viền cửa sổ cho đẹp
             stage.initModality(Modality.APPLICATION_MODAL);
-            if (tableNhanVien != null && tableNhanVien.getScene() != null) {
-                stage.initOwner(tableNhanVien.getScene().getWindow());
+            if (tableView != null && tableView.getScene() != null) {
+                stage.initOwner(tableView.getScene().getWindow());
             }
             stage.setScene(new Scene(root));
             stage.showAndWait();
+
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi mở form", e.getMessage());
