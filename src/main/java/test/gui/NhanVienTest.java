@@ -21,7 +21,7 @@ public class NhanVienTest extends Application {
             SessionManager.setCurrentUser(admin);
 
             // 1. Tải file giao diện từ thư mục resources
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/gui/view/nhanVien.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/dialogs/nhanVien.fxml"));
             Parent root = loader.load();
 
             // 2. Gắn giao diện vào một "Cảnh" (Scene)
