@@ -24,15 +24,17 @@
     <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
         <TextField fx:id="txtSearch" promptText="🔍  Tìm kiếm..." styleClass="search-bar"
                    prefWidth="260" onKeyReleased="#handleSearch"/>
-                <ComboBox fx:id="cboKhu" promptText="Khu máy" styleClass="combo-box" prefWidth="140">
-                </ComboBox>
-                <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140">
-                </ComboBox>
+        <ComboBox fx:id="cboKhu" promptText="Khu máy" styleClass="combo-box" prefWidth="140"/>
+        <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140"/>
         <Pane HBox.hgrow="ALWAYS"/>
         <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary"
                 onAction="#handleThem"/>
         <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning"
                 onAction="#handleSua" disable="true"/>
+        <Button fx:id="btnBaoTri" text="🔧  Bảo trì" styleClass="btn btn-warning"
+                onAction="#handleBaoTri" disable="true"/>
+        <Button fx:id="btnKhoiPhuc" text="✅  Khôi phục" styleClass="btn btn-primary"
+                onAction="#handleKhoiPhuc" disable="true"/>
         <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger"
                 onAction="#handleXoa" disable="true"/>
         <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary"
@@ -43,12 +45,14 @@
     <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
         <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
                    style="-fx-background-radius: 8;">
-            <TableColumn fx:id="colMaMay" text="Mã máy" prefWidth="80"/>
-            <TableColumn fx:id="colTenMay" text="Tên máy" prefWidth="150"/>
-            <TableColumn fx:id="colCauHinh" text="Cấu hình" prefWidth="200"/>
-            <TableColumn fx:id="colKhu" text="Khu" prefWidth="100"/>
-            <TableColumn fx:id="colGia" text="Giá/giờ" prefWidth="100"/>
-            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+            <columns>
+                <TableColumn fx:id="colMaMay" text="Mã máy" prefWidth="80"/>
+                <TableColumn fx:id="colTenMay" text="Tên máy" prefWidth="150"/>
+                <TableColumn fx:id="colCauHinh" text="Cấu hình" prefWidth="200"/>
+                <TableColumn fx:id="colKhu" text="Khu" prefWidth="100"/>
+                <TableColumn fx:id="colGia" text="Giá/giờ" prefWidth="100"/>
+                <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="120"/>
+            </columns>
         </TableView>
 
         <!-- Footer -->

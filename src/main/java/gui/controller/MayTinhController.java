@@ -27,11 +27,11 @@ import java.util.ResourceBundle;
 public class MayTinhController implements Initializable {
 
     @FXML private TableView<MayTinh> tableView;
-    @FXML private TableColumn<MayTinh, String> colMa;
-    @FXML private TableColumn<MayTinh, String> colTen;
+    @FXML private TableColumn<MayTinh, String> colMaMay;       // ← khớp FXML
+    @FXML private TableColumn<MayTinh, String> colTenMay;      // ← khớp FXML
     @FXML private TableColumn<MayTinh, String> colKhu;
     @FXML private TableColumn<MayTinh, String> colCauHinh;
-    @FXML private TableColumn<MayTinh, Double> colGiaMoiGio;
+    @FXML private TableColumn<MayTinh, Double> colGia;         // ← khớp FXML
     @FXML private TableColumn<MayTinh, String> colTrangThai;
 
     @FXML private TextField txtSearch;
@@ -41,6 +41,8 @@ public class MayTinhController implements Initializable {
     @FXML private Label lblTotal;
     @FXML private Button btnSua;
     @FXML private Button btnXoa;
+    @FXML private Button btnBaoTri;
+    @FXML private Button btnKhoiPhuc;
 
     private final MayTinhBUS mayTinhBUS = new MayTinhBUS();
     private final KhuMayBUS khuMayBUS   = new KhuMayBUS();
@@ -69,25 +71,25 @@ public class MayTinhController implements Initializable {
             cboKhu.getItems().add("Tất cả");
             khuList.forEach(k -> cboKhu.getItems().add(k.getMakhu()));
             cboKhu.setValue("Tất cả");
-            cboKhu.setOnAction(e -> applyFilter());
+            cboKhu.setOnAction(e -> locTheoKhu());
         } catch (Exception ignored) {}
     }
 
     private void setupTableColumns() {
-        if (colMa       != null) colMa.setCellValueFactory(new PropertyValueFactory<>("mamay"));
-        if (colTen      != null) colTen.setCellValueFactory(new PropertyValueFactory<>("tenmay"));
+        if (colMaMay    != null) colMaMay.setCellValueFactory(new PropertyValueFactory<>("mamay"));
+        if (colTenMay   != null) colTenMay.setCellValueFactory(new PropertyValueFactory<>("tenmay"));
         if (colKhu      != null) colKhu.setCellValueFactory(new PropertyValueFactory<>("makhu"));
         if (colCauHinh  != null) colCauHinh.setCellValueFactory(new PropertyValueFactory<>("cauhinh"));
-        if (colGiaMoiGio!= null) {
-            colGiaMoiGio.setCellValueFactory(new PropertyValueFactory<>("giamoigio"));
-            colGiaMoiGio.setCellFactory(col -> new TableCell<>() {
+        if (colGia      != null) {
+            colGia.setCellValueFactory(new PropertyValueFactory<>("giamoigio"));
+            colGia.setCellFactory(col -> new TableCell<>() {
                 @Override protected void updateItem(Double v, boolean empty) {
                     super.updateItem(v, empty);
                     setText(empty || v == null ? null : String.format("%,.0f ₫/giờ", v));
                 }
             });
         }
-        if (colTrangThai!= null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
+        if (colTrangThai != null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
     }
 
     private void setupTableSelection() {
@@ -96,10 +98,98 @@ public class MayTinhController implements Initializable {
             boolean has = n != null;
             if (btnSua != null) btnSua.setDisable(!has);
             if (btnXoa != null) btnXoa.setDisable(!has);
+
+            // Gọi onRowSelected khi chọn dòng
+            onRowSelected(n);
         });
-        if (btnSua != null) btnSua.setDisable(true);
-        if (btnXoa != null) btnXoa.setDisable(true);
+        if (btnSua      != null) btnSua.setDisable(true);
+        if (btnXoa      != null) btnXoa.setDisable(true);
+        if (btnBaoTri   != null) btnBaoTri.setDisable(true);
+        if (btnKhoiPhuc != null) btnKhoiPhuc.setDisable(true);
     }
+
+    // ================================================================
+    //                    CÁC PHƯƠNG THỨC MỚI
+    // ================================================================
+
+    /**
+     * Enable/disable btnBaoTri và btnKhoiPhuc dựa theo TrangThai của máy đang chọn.
+     * - btnBaoTri:   chỉ enable khi máy đang TRONG
+     * - btnKhoiPhuc: chỉ enable khi máy đang BAOTRI
+     */
+    private void onRowSelected(MayTinh mayTinh) {
+        if (mayTinh == null) {
+            if (btnBaoTri   != null) btnBaoTri.setDisable(true);
+            if (btnKhoiPhuc != null) btnKhoiPhuc.setDisable(true);
+            return;
+        }
+
+        String trangThai = mayTinh.getTrangthai();
+        if (btnBaoTri   != null) btnBaoTri.setDisable(!"TRONG".equals(trangThai));
+        if (btnKhoiPhuc != null) btnKhoiPhuc.setDisable(!"BAOTRI".equals(trangThai));
+    }
+
+    /**
+     * Chuyển máy sang bảo trì.
+     * Gọi MayTinhBUS.chuyenTrangThai(maMay, "BAOTRI")
+     */
+    @FXML
+    public void handleBaoTri() {
+        if (selectedItem == null) return;
+
+        if (!"TRONG".equals(selectedItem.getTrangthai())) {
+            ThongBaoDialogHelper.showError(tableView.getScene(),
+                    "Chỉ có thể bảo trì máy đang ở trạng thái TRỐNG!");
+            return;
+        }
+
+        try {
+            mayTinhBUS.chuyenTrangThai(selectedItem.getMamay(), "BAOTRI");
+            ThongBaoDialogHelper.showSuccess(tableView.getScene(),
+                    "Đã chuyển máy " + selectedItem.getTenmay() + " sang BẢO TRÌ!");
+            loadData();
+        } catch (Exception e) {
+            ThongBaoDialogHelper.showError(tableView.getScene(),
+                    "Lỗi chuyển bảo trì: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Phục hồi máy từ bảo trì về trống.
+     * Gọi MayTinhBUS.chuyenTrangThai(maMay, "TRONG")
+     */
+    @FXML
+    public void handleKhoiPhuc() {
+        if (selectedItem == null) return;
+
+        if (!"BAOTRI".equals(selectedItem.getTrangthai())) {
+            ThongBaoDialogHelper.showError(tableView.getScene(),
+                    "Chỉ có thể khôi phục máy đang ở trạng thái BẢO TRÌ!");
+            return;
+        }
+
+        try {
+            mayTinhBUS.chuyenTrangThai(selectedItem.getMamay(), "TRONG");
+            ThongBaoDialogHelper.showSuccess(tableView.getScene(),
+                    "Đã khôi phục máy " + selectedItem.getTenmay() + " về TRỐNG!");
+            loadData();
+        } catch (Exception e) {
+            ThongBaoDialogHelper.showError(tableView.getScene(),
+                    "Lỗi khôi phục: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Filter TableView theo khu được chọn trong ComboBox.
+     */
+    @FXML
+    public void locTheoKhu() {
+        applyFilter();
+    }
+
+    // ================================================================
+    //                    CÁC PHƯƠNG THỨC CŨ
+    // ================================================================
 
     public void loadData() {
         try {
@@ -123,8 +213,8 @@ public class MayTinhController implements Initializable {
         if (filteredList == null) return;
         filteredList.setPredicate(item -> {
             boolean matchKw = keyword.isEmpty()
-                || (item.getMamay()  != null && item.getMamay().toLowerCase().contains(keyword))
-                || (item.getTenmay() != null && item.getTenmay().toLowerCase().contains(keyword));
+                    || (item.getMamay()  != null && item.getMamay().toLowerCase().contains(keyword))
+                    || (item.getTenmay() != null && item.getTenmay().toLowerCase().contains(keyword));
             boolean matchTT  = tt  == null || "Tất cả".equals(tt)  || tt.equals(item.getTrangthai());
             boolean matchKhu = khu == null || "Tất cả".equals(khu) || khu.equals(item.getMakhu());
             return matchKw && matchTT && matchKhu;
