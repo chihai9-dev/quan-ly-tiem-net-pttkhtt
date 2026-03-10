@@ -81,19 +81,41 @@ public class NhanVienController implements Initializable {
         if (cboChucVu != null) {
             cboChucVu.getItems().addAll("TATC", "QUANLY", "NHANVIEN", "THUNGAN");
             cboChucVu.getSelectionModel().selectFirst();
+            // Tự động lọc lại bảng ngay khi bạn chọn chức vụ mới
+            cboChucVu.setOnAction(e -> loadData());
         }
         if (cboTrangThai != null) {
             cboTrangThai.getItems().addAll("TATC", "DANGLAMVIEC", "NGHIVIEC");
             cboTrangThai.getSelectionModel().selectFirst();
+            // Tự động lọc lại bảng ngay khi bạn chọn trạng thái mới
+            cboTrangThai.setOnAction(e -> loadData());
         }
     }
 
     public void loadData() {
         try {
-            // Tạm thời hiển thị nhân viên đang làm việc, bạn có thể chỉnh filter sau
-            List<NhanVien> list = nhanVienBUS.getAllNhanVienDangLamViec();
-            listNhanVien.setAll(list);
+            // 1. Lấy TẤT CẢ nhân viên bằng cách gộp 2 danh sách lại
+            List<NhanVien> listAll = new java.util.ArrayList<>();
+            listAll.addAll(nhanVienBUS.getAllNhanVienDangLamViec());
+            listAll.addAll(nhanVienBUS.getAllNhanVienDaNghiViec());
 
+            // 2. Lấy giá trị từ các bộ lọc trên giao diện
+            String chucVu = cboChucVu != null ? cboChucVu.getValue() : "TATC";
+            String trangThai = cboTrangThai != null ? cboTrangThai.getValue() : "TATC";
+            String keyword = txtSearch != null ? txtSearch.getText().trim().toLowerCase() : "";
+
+            // 3. Tiến hành lọc dữ liệu
+            List<NhanVien> listFiltered = listAll.stream()
+                    .filter(nv -> "TATC".equals(chucVu) || nv.getChucvu().equalsIgnoreCase(chucVu))
+                    .filter(nv -> "TATC".equals(trangThai) || nv.getTrangthai().equalsIgnoreCase(trangThai))
+                    .filter(nv -> keyword.isEmpty() ||
+                            nv.getManv().toLowerCase().contains(keyword) ||
+                            nv.getTen().toLowerCase().contains(keyword) ||
+                            (nv.getHo() != null && nv.getHo().toLowerCase().contains(keyword)))
+                    .collect(java.util.stream.Collectors.toList());
+
+            // 4. Hiển thị lên bảng
+            listNhanVien.setAll(listFiltered);
             if (tableView != null) tableView.setItems(listNhanVien);
             if (lblTotal != null) lblTotal.setText("Tổng: " + listNhanVien.size() + " bản ghi");
 
@@ -102,25 +124,9 @@ public class NhanVienController implements Initializable {
         }
     }
 
-    // --- CÁC HÀM XỬ LÝ SỰ KIỆN NÚT BẤM VÀ TÌM KIẾM ---
-
     @FXML
     private void handleSearch() {
-        try {
-            String keyword = txtSearch != null ? txtSearch.getText() : "";
-            List<NhanVien> list = nhanVienBUS.timKiemNhanVien(keyword);
-            listNhanVien.setAll(list);
-            if (lblTotal != null) lblTotal.setText("Tổng: " + listNhanVien.size() + " bản ghi");
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Lỗi tìm kiếm", e.getMessage());
-        }
-    }
-
-    @FXML
-    private void handleLamMoi() {
-        if (txtSearch != null) txtSearch.clear();
-        if (cboChucVu != null) cboChucVu.getSelectionModel().selectFirst();
-        if (cboTrangThai != null) cboTrangThai.getSelectionModel().selectFirst();
+        // Chỉ cần gọi lại loadData() là xong, vì logic tìm kiếm đã được tích hợp sẵn ở trên
         loadData();
     }
 
