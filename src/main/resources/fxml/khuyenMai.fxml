@@ -11,8 +11,7 @@
       spacing="16" style="-fx-padding: 0;">
 
     <!-- Page Header -->
-    <HBox alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding: 4 0 4 0;">
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 4 0 4 0;">
         <Label text="🎁" style="-fx-font-size:26px;"/>
         <VBox spacing="2">
             <Label text="Quản Lý Khuyến Mãi" styleClass="page-title"/>
@@ -24,30 +23,26 @@
     <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
         <TextField fx:id="txtSearch" promptText="🔍  Tìm kiếm..." styleClass="search-bar"
                    prefWidth="260" onKeyReleased="#handleSearch"/>
-                <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140">
-                </ComboBox>
+        <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140"/>
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary"
-                onAction="#handleThem"/>
-        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning"
-                onAction="#handleSua" disable="true"/>
-        <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger"
-                onAction="#handleXoa" disable="true"/>
-        <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary"
-                onAction="#handleLamMoi"/>
+        <Button fx:id="btnThem" text="＋  Thêm" styleClass="btn btn-primary" onAction="#handleThem"/>
+        <Button fx:id="btnSua" text="✎  Sửa" styleClass="btn btn-warning" onAction="#handleSua" disable="true"/>
+        <Button fx:id="btnXoa" text="✕  Xóa" styleClass="btn btn-danger" onAction="#handleXoa" disable="true"/>
+        <Button fx:id="btnLamMoi" text="↺  Làm mới" styleClass="btn btn-secondary" onAction="#handleLamMoi"/>
     </HBox>
 
     <!-- Table -->
     <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
-        <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
-                   style="-fx-background-radius: 8;">
-            <TableColumn fx:id="colMaKM" text="Mã KM" prefWidth="80"/>
-            <TableColumn fx:id="colTenKM" text="Tên CTKM" prefWidth="200"/>
-            <TableColumn fx:id="colLoai" text="Loại" prefWidth="120"/>
-            <TableColumn fx:id="colGiaTri" text="Giá trị" prefWidth="100"/>
-            <TableColumn fx:id="colTuNgay" text="Từ ngày" prefWidth="120"/>
-            <TableColumn fx:id="colDenNgay" text="Đến ngày" prefWidth="120"/>
-            <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="100"/>
+        <TableView fx:id="tableView" VBox.vgrow="ALWAYS" style="-fx-background-radius: 8;">
+            <columns>
+                <TableColumn fx:id="colMaKM" text="Mã KM" prefWidth="80"/>
+                <TableColumn fx:id="colTenKM" text="Tên CTKM" prefWidth="200"/>
+                <TableColumn fx:id="colLoai" text="Loại" prefWidth="120"/>
+                <TableColumn fx:id="colGiaTri" text="Giá trị" prefWidth="100"/>
+                <TableColumn fx:id="colTuNgay" text="Từ ngày" prefWidth="120"/>
+                <TableColumn fx:id="colDenNgay" text="Đến ngày" prefWidth="120"/>
+                <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="100"/>
+            </columns>
         </TableView>
 
         <!-- Footer -->

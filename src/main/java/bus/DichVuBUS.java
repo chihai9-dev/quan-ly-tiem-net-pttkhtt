@@ -11,24 +11,26 @@ public class DichVuBUS {
 
     private final DichVuDAO dvDAO = new DichVuDAO();
 
-    // LẤY TẤT CẢ DỊCH VỤ (Phân quyền: User)
+    // LẤY TẤT CẢ DỊCH VỤ (Phân quyền: Nhân viên trở lên)
     public List<DichVu> getAll() throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireNhanVien();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireNhanVien();
 
         List<DichVu> result = dvDAO.getAll();
         System.out.println("Đã lấy được " + result.size() + " dịch vụ.");
         return result;
     }
 
-    // LẤY CÁC DỊCH VỤ CÒN HÀNG (Phân quyền: KHACHHANG)
+    // LẤY CÁC DỊCH VỤ CÒN HÀNG (Phân quyền: Khách hàng)
     public List<DichVu> getDichVuConHang() throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireKhachHang();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireKhachHang();
 
         List<DichVu> list = dvDAO.getAll();
         Iterator<DichVu> it = list.iterator();
-        while (it.hasNext()) {
+        while(it.hasNext()) {
             if (it.next().getSoluongton() <= 0) it.remove();
         }
         return list;
@@ -43,7 +45,7 @@ public class DichVuBUS {
     // KIỂM TRA TÊN KHÔNG ĐƯỢC TRÙNG VỚI CÁC DỊCH VỤ ĐÃ CÓ
     private boolean checkTrungTenDichVu(String tenDV, String oldName) {
         for (DichVu item : dvDAO.getAll()) {
-            if (oldName.equals(item.getTendv())) continue;
+            if (oldName != null && oldName.equals(item.getTendv())) continue;
             if (chuanHoaTen(tenDV).equals(chuanHoaTen(item.getTendv()))) return false;
         }
         return true;
@@ -65,16 +67,13 @@ public class DichVuBUS {
 
         if (dv.getDongia() <= 0.0)
             throw new Exception("Đơn giá phải lớn hơn 0!");
-
-        // Lưu ý: Tùy mục đích mà bạn có thể comment 2 dòng này nếu muốn giữ số lượng/trạng thái cũ khi sửa
-        // dv.setSoluongton(0);
-        // dv.setTrangthai("HETHANG");
     }
 
-    // THÊM DỊCH VỤ (Phân quyền: QUANLY)
+    // THÊM DỊCH VỤ (Phân quyền: Quản lý)
     public void themDichVu(DichVu newDichVu) throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireQuanLy();
 
         validateDichVu(newDichVu, "");
 
@@ -83,10 +82,11 @@ public class DichVuBUS {
         System.out.println("Thêm dịch vụ thành công.");
     }
 
-    // SỬA DỊCH VỤ (Phân quyền: QUANLY)
+    // SỬA DỊCH VỤ (Phân quyền: Quản lý)
     public void suaDichVu(DichVu updateDV) throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireQuanLy();
 
         DichVu existing = dvDAO.getByID(updateDV.getMadv());
         if (existing == null) throw new Exception("Không tìm thấy mã dịch vụ cần sửa!");
@@ -98,10 +98,11 @@ public class DichVuBUS {
         System.out.println("Sửa dịch vụ thành công.");
     }
 
-    // XÓA DỊCH VỤ => CHUYỂN SANG TRẠNG THÁI NGỪNG BÁN (Phân quyền: QUANLY)
+    // XÓA DỊCH VỤ => CHUYỂN SANG TRẠNG THÁI NGỪNG BÁN (Phân quyền: Quản lý)
     public void xoaDichVu(String maDV) throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireQuanLy();
 
         if (maDV == null) throw new Exception("Mã dịch vụ không được để trống!");
         if (dvDAO.getByID(maDV) == null) throw new Exception("Không tồn tại mã dịch vụ này!");
@@ -111,10 +112,11 @@ public class DichVuBUS {
         System.out.println("Xóa dịch vụ thành công.");
     }
 
-    // KHÔI PHỤC DỊCH VỤ (Phân quyền: QUANLY)
+    // KHÔI PHỤC DỊCH VỤ (Phân quyền: Quản lý)
     public void khoiPhucLaiDichVu(String maDV) throws Exception {
-        // [PHÂN QUYỀN]: PermissionHelper.requireLogin();
-        // [PHÂN QUYỀN]: PermissionHelper.requireQuanLy();
+        // KÍCH HOẠT PHÂN QUYỀN
+        PermissionHelper.requireLogin();
+        PermissionHelper.requireQuanLy();
 
         if (maDV == null) throw new Exception("Mã dịch vụ không được để trống!");
         DichVu check = dvDAO.getByID(maDV);

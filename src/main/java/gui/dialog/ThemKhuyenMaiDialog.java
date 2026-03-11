@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 public class ThemKhuyenMaiDialog implements Initializable {
 
     @FXML private Label    lblTitle;
+    @FXML private Label    lblDialogTitle;
     @FXML private TextField  txtMaKM;
     @FXML private TextField  txtTenKM;
     @FXML private ComboBox<String> cboLoai;
@@ -28,7 +29,6 @@ public class ThemKhuyenMaiDialog implements Initializable {
     @FXML private Label      lblGiaTriUnit;
     @FXML private Label      lblError;
     @FXML private Button     btnSave;
-    @FXML private Button     btnCancel;
 
     private final KhuyenMaiBUS khuyenMaiBUS = new KhuyenMaiBUS();
     private ChuongTrinhKhuyenMai entity;
@@ -64,12 +64,15 @@ public class ThemKhuyenMaiDialog implements Initializable {
     public void setEntity(ChuongTrinhKhuyenMai km) {
         this.entity     = km;
         this.isEditMode = (km != null);
+        String titleText = isEditMode ? "Sửa Khuyến Mãi" : "Thêm Khuyến Mãi";
+        if (lblTitle      != null) lblTitle.setText(titleText);
+        if (lblDialogTitle != null) lblDialogTitle.setText(titleText);
+
         if (isEditMode) {
-            if (lblTitle    != null) lblTitle.setText("Sửa Khuyến Mãi");
-            if (txtMaKM     != null) { txtMaKM.setText(km.getMaCTKM()); txtMaKM.setDisable(true); }
-            if (txtTenKM    != null) txtTenKM.setText(km.getTenCT());
-            if (cboLoai     != null) cboLoai.setValue(km.getLoaiKM());
-            if (txtGiaTri   != null) txtGiaTri.setText(String.valueOf(km.getGiaTriKM()));
+            if (txtMaKM  != null) { txtMaKM.setText(km.getMaCTKM()); txtMaKM.setDisable(true); }
+            if (txtTenKM != null) txtTenKM.setText(km.getTenCT());
+            if (cboLoai  != null) cboLoai.setValue(km.getLoaiKM());
+            if (txtGiaTri != null) txtGiaTri.setText(String.valueOf(km.getGiaTriKM()));
             if (txtNapToiThieu != null) txtNapToiThieu.setText(String.valueOf(km.getDieuKienToiThieu()));
             if (datTuNgay != null) {
                 LocalDateTime ngayBD = km.getNgayBatDau();
@@ -80,10 +83,7 @@ public class ThemKhuyenMaiDialog implements Initializable {
                 datDenNgay.setValue(ngayKT != null ? ngayKT.toLocalDate() : LocalDate.now().plusMonths(1));
             }
             if (cboTrangThai != null) cboTrangThai.setValue(km.getTrangThai());
-            if (txtMoTa      != null) txtMoTa.setText(""); // Nếu entity có getMoTa() thì set ở đây
             updateUnit();
-        } else {
-            if (lblTitle != null) lblTitle.setText("Thêm Khuyến Mãi");
         }
     }
 
@@ -94,12 +94,14 @@ public class ThemKhuyenMaiDialog implements Initializable {
         clearError();
         String tenKM = txtTenKM != null ? txtTenKM.getText().trim() : "";
         if (tenKM.isEmpty()) { setError("Tên khuyến mãi không được để trống"); return; }
+
         double giaTri;
         try {
             String rawGT = txtGiaTri != null ? txtGiaTri.getText().replace(",", "").trim() : "0";
             giaTri = Double.parseDouble(rawGT);
             if (giaTri <= 0) { setError("Giá trị KM phải > 0"); return; }
         } catch (NumberFormatException e) { setError("Giá trị không hợp lệ"); return; }
+
         double napMin = 0;
         try {
             String rawMin = txtNapToiThieu != null ? txtNapToiThieu.getText().replace(",", "").trim() : "0";
@@ -127,18 +129,14 @@ public class ThemKhuyenMaiDialog implements Initializable {
         km.setLoaiKM(cboLoai != null ? cboLoai.getValue() : "PHANTRAM");
         km.setGiaTriKM(giaTri);
         km.setDieuKienToiThieu(napMin);
-        km.setNgayBatDau(tuNgayDT);   // ✅ LocalDateTime
-        km.setNgayKetThuc(denNgayDT); // ✅ LocalDateTime
+        km.setNgayBatDau(tuNgayDT);
+        km.setNgayKetThuc(denNgayDT);
         km.setTrangThai(cboTrangThai != null ? cboTrangThai.getValue() : "HOATDONG");
 
         try {
-            if (isEditMode) {
-                khuyenMaiBUS.suaKhuyenMai(km);
-                ThongBaoDialog.showSuccess(getStage(), "Cập nhật khuyến mãi thành công!");
-            } else {
-                khuyenMaiBUS.themKhuyenMai(km);
-                ThongBaoDialog.showSuccess(getStage(), "Thêm khuyến mãi thành công!");
-            }
+            if (isEditMode) khuyenMaiBUS.suaKhuyenMai(km);
+            else khuyenMaiBUS.themKhuyenMai(km);
+
             if (onSaveCallback != null) onSaveCallback.run();
             closeDialog();
         } catch (Exception e) {
@@ -146,16 +144,25 @@ public class ThemKhuyenMaiDialog implements Initializable {
         }
     }
 
-    @FXML public void handleCancel() { closeDialog(); }
+    @FXML
+    public void handleCancel() {
+        closeDialog();
+    }
 
     private void setError(String msg)  { if (lblError != null) lblError.setText(msg); }
     private void clearError()          { if (lblError != null) lblError.setText(""); }
+
     private void closeDialog() {
-        if (btnCancel != null && btnCancel.getScene() != null)
-            ((Stage) btnCancel.getScene().getWindow()).close();
+        Stage stage = null;
+        if (btnSave != null && btnSave.getScene() != null) stage = (Stage) btnSave.getScene().getWindow();
+        else if (txtTenKM != null && txtTenKM.getScene() != null) stage = (Stage) txtTenKM.getScene().getWindow();
+        else if (txtMaKM != null && txtMaKM.getScene() != null) stage = (Stage) txtMaKM.getScene().getWindow();
+        if (stage != null) stage.close();
     }
+
     private Stage getStage() {
-        return btnSave != null && btnSave.getScene() != null
-                ? (Stage) btnSave.getScene().getWindow() : null;
+        if (btnSave  != null && btnSave.getScene()  != null) return (Stage) btnSave.getScene().getWindow();
+        if (txtTenKM != null && txtTenKM.getScene() != null) return (Stage) txtTenKM.getScene().getWindow();
+        return null;
     }
 }
