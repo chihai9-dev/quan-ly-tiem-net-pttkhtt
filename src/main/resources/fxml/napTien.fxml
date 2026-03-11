@@ -60,20 +60,15 @@
                 <Label text="Số tiền nạp (VNĐ) *" styleClass="form-label"/>
                 <TextField fx:id="txtSoTien" promptText="VD: 100000"
                            styleClass="text-field" onKeyReleased="#handleSoTienChanged"/>
-                <!-- Quick amounts -->
                 <HBox spacing="6" style="-fx-padding: 4 0 0 0;">
                     <Button text="50.000" styleClass="btn btn-outline"
-                            style="-fx-font-size:11px; -fx-padding:4 8;"
-                            onAction="#handleQuickAmount50"/>
+                            style="-fx-font-size:11px; -fx-padding:4 8;" onAction="#handleQuickAmount50"/>
                     <Button text="100.000" styleClass="btn btn-outline"
-                            style="-fx-font-size:11px; -fx-padding:4 8;"
-                            onAction="#handleQuickAmount100"/>
+                            style="-fx-font-size:11px; -fx-padding:4 8;" onAction="#handleQuickAmount100"/>
                     <Button text="200.000" styleClass="btn btn-outline"
-                            style="-fx-font-size:11px; -fx-padding:4 8;"
-                            onAction="#handleQuickAmount200"/>
+                            style="-fx-font-size:11px; -fx-padding:4 8;" onAction="#handleQuickAmount200"/>
                     <Button text="500.000" styleClass="btn btn-outline"
-                            style="-fx-font-size:11px; -fx-padding:4 8;"
-                            onAction="#handleQuickAmount500"/>
+                            style="-fx-font-size:11px; -fx-padding:4 8;" onAction="#handleQuickAmount500"/>
                 </HBox>
             </VBox>
 
@@ -129,13 +124,15 @@
                 <Button text="🔍  Lọc" styleClass="btn btn-outline" onAction="#handleFilterHistory"/>
             </HBox>
             <TableView fx:id="tableHistory" VBox.vgrow="ALWAYS" style="-fx-background-radius:0;">
-                <TableColumn fx:id="colMaNT" text="Mã NT" prefWidth="80"/>
-                <TableColumn fx:id="colKHHist" text="Khách hàng" prefWidth="160"/>
-                <TableColumn fx:id="colSoTienHist" text="Số tiền" prefWidth="110"/>
-                <TableColumn fx:id="colKMHist" text="KM" prefWidth="80"/>
-                <TableColumn fx:id="colTongHist" text="Tổng nhận" prefWidth="110"/>
-                <TableColumn fx:id="colNVHist" text="Nhân viên" prefWidth="130"/>
-                <TableColumn fx:id="colNgayHist" text="Ngày nạp" prefWidth="130"/>
+                <columns>
+                    <TableColumn fx:id="colMaNT" text="Mã NT" prefWidth="80"/>
+                    <TableColumn fx:id="colKHHist" text="Khách hàng" prefWidth="160"/>
+                    <TableColumn fx:id="colSoTienHist" text="Số tiền" prefWidth="110"/>
+                    <TableColumn fx:id="colKMHist" text="KM" prefWidth="80"/>
+                    <TableColumn fx:id="colTongHist" text="Tổng nhận" prefWidth="110"/>
+                    <TableColumn fx:id="colNVHist" text="Nhân viên" prefWidth="130"/>
+                    <TableColumn fx:id="colNgayHist" text="Ngày nạp" prefWidth="130"/>
+                </columns>
             </TableView>
         </VBox>
     </HBox>
