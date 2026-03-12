@@ -21,8 +21,8 @@ public class KhachHangBUS {
         chuanHoaDuLieuKhachHang(kh);
         validateKhachHangToanDien(kh, true);
 
-        String encodedPass = PasswordEncoder.encode(kh.getMatkhau());
-        kh.setMatkhau(encodedPass);
+        //String encodedPass = PasswordEncoder.encode(kh.getMatkhau());
+        //kh.setMatkhau(encodedPass);//
 
         try {
             boolean isSuccess = khachHangDAO.insert(kh);
