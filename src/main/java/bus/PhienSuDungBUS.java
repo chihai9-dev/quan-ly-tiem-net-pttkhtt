@@ -326,7 +326,7 @@ public class PhienSuDungBUS {
                                        KhachHang khachHang) throws Exception {
         double tienDichVu = 0;
         try {
-            tienDichVu = suDungDichVuDAO.tinhTongTienKhachHang(phien.getMaKH());
+            tienDichVu = suDungDichVuDAO.tinhTongTienPhien(phien.getMaPhien());
         } catch (Exception e) {
             System.err.println("[TinhTien] Lỗi tính tiền dịch vụ: " + e.getMessage());
         }
@@ -493,6 +493,7 @@ public class PhienSuDungBUS {
         if (!"HOATDONG".equals(kh.getTrangthai()))
             throw new Exception("Tài khoản khách hàng đã bị khóa.");
     }
+
 
     /** Kiểm tra khách còn đủ điều kiện chơi: có gói giờ HOẶC soDu > 0 */
     private void checkKhachHangCoTheChoi(KhachHang kh) throws Exception {

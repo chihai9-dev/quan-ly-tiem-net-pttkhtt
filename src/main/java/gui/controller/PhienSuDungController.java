@@ -177,7 +177,7 @@ public class PhienSuDungController implements Initializable {
                         setText("🟢 Đang chơi");
                         setStyle("-fx-text-fill:#1565C0; -fx-font-weight:bold;");
                     } else {
-                        setText("⬜ Đã kết thúc");
+                        setText("🟢 Đã kết thúc");
                         setStyle("-fx-text-fill:#555555;");
                     }
                 }

@@ -56,7 +56,6 @@
     <!-- Table -->
     <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding:0;">
         <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
-            <!-- ✅ QUAN TRỌNG: columns phải nằm trong thẻ <columns> -->
             <columns>
                 <TableColumn fx:id="colMaPhien"   text="Mã phiên"       prefWidth="110"/>
                 <TableColumn fx:id="colMaMay"     text="Máy"            prefWidth="90"/>

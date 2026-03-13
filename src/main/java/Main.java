@@ -1,4 +1,5 @@
 
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -6,8 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import utils.SessionManager;
-import entity.NhanVien;
-
 
 import java.io.InputStream;
 import java.util.Objects;
@@ -22,25 +21,17 @@ import java.util.Objects;
  */
 public class Main extends Application {
 
-    private static final double LOGIN_WIDTH  = 1000;
-    private static final double LOGIN_HEIGHT = 800;
+    private static final double LOGIN_WIDTH  = 900;
+    private static final double LOGIN_HEIGHT = 700;
     private static final String APP_TITLE    = "Quản Lý Tiệm Internet";
 
     @Override
     public void start(Stage primaryStage) {
         try {
-            NhanVien mockNV = new NhanVien();
-            mockNV.setManv("NV001");
-            mockNV.setHo("Admin");
-            mockNV.setTen("Test");
-            mockNV.setChucvu("QUANLY");
-            mockNV.setTendangnhap("admin");
-            mockNV.setTrangthai("DANGLAMVIEC");
-            SessionManager.setCurrentUser(mockNV);
             Parent root = FXMLLoader.load(
                     Objects.requireNonNull(
-                            getClass().getResource("/fxml/hoaDon.fxml"),
-                            "Không tìm thấy /fxml/hoadon.fxml"
+                            getClass().getResource("/fxml/login.fxml"),
+                            "Không tìm thấy /fxml/dichvu.fxml"
                     )
             );
 
@@ -51,6 +42,11 @@ public class Main extends Application {
             primaryStage.setResizable(false);
             primaryStage.centerOnScreen();
 
+            // Load icon nếu có (src/main/resources/images/icon.png)
+            try {
+                InputStream icon = getClass().getResourceAsStream("/images/icon.png");
+                if (icon != null) primaryStage.getIcons().add(new Image(icon));
+            } catch (Exception ignored) {}
 
             // Đăng xuất session khi đóng cửa sổ
             primaryStage.setOnCloseRequest(e -> SessionManager.clearSession());

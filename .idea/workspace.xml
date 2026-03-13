@@ -5,13 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3837fdc6-0be4-46f9-86ef-c626431d4f44" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/bus/PhienSuDungBUS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/bus/PhienSuDungBUS.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dao/DBConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/DBConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/dao/PhienSuDungDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/PhienSuDungDAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/dao/SuDungDichVuDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/dao/SuDungDichVuDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/MainController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gui/controller/PhienSuDungController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gui/controller/PhienSuDungController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/fxml/phienSuDung.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/fxml/phienSuDung.fxml" afterDir="false" />
     </list>
@@ -56,33 +55,40 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DichVuLauncher.executor": "Run",
-    "Application.DichVuTest.executor": "Run",
-    "Application.LoginLauncher.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.NhanVienLauncher.executor": "Run",
-    "Application.TestChuongTrinhKhuyenMaiDAO.executor": "Run",
-    "Application.TestDichVuDAO.executor": "Run",
-    "Application.TestKhachHangDAO.executor": "Run",
-    "Application.TestNhanVienDAO.executor": "Run",
-    "Application.TestPhienSuDungDAO.executor": "Run",
-    "Application.Unnamed.executor": "Run",
-    "Maven.DataBase_Java [clean].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "duyddawng-new",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/Downloads/quan-ly-tiem-net-pttkhtt",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.JavaFX"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DichVuLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.DichVuTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.LoginLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.NhanVienLauncher.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestChuongTrinhKhuyenMaiDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestDichVuDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestKhachHangDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestNhanVienDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TestPhienSuDungDAO.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Application.main.executor&quot;: &quot;Run&quot;,
+    &quot;Downloaded.Files.Path.Enabled&quot;: &quot;false&quot;,
+    &quot;Maven.DataBase_Java [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.quan-ly-tiem-net [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Repository.Attach.Annotations&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.JavaDocs&quot;: &quot;false&quot;,
+    &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;duyddawng-new&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Downloads/quan-ly-tiem-net-pttkhtt&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="Application.Main">
+}</component>
+  <component name="RunManager" selected="Application.main">
     <configuration name="LoginLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.gui.LoginLauncher" />
       <module name="DataBase_Java" />
@@ -96,16 +102,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
-      <option name="ALTERNATIVE_JRE_PATH" value="25" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-      <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="DataBase_Java" />
-      <option name="VM_PARAMETERS" value="--module-path &quot;D:\openjfx-25.0.2_windows-x64_bin-sdk\javafx-sdk-25.0.2\lib&quot; --add-modules javafx.controls,javafx.fxml  " />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="NhanVienLauncher" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.gui.NhanVienLauncher" />
       <module name="DataBase_Java" />
@@ -115,6 +111,14 @@
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="main" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="DataBase_Java" />
+      <option name="VM_PARAMETERS" value="--module-path &quot;C:\Users\duydd\Downloads\openjfx-25.0.2_windows-x64_bin-sdk\javafx-sdk-25.0.2\lib&quot; --add-modules javafx.controls,javafx.fxml --enable-native-access=javafx.graphics" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -150,15 +154,15 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Application.Main" />
+      <item itemvalue="Application.main" />
       <item itemvalue="Application.LoginLauncher" />
       <item itemvalue="Application.NhanVienLauncher" />
       <item itemvalue="Maven.quan-ly-tiem-net [javafx:run]" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.NhanVienLauncher" />
         <item itemvalue="Application.LoginLauncher" />
+        <item itemvalue="Application.NhanVienLauncher" />
       </list>
     </recent_temporary>
   </component>
