@@ -163,12 +163,32 @@ public class SuDungDichVuDAO{
     //tính tống tiền sử dụng dịch vụ
     public  double tinhTongTienKhachHang(String maKH ) throws Exception {
         String sql = "SELECT SUM(DonGia) FROM sudungdichvu" +
-                "WHERE MaPhien = ?";
+                "WHERE MaKH = ?";
 
         try(Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
         ){
             pstmt.setString(1,maKH);
+
+            try (ResultSet rs = pstmt.executeQuery()){
+                if(rs.next()){
+                    return  rs.getDouble(1);
+                }
+            }
+        }
+        catch (SQLException e ){
+            throw  new Exception("Lỗi tính tổng tiền khách hàng " + e.getMessage());
+        }
+        return  0.0;
+    }
+    public  double tinhTongTienPhien(String maPhien ) throws Exception {
+        String sql = "SELECT SUM(DonGia) FROM sudungdichvu" +
+                "WHERE MaPhien = ?";
+
+        try(Connection conn = DBConnection.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+        ){
+            pstmt.setString(1,maPhien);
 
             try (ResultSet rs = pstmt.executeQuery()){
                 if(rs.next()){

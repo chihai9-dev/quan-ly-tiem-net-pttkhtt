@@ -6,32 +6,43 @@ import utils.*;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- * Business Logic Layer cho Phiên Sử Dụng
- * Xử lý logic nghiệp vụ: Mở phiên, kết thúc phiên, tính tiền
+ * ============================================================
+ *  PhienSuDungBUS  –  Tầng Business Logic cho Phiên Sử Dụng
+ * ============================================================
  *
- * @author QuanLyTiemNet Team
- * @version 2.1 - Extended
+ *  Cách hoạt động ĐƠN GIẢN (không dùng Timer/Scheduler):
+ *
+ *    Mở phiên   →  lưu DB, xong (không đặt timer gì cả)
+ *    Kết thúc   →  thủ công (nhân viên bấm nút)
+ *    Kiểm tra   →  gọi kiemTraVaKetThucPhienQuaHan() khi:
+ *                    [1] Nhân viên bấm Refresh
+ *                    [2] Vừa đăng nhập (MainController.initialize)
+ *
+ *  Điều kiện phiên "quá hạn":
+ *    [A] soDu = 0 VÀ không còn gói nào có giờ → hết sạch ngay
+ *    [B] giờ hiện tại > giờ bắt đầu + (gioTuGoi + soDu/giaMoiGio) × 3600 giây
+ *    → Thỏa [A] HOẶC [B] → kết thúc phiên + tạo hóa đơn đầy đủ
  */
 public class PhienSuDungBUS {
 
-    // ==================== DEPENDENCIES ====================
-    private final PhienSuDungDAO phienSuDungDAO;
-    private final MayTinhDAO mayTinhDAO;
-    private final KhachHangDAO khachHangDAO;
-    private final GoiDichVuKhachHangDAO goiDichVuKhachHangDAO;
-    private final SuDungDichVuDAO suDungDichVuDAO;
-    private final HoaDonDAO hoaDonDAO;
+    // ================================================================
+    //  PHẦN 1: CÁC DAO
+    // ================================================================
 
-    // ==================== CONSTRUCTOR ====================
-    /**
-     * Constructor với Dependency Injection
-     */
+    private final PhienSuDungDAO        phienSuDungDAO;
+    private final MayTinhDAO            mayTinhDAO;
+    private final KhachHangDAO          khachHangDAO;
+    private final GoiDichVuKhachHangDAO goiDichVuKhachHangDAO;
+    private final SuDungDichVuDAO       suDungDichVuDAO;
+    private final HoaDonDAO             hoaDonDAO;
+
+    // ================================================================
+    //  PHẦN 2: CONSTRUCTOR
+    // ================================================================
+
     public PhienSuDungBUS(
             PhienSuDungDAO phienSuDungDAO,
             MayTinhDAO mayTinhDAO,
@@ -39,687 +50,482 @@ public class PhienSuDungBUS {
             GoiDichVuKhachHangDAO goiDichVuKhachHangDAO,
             SuDungDichVuDAO suDungDichVuDAO,
             HoaDonDAO hoaDonDAO) {
-        this.phienSuDungDAO = phienSuDungDAO;
-        this.mayTinhDAO = mayTinhDAO;
-        this.khachHangDAO = khachHangDAO;
+
+        this.phienSuDungDAO        = phienSuDungDAO;
+        this.mayTinhDAO            = mayTinhDAO;
+        this.khachHangDAO          = khachHangDAO;
         this.goiDichVuKhachHangDAO = goiDichVuKhachHangDAO;
-        this.suDungDichVuDAO = suDungDichVuDAO;
-        this.hoaDonDAO = hoaDonDAO;
+        this.suDungDichVuDAO       = suDungDichVuDAO;
+        this.hoaDonDAO             = hoaDonDAO;
     }
 
-    // ==================== CORE BUSINESS METHODS ====================
+    // ================================================================
+    //  PHẦN 3: KIỂM TRA VÀ KẾT THÚC PHIÊN QUÁ HẠN  ← TÍNH NĂNG CHÍNH
+    // ================================================================
 
     /**
-     * Mở phiên chơi mới cho khách hàng
+     * Quét tất cả phiên DANGCHOI, tìm phiên quá hạn và kết thúc chúng.
      *
-     * Quy trình:
-     * 1. Kiểm tra quyền: QUANLY hoặc NHANVIEN
-     * 2. Validate: Khách hàng tồn tại, máy khả dụng
-     * 3. Kiểm tra: Khách hàng chưa có phiên đang chơi
-     * 4. Kiểm tra: Máy chưa có người sử dụng
-     * 5. Kiểm tra: Khách hàng có thể chơi (có tiền hoặc có gói)
-     * 6. Tạo phiên mới với trạng thái = DANGCHOI
-     * 7. Cập nhật máy: TrangThai = DANGDUNG
+     * Được gọi từ:
+     *   • PhienSuDungController.handleRefresh()   → nhân viên bấm nút Refresh
+     *   • MainController.initialize()             → mỗi lần đăng nhập vào hệ thống
      *
-     * @param maKH Mã khách hàng
-     * @param maMay Mã máy tính
-     * @return PhienSuDung vừa tạo
-     * @throws Exception Nếu có lỗi xảy ra
+     * @return danh sách phiên vừa bị kết thúc (Controller dùng để hiện thông báo)
+     */
+    public List<PhienSuDung> kiemTraVaKetThucPhienQuaHan() {
+        List<PhienSuDung> danhSachDaKetThuc = new ArrayList<>();
+
+        // Bước 1: lấy tất cả phiên đang chơi từ DB
+        List<PhienSuDung> danhSachDangChoi;
+        try {
+            danhSachDangChoi = phienSuDungDAO.getAllPhienDangChoi();
+        } catch (Exception e) {
+            System.err.println("[KiemTra] Lỗi lấy danh sách phiên: " + e.getMessage());
+            return danhSachDaKetThuc; // trả về rỗng, không crash app
+        }
+
+        // Bước 2: xét từng phiên
+        for (PhienSuDung phien : danhSachDangChoi) {
+            try {
+                if (laPhienQuaHan(phien)) {
+                    System.out.printf("[KiemTra] Phiên %s (KH: %s) quá hạn → kết thúc%n",
+                            phien.getMaPhien(), phien.getMaKH());
+
+                    PhienSuDung ketQua = thucHienKetThuc(phien.getMaPhien());
+                    danhSachDaKetThuc.add(ketQua);
+                }
+            } catch (Exception e) {
+                // Ghi log lỗi nhưng tiếp tục xử lý các phiên còn lại
+                System.err.println("[KiemTra] Lỗi kết thúc phiên "
+                        + phien.getMaPhien() + ": " + e.getMessage());
+            }
+        }
+
+        System.out.printf("[KiemTra] Xong: %d/%d phiên bị kết thúc tự động.%n",
+                danhSachDaKetThuc.size(), danhSachDangChoi.size());
+
+        return danhSachDaKetThuc;
+    }
+
+    /**
+     * Kiểm tra một phiên có quá hạn không.
+     *
+     * Tổng giờ tối đa = giờ còn trong gói + soDu / giaMoiGio
+     * Thời điểm hết tiền = gioBatDau + tổng giờ tối đa
+     *
+     * Quá hạn nếu:
+     *   [A] Tổng giờ tối đa <= 0   (hết sạch tiền và gói)
+     *   [B] Giờ hiện tại > thời điểm hết tiền
+     */
+    private boolean laPhienQuaHan(PhienSuDung phien) {
+        try {
+            KhachHang khachHang = khachHangDAO.getById(phien.getMaKH());
+            if (khachHang == null) return false;
+
+            double giaMoiGio = phien.getGiaMoiGio();
+            if (giaMoiGio <= 0) return false; // máy miễn phí → không kết thúc tự động
+
+            // Tính tổng giờ còn lại trong các gói
+            double gioTuGoi = 0;
+            try {
+                for (GoiDichVuKhachHang goi :
+                        goiDichVuKhachHangDAO.getByKhachHang(khachHang.getMakh())) {
+                    if (goi != null && goi.getSogioconlai() > 0) {
+                        gioTuGoi += goi.getSogioconlai();
+                    }
+                }
+            } catch (Exception ignored) {}
+
+            // Tính giờ có thể chơi từ số dư tiền
+            double gioTuTien    = khachHang.getSodu() / giaMoiGio;
+            double tongGioToiDa = gioTuGoi + gioTuTien;
+
+            // ── Điều kiện [A]: hết sạch cả gói lẫn tiền ──────────────────
+            if (tongGioToiDa <= 0) {
+                System.out.printf("[KiemTra] ĐK[A] KH %s: hết tiền và hết gói%n",
+                        khachHang.getMakh());
+
+                khachHangDAO.updateSoDu(khachHang.getMakh(),0);
+                return true;
+            }
+
+            // ── Điều kiện [B]: giờ hiện tại vượt thời điểm hết tiền ──────
+            //    thoiDiemHetTien = gioBatDau + tongGioToiDa (giờ → giây)
+            if (phien.getGioBatDau() != null) {
+                long tongGiayToiDa = (long)(tongGioToiDa * 3600);
+                LocalDateTime thoiDiemHetTien =
+                        phien.getGioBatDau().plusSeconds(tongGiayToiDa);
+
+                if (LocalDateTime.now().isAfter(thoiDiemHetTien)) {
+                    System.out.printf("[KiemTra] ĐK[B] Phiên %s hết tiền lúc %s%n",
+                            phien.getMaPhien(), thoiDiemHetTien);
+                    return true;
+                }
+            }
+
+            return false; // chưa quá hạn
+
+        } catch (Exception e) {
+            System.err.println("[KiemTra] Lỗi kiểm tra phiên "
+                    + phien.getMaPhien() + ": " + e.getMessage());
+            return false; // nếu lỗi → không tự ý kết thúc
+        }
+    }
+
+    // ================================================================
+    //  PHẦN 4: MỞ PHIÊN MỚI
+    // ================================================================
+
+    /**
+     * Mở một phiên chơi mới cho khách hàng.
+     *
+     *   1. Kiểm tra quyền
+     *   2. Validate input
+     *   3. Kiểm tra khách chưa có phiên khác, máy đang trống
+     *   4. Kiểm tra khách còn tiền / gói để chơi
+     *   5. Tạo phiên, lưu DB, cập nhật trạng thái máy
      */
     public PhienSuDung moPhienMoi(String maKH, String maMay) throws Exception {
-        // 1. Kiểm tra phân quyền
         PermissionHelper.requireMoPhien();
         String maNV = PermissionHelper.getCurrentMaNV();
 
-        // 2. Validate dữ liệu đầu vào
         validateMoPhienInput(maKH, maMay);
 
-        // 3. Kiểm tra khách hàng chưa có phiên đang chơi
         if (phienSuDungDAO.hasPhienDangChoi(maKH)) {
-            throw new Exception(
-                    "Khách hàng đang có phiên chơi khác.\n" +
-                            "Vui lòng kết thúc phiên cũ trước khi mở phiên mới."
-            );
+            throw new Exception("Khách hàng đang có phiên chơi khác.\nVui lòng kết thúc phiên cũ trước.");
         }
-
-        // 4. Kiểm tra máy chưa có người sử dụng
         if (phienSuDungDAO.isMayDangSuDung(maMay)) {
-            throw new Exception(
-                    "Máy " + maMay + " đang có người sử dụng.\n" +
-                            "Vui lòng chọn máy khác."
-            );
+            throw new Exception("Máy " + maMay + " đang có người sử dụng.\nVui lòng chọn máy khác.");
         }
 
-        // 5. Lấy thông tin khách hàng
-        KhachHang kh = khachHangDAO.getById(maKH);
-        if (kh == null) {
-            throw new Exception("Không tìm thấy thông tin khách hàng: " + maKH);
-        }
+        KhachHang khachHang = khachHangDAO.getById(maKH);
+        if (khachHang == null) throw new Exception("Không tìm thấy khách hàng: " + maKH);
+        checkKhachHangCoTheChoi(khachHang);
 
-        // 6. Kiểm tra khách hàng có thể chơi
-        checkKhachHangCoTheChoi(kh);
+        MayTinh mayTinh = mayTinhDAO.getById(maMay);
 
-        // 7. Lấy giá máy
-        MayTinh may = mayTinhDAO.getById(maMay);
-        double giaMoiGio = may.getGiamoigio();
-
-        // 8. Tạo phiên mới
+        // Tạo đối tượng phiên (các giá trị tính toán = 0, cập nhật khi kết thúc)
         PhienSuDung phienMoi = new PhienSuDung();
         phienMoi.setMaPhien(phienSuDungDAO.generateMaPhien());
         phienMoi.setMaKH(maKH);
         phienMoi.setMaMay(maMay);
         phienMoi.setMaNV(maNV);
         phienMoi.setGioBatDau(LocalDateTime.now());
-        phienMoi.setGiaMoiGio(giaMoiGio);
+        phienMoi.setGiaMoiGio(mayTinh.getGiamoigio());
         phienMoi.setTrangThai("DANGCHOI");
-
-        // 9. Xác định loại thanh toán (ưu tiên gói trước)
+        phienMoi.setTongGio(0);
+        phienMoi.setGioSuDungTuGoi(0);
+        phienMoi.setGioSuDungTuTaiKhoan(0);
+        phienMoi.setTienGioChoi(0);
         setLoaiThanhToan(phienMoi, maKH);
 
-        // 10. Lưu phiên vào DB
         if (!phienSuDungDAO.insert(phienMoi)) {
-            throw new Exception(
-                    "Không thể tạo phiên mới.\n" +
-                            "Vui lòng thử lại hoặc liên hệ quản trị viên."
-            );
+            throw new Exception("Không thể tạo phiên mới. Vui lòng thử lại.");
         }
-
-        // 11. Cập nhật trạng thái máy
-        may.setTrangthai("DANGDUNG");
         mayTinhDAO.chuyenDangDung(maMay.trim());
 
-        // 12. Log action
         PermissionHelper.logAction("MO_PHIEN",
-                "MaPhien=" + phienMoi.getMaPhien() +
-                        ", MaKH=" + maKH +
-                        ", MaMay=" + maMay +
-                        ", LoaiThanhToan=" + phienMoi.getLoaiThanhToan()
-        );
-
+                "MaPhien=" + phienMoi.getMaPhien() + ", MaKH=" + maKH + ", MaMay=" + maMay);
         return phienMoi;
     }
 
-    /**
-     * Kết thúc phiên chơi
-     *
-     * @param maPhien Mã phiên cần kết thúc
-     * @return PhienSuDung đã kết thúc
-     * @throws Exception Nếu có lỗi xảy ra
-     */
+    // ================================================================
+    //  PHẦN 5: KẾT THÚC PHIÊN
+    // ================================================================
+
+    /** Kết thúc phiên thủ công (nhân viên bấm nút "Kết thúc"). */
     public PhienSuDung ketThucPhien(String maPhien) throws Exception {
-        // 1. Kiểm tra phân quyền
         PermissionHelper.requireKetThucPhien();
-
-        // 2. Lấy thông tin phiên
-        PhienSuDung phienSuDung = phienSuDungDAO.getByMaPhien(maPhien);
-
-        if (phienSuDung == null) {
-            throw new Exception("Không tìm thấy phiên với mã: " + maPhien);
-        }
-
-        if (!phienSuDung.isDangChoi()) {
-            throw new Exception(
-                    "Phiên này đã kết thúc hoặc không hợp lệ.\n" +
-                            "Trạng thái hiện tại: " + phienSuDung.getTrangThai()
-            );
-        }
-
-        // 3. Tính tổng giờ chơi
-        LocalDateTime gioKetThuc = LocalDateTime.now();
-        phienSuDung.setGioKetThuc(gioKetThuc);
-        double tongGio = tinhTongGio(phienSuDung.getGioBatDau(), gioKetThuc);
-
-        // 4. Tính giờ từ gói và từ tài khoản
-        GioSuDungResult gioResult = tinhGioSuDung(phienSuDung, tongGio);
-
-        phienSuDung.setGioSuDungTuGoi(gioResult.gioTuGoi);
-        phienSuDung.setGioSuDungTuTaiKhoan(gioResult.gioTuTaiKhoan);
-        phienSuDung.setTongGio(tongGio);
-
-        // 5. Xác định loại thanh toán cuối cùng
-        if (gioResult.gioTuGoi > 0 && gioResult.gioTuTaiKhoan > 0) {
-            phienSuDung.setLoaiThanhToan("KETHOP");
-        } else if (gioResult.gioTuGoi > 0) {
-            phienSuDung.setLoaiThanhToan("GOI");
-        } else {
-            phienSuDung.setLoaiThanhToan("TAIKHOAN");
-        }
-
-        // 6. Cập nhật trạng thái phiên
-        phienSuDung.setTrangThai("DAKETTHUC");
-        if (!phienSuDungDAO.update(phienSuDung)) {
-            throw new Exception("Không thể cập nhật phiên. Vui lòng thử lại.");
-        }
-
-        // 7. Cập nhật trạng thái máy về TRONG
-        mayTinhDAO.chuyenTrong(phienSuDung.getMaMay());
-
-        // 8. Tính tiền và tạo hóa đơn
-        double giaMoiGio = mayTinhDAO.getById(phienSuDung.getMaMay()).getGiamoigio();
-        double tienGioChoi = gioResult.gioTuTaiKhoan * giaMoiGio;
-
-        phienSuDung.setGiaMoiGio(giaMoiGio);
-        phienSuDung.setTienGioChoi(tienGioChoi);
-
-        // 9. Lấy thông tin khách hàng
-        KhachHang kh = khachHangDAO.getById(phienSuDung.getMaKH());
-        if (kh == null) {
-            throw new Exception("Không tìm thấy thông tin khách hàng");
-        }
-
-        // 10. Tạo hóa đơn
-        HoaDon hd = taoHoaDon(phienSuDung, tienGioChoi, kh);
-
-        // 11. Lưu hóa đơn
-        hoaDonDAO.them(hd);
-
-        // 12. Log action
-        PermissionHelper.logAction("KET_THUC_PHIEN",
-                "MaPhien=" + maPhien +
-                        ", TongGio=" + String.format("%.2f", tongGio) +
-                        ", TongTien=" + String.format("%.0f", hd.getThanhToan()) +
-                        ", TrangThaiHD=" + hd.getTrangThai()
-        );
-
-        return phienSuDung;
+        return thucHienKetThuc(maPhien);
     }
 
     /**
-     * Chuyển máy cho khách hàng đang chơi
+     * Hàm TRUNG TÂM xử lý kết thúc phiên.
+     * Dùng chung cho cả thủ công và tự động (kiemTraVaKetThucPhienQuaHan).
      *
-     * @param maPhien Mã phiên đang chơi
-     * @param maMayMoi Mã máy mới
-     * @return PhienSuDung đã cập nhật
-     * @throws Exception Nếu có lỗi
+     *   1. Lấy phiên từ DB, kiểm tra còn đang chơi
+     *   2. Tính tổng giờ chơi
+     *   3. Phân tách giờ: từ gói / từ tài khoản, cập nhật số giờ còn lại trong gói
+     *   4. Tính tiền (chỉ phần từ tài khoản)
+     *   5. Cập nhật DB (trangThai → DAKETTHUC)
+     *   6. Trả máy về TRONG
+     *   7. Tạo hóa đơn và trừ tiền khách
      */
-    public PhienSuDung chuyenMay(String maPhien, String maMayMoi) throws Exception {
-        PermissionHelper.requireMoPhien();
+    private PhienSuDung thucHienKetThuc(String maPhien) throws Exception {
 
-        // Kiểm tra phiên
+        // Bước 1
         PhienSuDung phien = phienSuDungDAO.getByMaPhien(maPhien);
-        if (phien == null) {
-            throw new Exception("Không tìm thấy phiên: " + maPhien);
-        }
+        if (phien == null)       throw new Exception("Không tìm thấy phiên: " + maPhien);
+        if (!phien.isDangChoi()) throw new Exception("Phiên này đã kết thúc rồi.");
 
-        if (!phien.isDangChoi()) {
-            throw new Exception("Phiên này đã kết thúc. Không thể chuyển máy.");
-        }
+        // Bước 2: tính tổng giờ chơi
+        LocalDateTime gioKetThuc = LocalDateTime.now();
+        double tongGio = tinhTongGio(phien.getGioBatDau(), gioKetThuc);
 
-        // Kiểm tra máy mới
-        MayTinh mayMoi = mayTinhDAO.getById(maMayMoi);
-        if (mayMoi == null) {
-            throw new Exception("Không tìm thấy máy: " + maMayMoi);
-        }
+        // Bước 3: phân tách giờ từ gói vs từ tài khoản
+        GioSuDungResult gioResult = tinhGioSuDung(phien, tongGio);
 
-        if (!"TRONG".equals(mayMoi.getTrangthai())) {
-            throw new Exception(
-                    "Máy " + maMayMoi + " không khả dụng.\n" +
-                            "Vui lòng chọn máy khác."
-            );
-        }
+        // Bước 4: tính tiền (chỉ phần giờ từ tài khoản mới tính tiền)
+        double giaMoiGio   = mayTinhDAO.getById(phien.getMaMay()).getGiamoigio();
+        double tienGioChoi = gioResult.gioTuTaiKhoan * giaMoiGio;
 
-        // Lưu máy cũ
-        String mayCu = phien.getMaMay();
+        if (gioResult.gioTuGoi > 0 && gioResult.gioTuTaiKhoan > 0)
+            phien.setLoaiThanhToan("KETHOP");
+        else if (gioResult.gioTuGoi > 0)
+            phien.setLoaiThanhToan("GOI");
+        else
+            phien.setLoaiThanhToan("TAIKHOAN");
 
-        // Cập nhật phiên
-        phien.setMaMay(maMayMoi);
-        phien.setGiaMoiGio(mayMoi.getGiamoigio());
+        // Bước 5: cập nhật DB
+        boolean ok = phienSuDungDAO.ketThucPhien(maPhien, gioKetThuc, tongGio,
+                gioResult.gioTuGoi, gioResult.gioTuTaiKhoan, tienGioChoi);
+        if (!ok) throw new Exception("Không thể cập nhật phiên. Vui lòng thử lại.");
 
-        if (!phienSuDungDAO.update(phien)) {
-            throw new Exception("Không thể cập nhật phiên");
-        }
+        // Bước 6: trả máy về trống
+        mayTinhDAO.chuyenTrong(phien.getMaMay());
 
-        // Cập nhật trạng thái máy cũ -> TRONG
-        mayTinhDAO.chuyenTrong(mayCu);
+        // Cập nhật object để trả về UI
+        phien.setGioKetThuc(gioKetThuc);
+        phien.setTongGio(tongGio);
+        phien.setGioSuDungTuGoi(gioResult.gioTuGoi);
+        phien.setGioSuDungTuTaiKhoan(gioResult.gioTuTaiKhoan);
+        phien.setGiaMoiGio(giaMoiGio);
+        phien.setTienGioChoi(tienGioChoi);
+        phien.setTrangThai("DAKETTHUC");
 
-        // Cập nhật trạng thái máy mới -> DANGDUNG
-        mayTinhDAO.chuyenDangDung(maMayMoi);
+        // Bước 7: tạo hóa đơn và trừ tiền
+        KhachHang khachHang = khachHangDAO.getById(phien.getMaKH());
+        if (khachHang == null) throw new Exception("Không tìm thấy khách hàng.");
 
-        PermissionHelper.logAction("CHUYEN_MAY",
-                "MaPhien=" + maPhien + ", MayCu=" + mayCu + ", MayMoi=" + maMayMoi
-        );
+        HoaDon hoaDon = tinhTienVaTaoHoaDon(phien, tienGioChoi, khachHang);
+        hoaDonDAO.them(hoaDon);
 
+        PermissionHelper.logAction("KET_THUC_PHIEN",
+                "MaPhien="     + maPhien
+                        + ", TongGio=" + String.format("%.2f", tongGio)
+                        + ", Tien="    + String.format("%.0f", tienGioChoi)
+                        + ", HD="      + hoaDon.getTrangThai());
         return phien;
     }
 
-
-
-
-    // ==================== QUERY & STATISTICS METHODS ====================
+    // ================================================================
+    //  PHẦN 6: TÍNH TIỀN VÀ TẠO HÓA ĐƠN
+    // ================================================================
 
     /**
-     * Kiểm tra khách hàng có phiên đang chơi không
+     * Tính tổng tiền, trừ số dư khách, tạo hóa đơn.
+     *
+     * thanhTien = tienGioChoi + tienDichVu
+     *
+     * Quy tắc trừ tiền:
+     *   soDu >= thanhTien → trừ đủ        → hóa đơn DATHANHTOAN
+     *   soDu <  thanhTien → trừ hết soDu  → hóa đơn CHUATHANHTOAN
+     *   soDu KHÔNG BAO GIỜ xuống âm
      */
-    public boolean hasPhienDangChoi(String maKH) throws Exception {
-        return phienSuDungDAO.hasPhienDangChoi(maKH);
+    private HoaDon tinhTienVaTaoHoaDon(PhienSuDung phien, double tienGioChoi,
+                                       KhachHang khachHang) throws Exception {
+        double tienDichVu = 0;
+        try {
+            tienDichVu = suDungDichVuDAO.tinhTongTienKhachHang(phien.getMaKH());
+        } catch (Exception e) {
+            System.err.println("[TinhTien] Lỗi tính tiền dịch vụ: " + e.getMessage());
+        }
+
+        double thanhTien   = tienGioChoi + tienDichVu;
+        double soDuHienTai = khachHang.getSodu();
+
+        HoaDon hoaDon = new HoaDon();
+        hoaDon.setMaHD(hoaDonDAO.taoMaHoaDonTuDong());
+        hoaDon.setMaPhien(phien.getMaPhien());
+        hoaDon.setMaKH(phien.getMaKH());
+        hoaDon.setMaNV(phien.getMaNV() != null ? phien.getMaNV() : "");
+        hoaDon.setNgayLap(phien.getGioKetThuc() != null ? phien.getGioKetThuc() : LocalDateTime.now());
+        hoaDon.setTienGioChoi(tienGioChoi);
+        hoaDon.setTienDichVu(tienDichVu);
+        hoaDon.setGiamGia(0.0);
+        try { hoaDon.setTongTien(thanhTien);      } catch (Exception ignored) {}
+        try { hoaDon.setPhuongThucTT("TAIKHOAN"); } catch (Exception ignored) {}
+
+        if (soDuHienTai >= thanhTien) {
+            // ✅ Đủ tiền
+            hoaDon.setThanhToan(thanhTien);
+            hoaDon.setTrangThai("DATHANHTOAN");
+            khachHangDAO.updateSoDu(khachHang.getMakh(), soDuHienTai - thanhTien);
+            System.out.printf("[TinhTien] KH %s: %.0f - %.0f = %.0f ₫ (ĐỦ)%n",
+                    khachHang.getMakh(), soDuHienTai, thanhTien, soDuHienTai - thanhTien);
+        } else {
+            // ⚠ Không đủ tiền: trừ hết soDu, phần còn lại ghi nợ
+            double tienThucTra = Math.max(0, soDuHienTai);
+            hoaDon.setThanhToan(tienThucTra);
+            hoaDon.setTrangThai("CHUATHANHTOAN");
+            khachHangDAO.updateSoDu(khachHang.getMakh(), 0);
+            System.out.printf("[TinhTien] KH %s: thiếu %.0f ₫ (NỢ)%n",
+                    khachHang.getMakh(), thanhTien - tienThucTra);
+        }
+
+        return hoaDon;
     }
 
-    /**
-     * Lấy phiên đang chơi của khách hàng
-     */
-    public PhienSuDung getPhienDangChoiByKhachHang(String maKH) throws Exception {
-        return phienSuDungDAO.getPhienDangChoiByKhachHang(maKH);
-    }
+    // ================================================================
+    //  PHẦN 7: CÁC HÀM QUERY
+    // ================================================================
 
-    /**
-     * Lấy phiên đang chơi trên máy
-     */
-    public PhienSuDung getPhienDangChoiByMay(String maMay) throws Exception {
-        return phienSuDungDAO.getPhienDangChoiByMay(maMay);
-    }
-
-    /**
-     * Lấy tất cả phiên đang chơi
-     */
-    public List<PhienSuDung> getAllPhienDangChoi() throws Exception {
-        PermissionHelper.requireNhanVien();
-        return phienSuDungDAO.getAllPhienDangChoi();
-    }
-
-    /**
-     * Lấy lịch sử phiên của khách hàng
-     */
-    public List<PhienSuDung> getLichSuPhienByKhachHang(String maKH) throws Exception {
-        PermissionHelper.requireNhanVien();
-        return phienSuDungDAO.getPhienByKhachHang(maKH);
-    }
-
-    /**
-     * Lấy lịch sử phiên theo máy
-     */
-    public List<PhienSuDung> getLichSuPhienByMay(String maMay) throws Exception {
-        PermissionHelper.requireNhanVien();
-        return phienSuDungDAO.getPhienByMay(maMay);
-    }
-
-    /**
-     * Lấy tất cả phiên sử dụng
-     */
     public List<PhienSuDung> getAllPhien() throws Exception {
         PermissionHelper.requireNhanVien();
         return phienSuDungDAO.getAll();
     }
 
-    /**
-     * Lấy phiên theo khoảng thời gian
-     */
-    public List<PhienSuDung> getPhienByDateRange(LocalDateTime tuNgay, LocalDateTime denNgay)
-            throws Exception {
+    public List<PhienSuDung> getAllPhienDangChoi() throws Exception {
         PermissionHelper.requireNhanVien();
-        return phienSuDungDAO.getPhienByDateRange(tuNgay, denNgay);
+        return phienSuDungDAO.getAllPhienDangChoi();
     }
 
-    /**
-     * Lấy phiên đã kết thúc trong khoảng thời gian
-     */
-    public List<PhienSuDung> getPhienDaKetThucByDateRange(
-            LocalDateTime tuNgay, LocalDateTime denNgay) throws Exception {
-        PermissionHelper.requireNhanVien();
-        return phienSuDungDAO.getPhienDaKetThucByDateRange(tuNgay, denNgay);
+    public boolean hasPhienDangChoi(String maKH) throws Exception {
+        return phienSuDungDAO.hasPhienDangChoi(maKH);
     }
 
+    public PhienSuDung getPhienDangChoiByKhachHang(String maKH) throws Exception {
+        return phienSuDungDAO.getPhienDangChoiByKhachHang(maKH);
+    }
 
-    /**
-     * Lấy thông tin chi tiết phiên
-     */
+    public PhienSuDung getPhienDangChoiByMay(String maMay) throws Exception {
+        return phienSuDungDAO.getPhienDangChoiByMay(maMay);
+    }
+
+    public List<PhienSuDung> getLichSuPhienByKhachHang(String maKH) throws Exception {
+        PermissionHelper.requireNhanVien();
+        return phienSuDungDAO.getPhienByKhachHang(maKH);
+    }
+
     public PhienSuDung getPhienById(String maPhien) throws Exception {
-        PhienSuDung phien = phienSuDungDAO.getByMaPhien(maPhien);
-
-        if (phien == null) {
-            throw new Exception("Không tìm thấy phiên: " + maPhien);
-        }
-
-        return phien;
+        PhienSuDung p = phienSuDungDAO.getByMaPhien(maPhien);
+        if (p == null) throw new Exception("Không tìm thấy phiên: " + maPhien);
+        return p;
     }
 
-    /**
-     * Đếm số phiên đang chơi
-     */
     public int countPhienDangChoi() throws Exception {
         return phienSuDungDAO.countByTrangThai("DANGCHOI");
     }
 
-    /**
-     * Đếm số phiên theo trạng thái
-     */
-    public int countPhienByTrangThai(String trangThai) throws Exception {
-        return phienSuDungDAO.countByTrangThai(trangThai);
-    }
-
-    /**
-     * Tính tổng giờ chơi của khách hàng
-     */
     public double getTongGioChoiByKhachHang(String maKH) throws Exception {
         return phienSuDungDAO.getTongGioChoiByKhachHang(maKH);
     }
 
-    /**
-     * Tính tổng doanh thu từ giờ chơi trong khoảng thời gian
-     */
-    public double getTongDoanhThuGioChoi(LocalDateTime tuNgay, LocalDateTime denNgay)
-            throws Exception {
+    public double getTongDoanhThuGioChoi(LocalDateTime tuNgay, LocalDateTime denNgay) throws Exception {
         PermissionHelper.requireNhanVien();
         return phienSuDungDAO.getTongDoanhThuGioChoi(tuNgay, denNgay);
     }
 
-    /**
-     * Lấy top máy được sử dụng nhiều nhất
-     */
-    public List<Map<String, Object>> getTopMaySuDung(int top) throws Exception {
+    public List<PhienSuDung> getPhienByDateRange(LocalDateTime tuNgay, LocalDateTime denNgay) throws Exception {
         PermissionHelper.requireNhanVien();
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        List<PhienSuDung> allPhien = phienSuDungDAO.getAll();
-
-        // Đếm số lần sử dụng của mỗi máy
-        Map<String, Integer> countMap = new HashMap<>();
-        Map<String, Double> gioMap = new HashMap<>();
-
-        for (PhienSuDung phien : allPhien) {
-            if ("DAKETTHUC".equals(phien.getTrangThai())) {
-                String maMay = phien.getMaMay();
-                countMap.put(maMay, countMap.getOrDefault(maMay, 0) + 1);
-                gioMap.put(maMay, gioMap.getOrDefault(maMay, 0.0) + phien.getTongGio());
-            }
-        }
-
-        // Tạo danh sách kết quả
-        for (Map.Entry<String, Integer> entry : countMap.entrySet()) {
-            Map<String, Object> item = new HashMap<>();
-            String maMay = entry.getKey();
-
-            try {
-                MayTinh may = mayTinhDAO.getById(maMay);
-                if (may != null) {
-                    item.put("maMay", maMay);
-                    item.put("tenMay", may.getTenmay());
-                    item.put("soLanDung", entry.getValue());
-                    item.put("tongGio", gioMap.get(maMay));
-                    result.add(item);
-                }
-            } catch (Exception e) {
-                // Skip nếu không tìm thấy máy
-            }
-        }
-
-        // Sắp xếp theo số lần dùng
-        result.sort((a, b) ->
-                Integer.compare((Integer)b.get("soLanDung"), (Integer)a.get("soLanDung"))
-        );
-
-        // Lấy top
-        return result.size() > top ? result.subList(0, top) : result;
+        return phienSuDungDAO.getPhienByDateRange(tuNgay, denNgay);
     }
 
-    /**
-     * Thống kê phiên theo ngày
-     */
-    public Map<String, Object> thongKePhienTheoNgay(LocalDateTime ngay) throws Exception {
-        PermissionHelper.requireNhanVien();
-
-        LocalDateTime batDauNgay = ngay.toLocalDate().atStartOfDay();
-        LocalDateTime ketThucNgay = batDauNgay.plusDays(1).minusSeconds(1);
-
-        List<PhienSuDung> phienTrongNgay = phienSuDungDAO.getPhienByDateRange(
-                batDauNgay, ketThucNgay
-        );
-
-        Map<String, Object> thongKe = new HashMap<>();
-        thongKe.put("ngay", ngay.toLocalDate().toString());
-        thongKe.put("tongSoPhien", phienTrongNgay.size());
-
-        int soPhienDaKetThuc = 0;
-        int soPhienDangChoi = 0;
-        double tongGioChoi = 0.0;
-        double tongDoanhThu = 0.0;
-
-        for (PhienSuDung phien : phienTrongNgay) {
-            if ("DAKETTHUC".equals(phien.getTrangThai())) {
-                soPhienDaKetThuc++;
-                tongGioChoi += phien.getTongGio();
-                tongDoanhThu += phien.getTienGioChoi();
-            } else if ("DANGCHOI".equals(phien.getTrangThai())) {
-                soPhienDangChoi++;
-            }
-        }
-
-        thongKe.put("soPhienDaKetThuc", soPhienDaKetThuc);
-        thongKe.put("soPhienDangChoi", soPhienDangChoi);
-        thongKe.put("tongGioChoi", tongGioChoi);
-        thongKe.put("tongDoanhThu", tongDoanhThu);
-        thongKe.put("gioChoiTrungBinh",
-                soPhienDaKetThuc > 0 ? tongGioChoi / soPhienDaKetThuc : 0.0
-        );
-
-        return thongKe;
+    public PhienSuDung chuyenMay(String maPhien, String maMayMoi) throws Exception {
+        PermissionHelper.requireMoPhien();
+        PhienSuDung phien = phienSuDungDAO.getByMaPhien(maPhien);
+        if (phien == null)       throw new Exception("Không tìm thấy phiên: " + maPhien);
+        if (!phien.isDangChoi()) throw new Exception("Phiên này đã kết thúc.");
+        MayTinh mayMoi = mayTinhDAO.getById(maMayMoi);
+        if (mayMoi == null || !"TRONG".equals(mayMoi.getTrangthai()))
+            throw new Exception("Máy " + maMayMoi + " không khả dụng.");
+        String mayCu = phien.getMaMay();
+        phien.setMaMay(maMayMoi);
+        phien.setGiaMoiGio(mayMoi.getGiamoigio());
+        if (!phienSuDungDAO.update(phien)) throw new Exception("Không thể cập nhật phiên.");
+        mayTinhDAO.chuyenTrong(mayCu);
+        mayTinhDAO.chuyenDangDung(maMayMoi);
+        PermissionHelper.logAction("CHUYEN_MAY",
+                "MaPhien=" + maPhien + ", MayCu=" + mayCu + ", MayMoi=" + maMayMoi);
+        return phien;
     }
 
-    /**
-     * Kiểm tra khách hàng có đủ tiền để chơi thêm X giờ không
-     */
-    public boolean kiemTraDuTienChoGio(String maKH, double soGio) throws Exception {
-        KhachHang kh = khachHangDAO.getById(maKH);
-        if (kh == null) {
-            throw new Exception("Không tìm thấy khách hàng");
-        }
+    // ================================================================
+    //  PHẦN 8: CÁC HÀM HELPER PRIVATE
+    // ================================================================
 
-        // Giả sử giá trung bình 10,000 VNĐ/giờ
-        double giaUocTinh = 10000.0;
-        double tienCanThiet = soGio * giaUocTinh;
-
-        return kh.getSodu() >= tienCanThiet;
-    }
-
-    /**
-     * Ước tính thời gian có thể chơi với số dư hiện tại
-     */
-    public double uocTinhGioCoTheChoi(String maKH) throws Exception {
-        KhachHang kh = khachHangDAO.getById(maKH);
-        if (kh == null) {
-            throw new Exception("Không tìm thấy khách hàng");
-        }
-
-        // Kiểm tra gói còn hạn
-        List<GoiDichVuKhachHang> listGoi = goiDichVuKhachHangDAO.getByKhachHang(maKH);
-        double gioTuGoi = 0.0;
-
-        for (GoiDichVuKhachHang goi : listGoi) {
-            if (goi != null && goi.getSogioconlai() > 0) {
-                gioTuGoi += goi.getSogioconlai();
-            }
-        }
-
-        // Ước tính giờ từ tiền (giá trung bình 10,000/giờ)
-        double giaUocTinh = 10000.0;
-        double gioTuTien = kh.getSodu() / giaUocTinh;
-
-        return gioTuGoi + gioTuTien;
-    }
-
-    // ==================== HELPER METHODS ====================
-
-    /**
-     * Xác định loại thanh toán cho phiên mới
-     * Ưu tiên sử dụng gói còn hạn trước
-     */
-    private void setLoaiThanhToan(PhienSuDung phienMoi, String maKH) throws Exception {
+    /** Xác định loại thanh toán khi mở phiên: GOI hoặc TAIKHOAN */
+    private void setLoaiThanhToan(PhienSuDung phienMoi, String maKH) {
         try {
-            List<GoiDichVuKhachHang> listGoiConHan = goiDichVuKhachHangDAO.getByKhachHang(maKH);
-            boolean isConHan = false;
-
-            for (GoiDichVuKhachHang goiConHan : listGoiConHan) {
-                if (goiConHan != null && goiConHan.getSogioconlai() > 0) {
-                    phienMoi.setLoaiThanhToan("GOI");
-                    phienMoi.setMaGoiKH(goiConHan.getMagoikh());
-                    isConHan = true;
-                    break;
-                }
-            }
-
-            if (!isConHan) {
-                phienMoi.setLoaiThanhToan("TAIKHOAN");
-            }
-        } catch (Exception e) {
-            phienMoi.setLoaiThanhToan("TAIKHOAN");
-        }
-    }
-
-    /**
-     * Tính giờ sử dụng từ gói và từ tài khoản
-     */
-    private GioSuDungResult tinhGioSuDung(PhienSuDung phienSuDung, double tongGio)
-            throws Exception {
-
-        double gioTuGoi = 0.0;
-        double gioTuTaiKhoan = 0.0;
-
-        if (phienSuDung.getMaGoiKH() != null) {
-            GoiDichVuKhachHang goi = goiDichVuKhachHangDAO.getByMaGoiKhachHang(
-                    phienSuDung.getMaGoiKH()
-            );
-
-            if (goi != null && goi.getSogioconlai() > 0) {
-                gioTuGoi = Math.min(tongGio, goi.getSogioconlai());
-                gioTuTaiKhoan = tongGio - gioTuGoi;
-
-                goi.setSogioconlai(goi.getSogioconlai() - gioTuGoi);
-                goiDichVuKhachHangDAO.update(goi);
-            } else {
-                gioTuTaiKhoan = tongGio;
-            }
-        } else {
-            gioTuTaiKhoan = tongGio;
-        }
-
-        return new GioSuDungResult(gioTuGoi, gioTuTaiKhoan);
-    }
-
-    /**
-     * Tạo hóa đơn cho phiên vừa kết thúc
-     */
-    private HoaDon taoHoaDon(PhienSuDung phienSuDung, double tienGioChoi, KhachHang kh)
-            throws Exception {
-
-        HoaDon hd = new HoaDon();
-
-        double tongTienDichVu = suDungDichVuDAO.tinhTongTienKhachHang(phienSuDung.getMaKH());
-        double thanhTien = tongTienDichVu + tienGioChoi;
-
-        hd.setMaHD(hoaDonDAO.taoMaHoaDonTuDong());
-        hd.setMaPhien(phienSuDung.getMaPhien());
-        hd.setMaKH(phienSuDung.getMaKH());
-        hd.setMaNV(phienSuDung.getMaNV());
-        hd.setNgayLap(phienSuDung.getGioKetThuc());
-        hd.setTienGioChoi(tienGioChoi);
-        hd.setTienDichVu(tongTienDichVu);
-        hd.setGiamGia(0.0);
-
-        if (thanhTien <= kh.getSodu()) {
-            hd.setThanhToan(thanhTien);
-            hd.setTrangThai("DATHANHTOAN");
-
-            kh.setSodu(kh.getSodu() - thanhTien);
-            khachHangDAO.update(kh);
-        } else {
-            hd.setThanhToan(0.0);
-            hd.setTrangThai("CHUATHANHTOAN");
-        }
-
-        return hd;
-    }
-
-    /**
-     * Validate dữ liệu đầu vào khi mở phiên
-     */
-    private void validateMoPhienInput(String maKH, String maMay) throws Exception {
-        if (maKH == null || maKH.trim().isEmpty()) {
-            throw new Exception("Vui lòng chọn khách hàng");
-        }
-
-        if (maMay == null || maMay.trim().isEmpty()) {
-            throw new Exception("Vui lòng chọn máy tính");
-        }
-
-        MayTinh may = mayTinhDAO.getById(maMay);
-        if (may == null) {
-            throw new Exception("Không tìm thấy máy tính với mã: " + maMay);
-        }
-
-        if (!"TRONG".equals(may.getTrangthai())) {
-            throw new Exception(
-                    "Máy tính " + maMay + " không khả dụng.\n" +
-                            "Trạng thái hiện tại: " + may.getTrangthai() + "\n" +
-                            "Vui lòng chọn máy khác."
-            );
-        }
-
-        KhachHang kh = khachHangDAO.getById(maKH);
-        if (kh == null) {
-            throw new Exception("Không tìm thấy khách hàng với mã: " + maKH);
-        }
-
-        if (!"HOATDONG".equals(kh.getTrangthai())) {
-            throw new Exception(
-                    "Tài khoản khách hàng đã bị khóa.\n" +
-                            "Trạng thái: " + kh.getTrangthai() + "\n" +
-                            "Vui lòng liên hệ quản lý để kích hoạt lại tài khoản."
-            );
-        }
-    }
-
-    /**
-     * Kiểm tra khách hàng có thể chơi hay không
-     */
-    private void checkKhachHangCoTheChoi(KhachHang kh) throws Exception {
-        boolean goiConHan = false;
-
-        try {
-            List<GoiDichVuKhachHang> listGoi = goiDichVuKhachHangDAO.getByKhachHang(kh.getMakh());
-
-            for (GoiDichVuKhachHang goi : listGoi) {
+            for (GoiDichVuKhachHang goi : goiDichVuKhachHangDAO.getByKhachHang(maKH)) {
                 if (goi != null && goi.getSogioconlai() > 0) {
-                    goiConHan = true;
-                    break;
+                    phienMoi.setLoaiThanhToan("GOI");
+                    phienMoi.setMaGoiKH(goi.getMagoikh());
+                    return;
                 }
             }
-        } catch (Exception e) {
-            System.err.println("Lỗi khi kiểm tra gói: " + e.getMessage());
-        }
-
-        boolean coTien = kh.getSodu() > 0;
-
-        if (!goiConHan && !coTien) {
-            throw new Exception(
-                    "Khách hàng " + kh.getTendangnhap() + " không thể chơi.\n\n" +
-                            "Lý do:\n" +
-                            "- Không có gói dịch vụ còn hạn\n" +
-                            "- Số dư tài khoản: 0 VNĐ\n\n" +
-                            "Vui lòng nạp tiền hoặc mua gói dịch vụ trước khi chơi."
-            );
-        }
+        } catch (Exception ignored) {}
+        phienMoi.setLoaiThanhToan("TAIKHOAN");
     }
 
-    // ==================== UTILITY METHODS ====================
-
     /**
-     * Tính tổng số giờ giữa 2 thời điểm
+     * Phân tách tổng giờ thành giờ từ gói và giờ từ tài khoản.
+     * Ưu tiên dùng gói trước. Cập nhật số giờ còn lại của gói trong DB.
      */
-    private double tinhTongGio(LocalDateTime gioBatDau, LocalDateTime gioKetThuc) {
-        long totalMinutes = ChronoUnit.MINUTES.between(gioBatDau, gioKetThuc);
-        return totalMinutes / 60.0;
+    private GioSuDungResult tinhGioSuDung(PhienSuDung phien, double tongGio) {
+        double gioTuGoi = 0.0;
+        if (phien.getMaGoiKH() != null) {
+            try {
+                GoiDichVuKhachHang goi =
+                        goiDichVuKhachHangDAO.getByMaGoiKhachHang(phien.getMaGoiKH());
+                if (goi != null && goi.getSogioconlai() > 0) {
+                    gioTuGoi = Math.min(tongGio, goi.getSogioconlai());
+                    goi.setSogioconlai(goi.getSogioconlai() - gioTuGoi);
+                    goiDichVuKhachHangDAO.update(goi);
+                }
+            } catch (Exception ignored) {}
+        }
+        return new GioSuDungResult(gioTuGoi, tongGio - gioTuGoi);
     }
 
-    // ==================== INNER CLASS ====================
+    /** Validate input khi mở phiên: rỗng, máy trống, khách hoạt động */
+    private void validateMoPhienInput(String maKH, String maMay) throws Exception {
+        if (maKH  == null || maKH.trim().isEmpty())  throw new Exception("Vui lòng chọn khách hàng.");
+        if (maMay == null || maMay.trim().isEmpty())  throw new Exception("Vui lòng chọn máy tính.");
+        MayTinh mayTinh = mayTinhDAO.getById(maMay);
+        if (mayTinh == null)
+            throw new Exception("Không tìm thấy máy: " + maMay);
+        if (!"TRONG".equals(mayTinh.getTrangthai()))
+            throw new Exception("Máy " + maMay + " không khả dụng (" + mayTinh.getTrangthai() + ").");
+        KhachHang kh = khachHangDAO.getById(maKH);
+        if (kh == null)
+            throw new Exception("Không tìm thấy khách hàng: " + maKH);
+        if (!"HOATDONG".equals(kh.getTrangthai()))
+            throw new Exception("Tài khoản khách hàng đã bị khóa.");
+    }
+
+    /** Kiểm tra khách còn đủ điều kiện chơi: có gói giờ HOẶC soDu > 0 */
+    private void checkKhachHangCoTheChoi(KhachHang kh) throws Exception {
+        boolean conGoi = false;
+        try {
+            for (GoiDichVuKhachHang goi : goiDichVuKhachHangDAO.getByKhachHang(kh.getMakh()))
+                if (goi != null && goi.getSogioconlai() > 0) { conGoi = true; break; }
+        } catch (Exception ignored) {}
+        if (!conGoi && kh.getSodu() <= 0)
+            throw new Exception("Khách hàng không thể chơi.\n"
+                    + "Số dư: 0 ₫ và không có gói dịch vụ.\n"
+                    + "Vui lòng nạp tiền hoặc mua gói trước.");
+    }
+
+    /** Tính tổng giờ chơi. Ví dụ: 90 phút → 1.5 giờ */
+    private double tinhTongGio(LocalDateTime batDau, LocalDateTime ketThuc) {
+        return ChronoUnit.MINUTES.between(batDau, ketThuc) / 60.0;
+    }
+
+    // ================================================================
+    //  PHẦN 9: CLASS NỘI BỘ
+    // ================================================================
 
     /**
-     * Class helper để trả về kết quả tính giờ sử dụng
+     * Kết quả phân tách giờ sử dụng.
+     * Dùng vì Java không có tuple, cần trả 2 giá trị cùng lúc.
      */
     private static class GioSuDungResult {
-        final double gioTuGoi;
-        final double gioTuTaiKhoan;
+        final double gioTuGoi;      // giờ trừ từ gói, không tính tiền
+        final double gioTuTaiKhoan; // giờ tính tiền từ số dư
 
         GioSuDungResult(double gioTuGoi, double gioTuTaiKhoan) {
-            this.gioTuGoi = gioTuGoi;
+            this.gioTuGoi      = gioTuGoi;
             this.gioTuTaiKhoan = gioTuTaiKhoan;
         }
     }

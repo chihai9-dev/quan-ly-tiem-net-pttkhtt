@@ -3,8 +3,6 @@ package gui.controller;
 import bus.KhuyenMaiBUS;
 import entity.ChuongTrinhKhuyenMai;
 import gui.dialog.ThemKhuyenMaiDialog;
-import javafx.beans.property.SimpleStringProperty;
-import java.time.format.DateTimeFormatter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -18,40 +16,37 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import utils.SessionManager;
 import utils.ThongBaoDialogHelper;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class KhuyenMaiController implements Initializable {
 
     @FXML private TableView<ChuongTrinhKhuyenMai> tableView;
-    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colMa;
-    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colTen;
+    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colMaKM;
+    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colTenKM;
     @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colLoai;
     @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colGiaTri;
-    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colDieuKien;
-    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colNgayBD;
-    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colNgayKT;
+    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colTuNgay;
+    @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colDenNgay;
     @FXML private TableColumn<ChuongTrinhKhuyenMai, String> colTrangThai;
 
-    @FXML private TextField txtSearch;
+    @FXML private TextField        txtSearch;
     @FXML private ComboBox<String> cboTrangThai;
-    @FXML private Label lblSubtitle;
-    @FXML private Label lblTotal;
-    @FXML private Button btnThem;
-    @FXML private Button btnSua;
-    @FXML private Button btnXoa;
-    @FXML private Button btnLamMoi;
+    @FXML private Label            lblSubtitle;
+    @FXML private Label            lblTotal;
+    @FXML private Button           btnThem;
+    @FXML private Button           btnSua;
+    @FXML private Button           btnXoa;       // nút toggle: Ngừng / Kích hoạt
+    @FXML private Button           btnLamMoi;
 
     private final KhuyenMaiBUS khuyenMaiBUS = new KhuyenMaiBUS();
-    private ObservableList<ChuongTrinhKhuyenMai> dataList = FXCollections.observableArrayList();
+    private final ObservableList<ChuongTrinhKhuyenMai> dataList = FXCollections.observableArrayList();
     private FilteredList<ChuongTrinhKhuyenMai> filteredList;
     private ChuongTrinhKhuyenMai selectedItem;
-
-    private static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -62,93 +57,67 @@ public class KhuyenMaiController implements Initializable {
             cboTrangThai.setValue("Tất cả");
             cboTrangThai.setOnAction(e -> applyFilter());
         }
-        updateMenuVisibility();
         loadData();
     }
 
-    private void updateMenuVisibility() {
-        boolean isQuanLy = SessionManager.isQuanLy();
-        if (btnThem != null) btnThem.setVisible(isQuanLy);
-        if (btnThem != null) btnThem.setManaged(isQuanLy);
-        if (btnSua  != null) btnSua.setVisible(isQuanLy);
-        if (btnSua  != null) btnSua.setManaged(isQuanLy);
-        if (btnXoa  != null) btnXoa.setVisible(isQuanLy);
-        if (btnXoa  != null) btnXoa.setManaged(isQuanLy);
-    }
-
     private void setupTableColumns() {
-        if (colMa  != null) colMa.setCellValueFactory(new PropertyValueFactory<>("maCTKM"));
-        if (colTen != null) colTen.setCellValueFactory(new PropertyValueFactory<>("tenCT"));
-        if (colLoai != null) colLoai.setCellValueFactory(c -> {
-            String loai = c.getValue().getLoaiKM();
-            return new SimpleStringProperty(loai == null ? "" : switch (loai) {
-                case "PHANTRAM" -> "Phần trăm (%)";
-                case "SOTIEN"   -> "Số tiền (₫)";
-                case "TANGGIO"  -> "Tặng giờ";
-                default -> loai;
-            });
-        });
-        if (colGiaTri != null) colGiaTri.setCellValueFactory(c -> {
-            var km  = c.getValue();
-            String loai = km.getLoaiKM();
-            double val  = km.getGiaTriKM();
-            return new SimpleStringProperty(switch (loai != null ? loai : "") {
-                case "PHANTRAM" -> String.format("%.0f%%", val);
-                case "TANGGIO"  -> String.format("%.1f giờ", val);
-                default         -> String.format("%,.0f ₫", val);
-            });
-        });
-        if (colDieuKien != null) colDieuKien.setCellValueFactory(c ->
-                new SimpleStringProperty(String.format("%,.0f ₫", c.getValue().getDieuKienToiThieu())));
-        if (colNgayBD != null) colNgayBD.setCellValueFactory(c -> {
-            var d = c.getValue().getNgayBatDau();
-            return new SimpleStringProperty(d != null ? d.format(FMT_DATE) : "");
-        });
-        if (colNgayKT != null) colNgayKT.setCellValueFactory(c -> {
-            var d = c.getValue().getNgayKetThuc();
-            return new SimpleStringProperty(d != null ? d.format(FMT_DATE) : "");
-        });
-        if (colTrangThai != null) colTrangThai.setCellValueFactory(c -> {
-            String tt = c.getValue().getTrangThai();
-            return new SimpleStringProperty(tt == null ? "" : switch (tt) {
-                case "HOATDONG" -> "Đang hoạt động";
-                case "HETHAN"   -> "Hết hạn";
-                case "CHUABD"   -> "Chưa bắt đầu";
-                case "NGUNG"    -> "Đã ngừng";
-                default -> tt;
-            });
-        });
+        if (colMaKM      != null) colMaKM.setCellValueFactory(new PropertyValueFactory<>("maCTKM"));
+        if (colTenKM     != null) colTenKM.setCellValueFactory(new PropertyValueFactory<>("tenCT"));
+        if (colLoai      != null) colLoai.setCellValueFactory(new PropertyValueFactory<>("tenLoaiKM"));
+        if (colGiaTri    != null) colGiaTri.setCellValueFactory(new PropertyValueFactory<>("giaTriKMFormatted"));
+        if (colTuNgay    != null) colTuNgay.setCellValueFactory(new PropertyValueFactory<>("ngayBatDauFormatted"));
+        if (colDenNgay   != null) colDenNgay.setCellValueFactory(new PropertyValueFactory<>("ngayKetThucFormatted"));
+        if (colTrangThai != null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("tenTrangThai"));
     }
 
     private void setupTableSelection() {
         tableView.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
             selectedItem = n;
-            boolean has = (n != null);
-            boolean canEdit = has && SessionManager.isQuanLy();
-            if (btnSua != null) btnSua.setDisable(!canEdit);
-            if (btnXoa != null) btnXoa.setDisable(!canEdit);
+            boolean has = n != null;
+            if (btnSua != null) btnSua.setDisable(!has);
+            if (btnXoa != null) {
+                btnXoa.setDisable(!has);
+                updateToggleButton(n);
+            }
         });
         if (btnSua != null) btnSua.setDisable(true);
         if (btnXoa != null) btnXoa.setDisable(true);
     }
 
+    private void updateToggleButton(ChuongTrinhKhuyenMai item) {
+        if (btnXoa == null) return;
+        if (item == null) {
+            btnXoa.setText("✕  Xóa");
+            return;
+        }
+        String tt = item.getTrangThai();
+        if ("HOATDONG".equals(tt)) btnXoa.setText("⏸  Ngừng");
+        else if ("NGUNG".equals(tt)) btnXoa.setText("▶  Kích hoạt");
+        else {
+            btnXoa.setText("✕  Hết hạn");
+            btnXoa.setDisable(true);
+        }
+    }
+
     public void loadData() {
         try {
+            khuyenMaiBUS.capNhatChuongTrinhHetHan();
+
             List<ChuongTrinhKhuyenMai> list = khuyenMaiBUS.getAllKhuyenMai();
             dataList.setAll(list);
             filteredList = new FilteredList<>(dataList, p -> true);
             tableView.setItems(filteredList);
+            applyFilter();
             updateSubtitle();
         } catch (Exception e) {
             ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi tải dữ liệu: " + e.getMessage());
         }
     }
 
-    @FXML
-    public void handleSearch() { applyFilter(); }
+    @FXML public void handleSearch() { applyFilter(); }
 
     private void applyFilter() {
-        String keyword = txtSearch  != null ? txtSearch.getText().toLowerCase().trim() : "";
+        String keyword = txtSearch    != null ? txtSearch.getText().toLowerCase().trim() : "";
         String tt      = cboTrangThai != null ? cboTrangThai.getValue() : "Tất cả";
         if (filteredList == null) return;
         filteredList.setPredicate(item -> {
@@ -161,40 +130,45 @@ public class KhuyenMaiController implements Initializable {
         updateSubtitle();
     }
 
-    @FXML
-    public void handleThem() {
-        if (!SessionManager.isQuanLy()) {
-            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền thêm chương trình khuyến mãi.");
-            return;
-        }
-        openDialog(null);
-    }
+    @FXML public void handleThem() { openDialog(null); }
 
     @FXML
     public void handleSua() {
         if (selectedItem == null) return;
-        if (!SessionManager.isQuanLy()) {
-            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền sửa chương trình khuyến mãi.");
-            return;
-        }
         openDialog(selectedItem);
     }
 
     @FXML
     public void handleXoa() {
         if (selectedItem == null) return;
-        if (!SessionManager.isQuanLy()) {
-            ThongBaoDialogHelper.showWarning(tableView.getScene(), "Chỉ Quản lý mới có quyền xóa chương trình khuyến mãi.");
+        String tt = selectedItem.getTrangThai();
+        if ("HETHAN".equals(tt)) {
+            ThongBaoDialogHelper.showWarning(tableView.getScene(),
+                    "Không thể kích hoạt chương trình đã hết hạn.\nVui lòng cập nhật ngày kết thúc trước.");
             return;
         }
+
         Stage owner = (Stage) tableView.getScene().getWindow();
-        if (!gui.dialog.XacNhanDialog.showDelete(owner, selectedItem.getTenCT())) return;
+
         try {
-            khuyenMaiBUS.xoaKhuyenMai(selectedItem.getMaCTKM());
-            ThongBaoDialogHelper.showSuccess(tableView.getScene(), "Đã xóa (ngưng) chương trình khuyến mãi!");
+            if ("HOATDONG".equals(tt)) {
+                if (!gui.dialog.XacNhanDialog.showDelete(owner, "Ngừng: " + selectedItem.getTenCT())) return;
+                khuyenMaiBUS.tatChuongTrinh(selectedItem.getMaCTKM());
+                ThongBaoDialogHelper.showSuccess(tableView.getScene(),
+                        "Đã ngừng chương trình: " + selectedItem.getTenCT());
+            } else if ("NGUNG".equals(tt)) {
+                if (LocalDateTime.now().isAfter(selectedItem.getNgayKetThuc())) {
+                    ThongBaoDialogHelper.showWarning(tableView.getScene(),
+                            "Chương trình đã quá ngày kết thúc.\nVui lòng cập nhật ngày kết thúc trước khi kích hoạt lại.");
+                    return;
+                }
+                khuyenMaiBUS.batChuongTrinh(selectedItem.getMaCTKM());
+                ThongBaoDialogHelper.showSuccess(tableView.getScene(),
+                        "Đã kích hoạt lại: " + selectedItem.getTenCT());
+            }
             loadData();
         } catch (Exception e) {
-            ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi xóa: " + e.getMessage());
+            ThongBaoDialogHelper.showError(tableView.getScene(), "Lỗi: " + e.getMessage());
         }
     }
 
@@ -212,7 +186,6 @@ public class KhuyenMaiController implements Initializable {
             ThemKhuyenMaiDialog ctrl = loader.getController();
             ctrl.setEntity(entity);
             ctrl.setOnSaveCallback(this::loadData);
-
             Stage stage = new Stage(StageStyle.UNDECORATED);
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(tableView.getScene().getWindow());
