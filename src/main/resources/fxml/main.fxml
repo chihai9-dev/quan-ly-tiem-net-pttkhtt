@@ -7,49 +7,52 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="gui.controller.MainController"
             stylesheets="@../css/style.css"
-            prefWidth="1280" prefHeight="760">
+            prefWidth="1280" prefHeight="760"
+            styleClass="content-wrapper">
 
     <!-- ===== SIDEBAR ===== -->
     <left>
-        <VBox styleClass="sidebar" spacing="0">
+        <VBox styleClass="sidebar" spacing="0" focusTraversable="false">
 
             <!-- Logo -->
-            <VBox styleClass="sidebar-logo-area" spacing="4">
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="🖥" style="-fx-font-size:26px; -fx-text-fill:#FFFFFF;"/>
-                    <VBox spacing="2">
-                        <Label text="TIỆM NET" styleClass="sidebar-logo-text"/>
-                        <Label text="Quản lý hệ thống" styleClass="sidebar-logo-sub"/>
+            <VBox styleClass="sidebar-logo-area" spacing="4" focusTraversable="false">
+                <HBox spacing="10" alignment="CENTER_LEFT" focusTraversable="false">
+                    <Label text="🖥" focusTraversable="false"
+                           styleClass="sidebar-logo-icon-label"/>
+                    <VBox spacing="2" focusTraversable="false">
+                        <Label text="TIỆM NET" styleClass="sidebar-logo-text" focusTraversable="false"/>
+                        <Label text="Quản lý hệ thống" styleClass="sidebar-logo-sub" focusTraversable="false"/>
                     </VBox>
                 </HBox>
             </VBox>
 
             <!-- User info strip -->
-            <HBox spacing="10" alignment="CENTER_LEFT"
-                  style="-fx-background-color:#1A3255; -fx-padding: 12 15 12 15;">
-                <StackPane styleClass="header-avatar">
-                    <Label fx:id="lblAvatarChar" text="A"
-                           style="-fx-text-fill:#FFFFFF; -fx-font-weight:bold; -fx-font-size:14px;"/>
+            <HBox spacing="10" alignment="CENTER_LEFT" focusTraversable="false"
+                  styleClass="sidebar-user-strip">
+                <StackPane styleClass="header-avatar" focusTraversable="false">
+                    <Label fx:id="lblAvatarChar" text="A" focusTraversable="false"
+                           styleClass="sidebar-avatar-label"/>
                 </StackPane>
-                <VBox spacing="2">
-                    <Label fx:id="lblUserName" text="Tên người dùng"
-                           style="-fx-text-fill:#FFFFFF; -fx-font-size:13px; -fx-font-weight:bold;"/>
-                    <Label fx:id="lblUserRole" text="Vai trò"
-                           style="-fx-text-fill:#90CAF9; -fx-font-size:11px;"/>
+                <VBox spacing="2" focusTraversable="false">
+                    <Label fx:id="lblUserName" text="Tên người dùng" focusTraversable="false"
+                           styleClass="sidebar-user-name"/>
+                    <Label fx:id="lblUserRole" text="Vai trò" focusTraversable="false"
+                           styleClass="sidebar-user-role"/>
                 </VBox>
             </HBox>
 
             <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                        style="-fx-background-color:transparent; -fx-border-color:transparent;">
-                <VBox spacing="2" style="-fx-padding: 8 0 8 0;">
+                        focusTraversable="false">
+                <VBox spacing="2" focusTraversable="false"
+                      styleClass="sidebar-scroll-content">
 
                     <!-- DASHBOARD -->
-                    <Label text="TỔNG QUAN" styleClass="sidebar-section-label"/>
+                    <Label text="TỔNG QUAN" styleClass="sidebar-section-label" focusTraversable="false"/>
                     <Button fx:id="btnSoDoMay" text="🗺  Sơ đồ máy"
                             styleClass="menu-button" onAction="#loadSoDoMay"/>
 
                     <!-- VẬN HÀNH -->
-                    <Label text="VẬN HÀNH" styleClass="sidebar-section-label"/>
+                    <Label text="VẬN HÀNH" styleClass="sidebar-section-label" focusTraversable="false"/>
                     <Button fx:id="btnPhienSuDung" text="⏱  Phiên sử dụng"
                             styleClass="menu-button" onAction="#loadPhienSuDung"/>
                     <Button fx:id="btnNapTien" text="💳  Nạp tiền"
@@ -58,7 +61,7 @@
                             styleClass="menu-button" onAction="#loadHoaDon"/>
 
                     <!-- DỊCH VỤ -->
-                    <Label text="DỊCH VỤ" styleClass="sidebar-section-label"/>
+                    <Label text="DỊCH VỤ" styleClass="sidebar-section-label" focusTraversable="false"/>
                     <Button fx:id="btnDichVu" text="🥤  Dịch vụ"
                             styleClass="menu-button" onAction="#loadDichVu"/>
                     <Button fx:id="btnGoiDichVu" text="📦  Gói dịch vụ"
@@ -69,7 +72,7 @@
                             styleClass="menu-button" onAction="#loadNhapHang"/>
 
                     <!-- QUẢN LÝ -->
-                    <Label text="QUẢN LÝ" styleClass="sidebar-section-label"/>
+                    <Label text="QUẢN LÝ" styleClass="sidebar-section-label" focusTraversable="false"/>
                     <Button fx:id="btnKhachHang" text="👥  Khách hàng"
                             styleClass="menu-button" onAction="#loadKhachHang"/>
                     <Button fx:id="btnNhanVien" text="🏢  Nhân viên"
@@ -80,7 +83,7 @@
                             styleClass="menu-button" onAction="#loadKhuMay"/>
 
                     <!-- BÁO CÁO -->
-                    <Label text="BÁO CÁO" styleClass="sidebar-section-label"/>
+                    <Label text="BÁO CÁO" styleClass="sidebar-section-label" focusTraversable="false"/>
                     <Button fx:id="btnThongKe" text="📊  Thống kê"
                             styleClass="menu-button" onAction="#loadThongKe"/>
 
@@ -88,10 +91,12 @@
             </ScrollPane>
 
             <!-- Logout button -->
-            <VBox style="-fx-padding: 0 0 8 0;">
-                <Separator style="-fx-padding: 4 0 4 0;"/>
-                <Button text="🔓  Đăng xuất" styleClass="menu-button"
-                        style="-fx-text-fill:#FF8A80;" onAction="#handleLogout"/>
+            <VBox focusTraversable="false"
+                  styleClass="sidebar-logout-area">
+                <Separator focusTraversable="false"
+                           styleClass="sidebar-logout-separator"/>
+                <Button text="🔓  Đăng xuất" styleClass="menu-button, logout-button"
+                        onAction="#handleLogout"/>
             </VBox>
 
         </VBox>
@@ -99,13 +104,13 @@
 
     <!-- ===== CONTENT AREA ===== -->
     <center>
-        <VBox spacing="0">
+        <VBox spacing="0" styleClass="content-wrapper">
             <!-- Header bar -->
             <HBox styleClass="header-bar" alignment="CENTER_LEFT" spacing="14">
                 <Label fx:id="lblPageTitle" text="Sơ đồ máy" styleClass="header-title"
                        HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblCurrentTime" text="00:00:00"
-                       style="-fx-text-fill:#888888; -fx-font-size:13px;"/>
+                       styleClass="header-time"/>
             </HBox>
 
             <!-- Dynamic content -->

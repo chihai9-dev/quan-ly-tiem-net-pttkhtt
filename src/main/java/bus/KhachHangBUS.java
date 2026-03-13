@@ -57,7 +57,6 @@ public class KhachHangBUS {
             throw new Exception("Mật khẩu không chính xác!");
         }
 
-        SessionManager.setCurrentUser(kh);
         return kh;
     }
 

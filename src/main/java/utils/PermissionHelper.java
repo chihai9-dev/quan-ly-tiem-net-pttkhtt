@@ -72,20 +72,7 @@ public class PermissionHelper {
         }
     }
 
-    /**
-     * Yêu cầu phải là KHACHHANG
-     *
-     * @throws Exception nếu không phải khách hàng
-     */
-    public static void requireKhachHang() throws Exception {
-        if (!SessionManager.isLoggedIn()) {
-            throw new Exception("Vui lòng đăng nhập để thực hiện chức năng này");
-        }
 
-        if (!SessionManager.isKhachHang()) {
-            throw new Exception("Chức năng này chỉ dành cho khách hàng");
-        }
-    }
 
     // ============== METHODS LẤY THÔNG TIN VỚI VALIDATION ==============
 
@@ -116,31 +103,7 @@ public class PermissionHelper {
         return maNV;
     }
 
-    /**
-     * Lấy thông tin khách hàng hiện tại (đã validate)
-     *
-     * @return KhachHang đang đăng nhập
-     * @throws Exception nếu không phải khách hàng hoặc chưa đăng nhập
-     */
-    public static KhachHang getCurrentKhachHang() throws Exception {
-        requireKhachHang();
-        return SessionManager.getCurrentKhachHang();
-    }
 
-    /**
-     * Lấy mã khách hàng hiện tại (đã validate)
-     *
-     * @return Mã khách hàng (đảm bảo không null)
-     * @throws Exception nếu không phải khách hàng hoặc chưa đăng nhập
-     */
-    public static String getCurrentMaKH() throws Exception {
-        requireKhachHang();
-        String maKH = SessionManager.getCurrentMaKH();
-        if (maKH == null || maKH.trim().isEmpty()) {
-            throw new Exception("Không thể xác định mã khách hàng");
-        }
-        return maKH;
-    }
 
     // ============== METHODS KIỂM TRA PHÂN QUYỀN ĐẶC BIỆT ==============
 
@@ -200,50 +163,33 @@ public class PermissionHelper {
 
     /**
      * Kiểm tra người dùng có quyền xem thông tin khách hàng không
-     * - QUANLY: Có quyền xem tất cả
-     * - NHANVIEN: Có quyền xem tất cả
-     * - KHACHHANG: Chỉ xem được chính mình
+     * - QUANLY / NHANVIEN: Có quyền xem tất cả
      *
      * @param maKH Mã khách hàng cần xem
      * @return true nếu có quyền
      * @throws Exception nếu không có quyền
      */
     public static boolean canViewKhachHang(String maKH) throws Exception {
-        requireLogin();
+        requireNhanVien();
 
         if (maKH == null || maKH.trim().isEmpty()) {
             throw new Exception("Mã khách hàng không hợp lệ");
         }
 
-        // Nhân viên có quyền xem tất cả
-        if (SessionManager.isNhanVien()) {
-            return true;
-        }
-
-        // Khách hàng chỉ xem được chính mình
-        if (SessionManager.isKhachHang()) {
-            String currentMaKH = SessionManager.getCurrentMaKH();
-            if (currentMaKH != null && currentMaKH.equals(maKH)) {
-                return true;
-            }
-            throw new Exception("Bạn chỉ có thể xem thông tin của chính mình");
-        }
-
-        return false;
+        return true;
     }
 
     /**
      * Kiểm tra người dùng có quyền sửa thông tin khách hàng không
      * - QUANLY: Có quyền sửa tất cả
      * - NHANVIEN: Không có quyền sửa
-     * - KHACHHANG: Chỉ sửa được chính mình
      *
      * @param maKH Mã khách hàng cần sửa
      * @return true nếu có quyền
      * @throws Exception nếu không có quyền
      */
     public static boolean canEditKhachHang(String maKH) throws Exception {
-        requireLogin();
+        requireNhanVien();
 
         if (maKH == null || maKH.trim().isEmpty()) {
             throw new Exception("Mã khách hàng không hợp lệ");
@@ -254,21 +200,8 @@ public class PermissionHelper {
             return true;
         }
 
-        // NHANVIEN không có quyền sửa thông tin khách hàng
-        if (SessionManager.isNhanVien() && !SessionManager.isQuanLy()) {
-            throw new Exception("Nhân viên không có quyền sửa thông tin khách hàng");
-        }
-
-        // KHACHHANG chỉ sửa được chính mình
-        if (SessionManager.isKhachHang()) {
-            String currentMaKH = SessionManager.getCurrentMaKH();
-            if (currentMaKH != null && currentMaKH.equals(maKH)) {
-                return true;
-            }
-            throw new Exception("Bạn chỉ có thể sửa thông tin của chính mình");
-        }
-
-        return false;
+        // NHANVIEN không có quyền sửa
+        throw new Exception("Nhân viên không có quyền sửa thông tin khách hàng");
     }
 
     /**
@@ -282,12 +215,7 @@ public class PermissionHelper {
      * @throws Exception nếu không có quyền
      */
     public static boolean canViewBaoCao(String loaiBaoCao) throws Exception {
-        requireLogin();
-
-        // Khách hàng không có quyền xem báo cáo
-        if (SessionManager.isKhachHang()) {
-            throw new Exception("Khách hàng không có quyền xem báo cáo");
-        }
+        requireNhanVien();
 
         // QUANLY xem tất cả
         if (SessionManager.isQuanLy()) {
@@ -295,14 +223,10 @@ public class PermissionHelper {
         }
 
         // NHANVIEN chỉ xem báo cáo tổng quan
-        if (SessionManager.isNhanVien()) {
-            if ("TONGQUAN".equals(loaiBaoCao)) {
-                return true;
-            }
-            throw new Exception("Nhân viên chỉ được xem báo cáo tổng quan. Báo cáo chi tiết yêu cầu quyền Quản lý");
+        if ("TONGQUAN".equals(loaiBaoCao)) {
+            return true;
         }
-
-        return false;
+        throw new Exception("Nhân viên chỉ được xem báo cáo tổng quan. Báo cáo chi tiết yêu cầu quyền Quản lý");
     }
 
     // ============== METHODS KIỂM TRA QUYỀN THEO CHỨC NĂNG ==============
@@ -387,7 +311,6 @@ public class PermissionHelper {
         System.out.println("║ Loại TK:       " + SessionManager.getLoaiTaiKhoan());
         System.out.println("║ Là QUANLY:     " + SessionManager.isQuanLy());
         System.out.println("║ Là NHANVIEN:   " + SessionManager.isNhanVien());
-        System.out.println("║ Là KHACHHANG:  " + SessionManager.isKhachHang());
         System.out.println("║ Quyền Admin:   " + SessionManager.hasAdminPermission());
         System.out.println("║ Quyền Staff:   " + SessionManager.hasStaffPermission());
         System.out.println("╚════════════════════════════════════════╝");

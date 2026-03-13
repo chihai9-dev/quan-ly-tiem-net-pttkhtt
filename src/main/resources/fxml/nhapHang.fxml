@@ -8,11 +8,11 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.NhapHangController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" styleClass="no-padding">
 
     <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="12">
-        <Label text="📥" style="-fx-font-size:26px;"/>
+        <Label text="📥" styleClass="page-icon"/>
         <VBox spacing="2">
             <Label text="Nhập Hàng Từ NCC" styleClass="page-title"/>
             <Label text="Tạo phiếu nhập và duyệt cập nhật tồn kho" styleClass="page-subtitle"/>
@@ -69,9 +69,9 @@
     <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.55">
 
         <!-- Left: Phieu table -->
-        <VBox styleClass="page-card" spacing="0" style="-fx-padding:0;">
+        <VBox styleClass="page-card, no-padding" spacing="0">
             <Label text="Danh sách phiếu nhập"
-                   style="-fx-padding:14 16 10 16; -fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1565C0;"/>
+                   styleClass="section-title-blue-padded"/>
 
             <TableView fx:id="tablePhieu" VBox.vgrow="ALWAYS">
                 <columns>
@@ -84,9 +84,7 @@
                 </columns>
             </TableView>
 
-            <HBox alignment="CENTER_RIGHT" spacing="12"
-                  style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
-                         -fx-border-color:#E8EEF6 transparent transparent transparent; -fx-border-width:1 0 0 0;">
+            <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="table-footer">
                 <Label fx:id="lblTotal" text="Tổng: 0 phiếu" styleClass="page-subtitle"/>
             </HBox>
         </VBox>
@@ -95,7 +93,7 @@
         <VBox styleClass="page-card" spacing="12">
             <HBox alignment="CENTER_LEFT" spacing="10">
                 <Label text="Chi tiết phiếu nhập"
-                       style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#1565C0;"/>
+                       styleClass="section-title-blue"/>
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblTrangThaiPhieu" text="" styleClass="badge"/>
             </HBox>
@@ -108,20 +106,20 @@
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
 
-                <Label text="Mã phiếu:" style="-fx-text-fill:#888888;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <Label text="Mã phiếu:" styleClass="detail-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetMaPhieu" text="-" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                <Label text="Nhà cung cấp:" style="-fx-text-fill:#888888;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Label text="Nhà cung cấp:" styleClass="detail-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetNCC" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-                <Label text="Ngày nhập:" style="-fx-text-fill:#888888;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <Label text="Ngày nhập:" styleClass="detail-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetNgay" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                <Label text="Ghi chú:" style="-fx-text-fill:#888888;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label text="Ghi chú:" styleClass="detail-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetGhiChu" text="-" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
             </GridPane>
 
-            <Label text="Chi tiết hàng hóa:" style="-fx-font-weight:bold; -fx-text-fill:#555555;"/>
+            <Label text="Chi tiết hàng hóa:" styleClass="section-title-bold"/>
 
             <TableView fx:id="tableChiTiet" VBox.vgrow="ALWAYS">
                 <columns>
@@ -133,7 +131,7 @@
             </TableView>
 
             <HBox alignment="CENTER_RIGHT">
-                <Label text="Tổng tiền phiếu: " style="-fx-font-weight:bold;"/>
+                <Label text="Tổng tiền phiếu: " styleClass="text-bold"/>
                 <Label fx:id="lblDetTongTien" text="0 ₫" styleClass="currency-label"/>
             </HBox>
         </VBox>

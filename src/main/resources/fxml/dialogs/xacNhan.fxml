@@ -7,21 +7,19 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.dialog.XacNhanDialog"
       stylesheets="@../../css/style.css"
-      spacing="0" style="-fx-min-width:400; -fx-max-width:480;">
+      spacing="0" styleClass="dialog-root-md">
 
     <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
-        <Label fx:id="lblHeaderIcon" text="❓" style="-fx-font-size:22px;"/>
+        <Label fx:id="lblHeaderIcon" text="❓" styleClass="dialog-icon"/>
         <Label fx:id="lblDialogTitle" text="Xác nhận" styleClass="dialog-title"/>
     </HBox>
 
     <VBox styleClass="dialog-body" spacing="16" alignment="CENTER">
-        <Label fx:id="lblIcon" text="❓" style="-fx-font-size:48px;" alignment="CENTER"/>
+        <Label fx:id="lblIcon" text="❓" styleClass="dialog-big-icon" alignment="CENTER"/>
         <Label fx:id="lblMessage" text="Bạn có chắc muốn thực hiện thao tác này?"
-               wrapText="true" style="-fx-text-fill:#333333; -fx-font-size:14px;
-               -fx-alignment:CENTER; -fx-text-alignment:CENTER;" maxWidth="400"/>
+               wrapText="true" styleClass="dialog-message" maxWidth="400"/>
         <Label fx:id="lblSubMessage" text="" wrapText="true"
-               style="-fx-text-fill:#888888; -fx-font-size:12px;
-               -fx-alignment:CENTER; -fx-text-alignment:CENTER;" maxWidth="400"/>
+               styleClass="dialog-sub-message" maxWidth="400"/>
     </VBox>
 
     <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER">

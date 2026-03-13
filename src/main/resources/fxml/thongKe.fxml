@@ -7,11 +7,11 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.ThongKeController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" styleClass="no-padding">
 
     <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="12">
-        <Label text="📊" style="-fx-font-size:26px;"/>
+        <Label text="📊" styleClass="page-icon"/>
         <VBox spacing="2">
             <Label text="Thống Kê &amp; Báo Cáo" styleClass="page-title"/>
             <Label text="Phân tích doanh thu, chi phí và lợi nhuận" styleClass="page-subtitle"/>
@@ -21,18 +21,15 @@
     <!-- Summary cards -->
     <HBox spacing="12">
         <VBox styleClass="stat-card stat-card-green" spacing="4" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblTongThu" text="0 ₫" styleClass="stat-number"
-                   style="-fx-font-size:18px; -fx-text-fill:#388E3C;"/>
+            <Label fx:id="lblTongThu" text="0 ₫" styleClass="stat-number, stat-number-small, stat-number-green"/>
             <Label text="Tổng thu (tháng này)" styleClass="stat-label"/>
         </VBox>
         <VBox styleClass="stat-card stat-card-red" spacing="4" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblTongChi" text="0 ₫" styleClass="stat-number"
-                   style="-fx-font-size:18px; -fx-text-fill:#C62828;"/>
+            <Label fx:id="lblTongChi" text="0 ₫" styleClass="stat-number, stat-number-small, stat-number-red"/>
             <Label text="Tổng chi (ước tính)" styleClass="stat-label"/>
         </VBox>
         <VBox styleClass="stat-card stat-card-blue" spacing="4" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblLoiNhuan" text="0 ₫" styleClass="stat-number"
-                   style="-fx-font-size:18px; -fx-text-fill:#1565C0;"/>
+            <Label fx:id="lblLoiNhuan" text="0 ₫" styleClass="stat-number, stat-number-small, stat-number-blue"/>
             <Label text="Doanh thu hôm nay" styleClass="stat-label"/>
         </VBox>
         <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
@@ -45,9 +42,9 @@
 
         <!-- Tab 1 -->
         <Tab text="📈  Doanh thu">
-            <VBox spacing="12" style="-fx-padding:16;">
+            <VBox spacing="12" styleClass="tab-content-padding">
                 <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
-                    <Label text="Loại:" style="-fx-text-fill:#555555;"/>
+                    <Label text="Loại:" styleClass="text-muted"/>
                     <ComboBox fx:id="cboLoaiTK" styleClass="combo-box" prefWidth="160"
                               onAction="#handleLoaiTKChanged"/>
                     <DatePicker fx:id="dateFrom" promptText="Từ ngày" prefWidth="130"/>
@@ -60,9 +57,9 @@
                 </HBox>
 
                 <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">
-                    <VBox styleClass="page-card" spacing="0" style="-fx-padding:0;">
+                    <VBox styleClass="page-card, no-padding" spacing="0">
                         <Label text="Bảng dữ liệu"
-                               style="-fx-padding:12 16; -fx-font-weight:bold; -fx-text-fill:#1565C0;"/>
+                               styleClass="section-title-blue-padded"/>
                         <TableView fx:id="tableThongKe" VBox.vgrow="ALWAYS">
                             <columns>
                                 <TableColumn fx:id="colThoiGian" text="Thời gian" prefWidth="220"/>
@@ -76,7 +73,7 @@
                     <VBox styleClass="page-card" spacing="10">
                         <Label fx:id="lblChartPlaceholder"
                                text="Nhấn 'Thống kê' để hiển thị biểu đồ"
-                               style="-fx-text-fill:#AAAAAA; -fx-font-size:14px;"/>
+                               styleClass="chart-placeholder"/>
                         <StackPane fx:id="chartContainer" VBox.vgrow="ALWAYS" maxWidth="Infinity"/>
                     </VBox>
                 </SplitPane>
@@ -85,16 +82,16 @@
 
         <!-- Tab 2 -->
         <Tab text="💰  Thu - Chi - Lợi nhuận">
-            <VBox spacing="12" style="-fx-padding:16;">
+            <VBox spacing="12" styleClass="tab-content-padding">
                 <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
-                    <Label text="Khoảng thời gian:" style="-fx-text-fill:#555555;"/>
+                    <Label text="Khoảng thời gian:" styleClass="text-muted"/>
                     <ComboBox fx:id="cboThoiGian" styleClass="combo-box" prefWidth="160"/>
                     <DatePicker fx:id="dateTCFrom" promptText="Từ ngày" prefWidth="130"/>
                     <DatePicker fx:id="dateTCTo" promptText="Đến ngày" prefWidth="130"/>
                     <Button text="📊  Xem" styleClass="btn btn-primary" onAction="#handleThongKeThuChi"/>
                 </HBox>
 
-                <TableView fx:id="tableThuChi" VBox.vgrow="ALWAYS" styleClass="page-card" style="-fx-padding:0;">
+                <TableView fx:id="tableThuChi" VBox.vgrow="ALWAYS" styleClass="page-card, no-padding">
                     <columns>
                         <TableColumn fx:id="colTCThoiGian" text="Thời gian" prefWidth="180"/>
                         <TableColumn fx:id="colTCThu" text="Tổng thu (₫)" prefWidth="160"/>
@@ -107,16 +104,16 @@
 
         <!-- Tab 3 -->
         <Tab text="🏆  Top khách hàng">
-            <VBox spacing="12" style="-fx-padding:16;">
+            <VBox spacing="12" styleClass="tab-content-padding">
                 <HBox spacing="10" alignment="CENTER_LEFT" styleClass="toolbar">
-                    <Label text="Năm:" style="-fx-text-fill:#555555;"/>
+                    <Label text="Năm:" styleClass="text-muted"/>
                     <ComboBox fx:id="cboNamTop" styleClass="combo-box" prefWidth="100"/>
-                    <Label text="Hiển thị top:" style="-fx-text-fill:#555555;"/>
+                    <Label text="Hiển thị top:" styleClass="text-muted"/>
                     <ComboBox fx:id="cboTopN" styleClass="combo-box" prefWidth="100"/>
                     <Button text="📊  Xem" styleClass="btn btn-primary" onAction="#handleThongKeTop"/>
                 </HBox>
 
-                <TableView fx:id="tableTop" VBox.vgrow="ALWAYS" styleClass="page-card" style="-fx-padding:0;">
+                <TableView fx:id="tableTop" VBox.vgrow="ALWAYS" styleClass="page-card, no-padding">
                     <columns>
                         <TableColumn fx:id="colTopSTT" text="STT" prefWidth="60"/>
                         <TableColumn fx:id="colTopTen" text="Khách hàng" prefWidth="220"/>

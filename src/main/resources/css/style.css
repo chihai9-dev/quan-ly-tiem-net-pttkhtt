@@ -18,7 +18,10 @@
     -fx-text-dark: #212121;
     -fx-text-medium: #555555;
     -fx-text-light: #888888;
-    -fx-border-color: #DDEEFF;
+    -fx-border-color: transparent;
+    /* Xóa focus-border trắng mặc định JavaFX */
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
 }
 
 /* === ROOT SCENE === */
@@ -26,8 +29,14 @@
     -fx-font-family: "Segoe UI", "Arial", sans-serif;
     -fx-font-size: 13px;
     -fx-background-color: #F0F2F5;
+    -fx-focus-color: transparent !important;
+     -fx-faint-focus-color: transparent !important;
 }
 
+.text-field, .button, .table-view, .scroll-pane {
+    -fx-background-insets: 0, 0;
+    -fx-focus-traversable: true; /* Vẫn cho phép focus nhưng không hiện viền */
+}
 /* =========================================
    SIDEBAR / NAVIGATION
    ========================================= */
@@ -40,6 +49,8 @@
 .sidebar-logo-area {
     -fx-background-color: #142B47;
     -fx-padding: 20 15 20 15;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .sidebar-logo-text {
@@ -90,6 +101,50 @@
     -fx-padding: 5 0 5 0;
 }
 
+/* Ẩn toàn bộ border/outline/focus-ring cho các container trong sidebar */
+.sidebar VBox,
+.sidebar HBox,
+.sidebar StackPane,
+.sidebar Label {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.sidebar VBox:focused,
+.sidebar HBox:focused,
+.sidebar StackPane:focused,
+.sidebar Label:focused {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+/* ScrollPane trong sidebar không có border nào */
+.sidebar .scroll-pane,
+.sidebar .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.sidebar .scroll-bar:vertical {
+    -fx-background-color: #1E3A5F;
+    -fx-border-color: transparent;
+}
+
+.sidebar .scroll-bar:vertical .track {
+    -fx-background-color: #1A3255;
+}
+
+.sidebar .scroll-bar:vertical .thumb {
+    -fx-background-color: #2A4F7A;
+    -fx-background-radius: 4;
+}
+
 /* =========================================
    HEADER / TOP BAR
    ========================================= */
@@ -115,6 +170,10 @@
 .header-avatar {
     -fx-background-color: #1565C0;
     -fx-background-radius: 50%;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-border-radius: 50%;
     -fx-min-width: 34px;
     -fx-min-height: 34px;
     -fx-max-width: 34px;
@@ -123,6 +182,15 @@
     -fx-font-weight: bold;
     -fx-font-size: 14px;
     -fx-alignment: CENTER;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.header-avatar:focused {
+    -fx-background-color: #1565C0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
 }
 
 /* =========================================
@@ -189,8 +257,8 @@
 .toolbar {
     -fx-background-color: #FAFAFA;
     -fx-padding: 10 20 10 20;
-    -fx-border-color: #E8EEF6;
-    -fx-border-width: 0 0 1 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-spacing: 8;
 }
 
@@ -306,9 +374,9 @@
 }
 
 .text-field, .password-field, .text-area {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CCDDEE;
-    -fx-border-width: 1;
+    -fx-background-color: #F5F7FA;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-padding: 8 12 8 12;
@@ -318,22 +386,23 @@
     -fx-pref-height: 36px;
 }
 
+
 .text-field:focused, .password-field:focused, .text-area:focused {
-    -fx-border-color: #1565C0;
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.15), 4, 0, 0, 0);
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.12), 4, 0, 0, 0);
 }
 
 .text-field:disabled, .password-field:disabled {
-    -fx-background-color: #F5F5F5;
-    -fx-border-color: #E0E0E0;
+    -fx-background-color: #F0F0F0;
+    -fx-border-color: transparent;
     -fx-text-fill: #888888;
 }
-
 .combo-box {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CCDDEE;
-    -fx-border-width: 1;
+    -fx-background-color: #F5F7FA;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-font-size: 13px;
@@ -341,8 +410,10 @@
 }
 
 .combo-box:focused {
-    -fx-border-color: #1565C0;
-    -fx-border-width: 2;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.12), 4, 0, 0, 0);
 }
 
 .combo-box .list-cell {
@@ -360,21 +431,24 @@
 }
 
 .date-picker {
-    -fx-border-color: #CCDDEE;
-    -fx-border-width: 1;
+    -fx-background-color: #F5F7FA;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-pref-height: 36px;
 }
 
 .date-picker:focused {
-    -fx-border-color: #1565C0;
-    -fx-border-width: 2;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.12), 4, 0, 0, 0);
 }
 
 .text-field-error {
     -fx-border-color: #C62828;
-    -fx-border-width: 2;
+    -fx-border-width: 1;
 }
 
 .error-label {
@@ -387,8 +461,8 @@
    ========================================= */
 .table-view {
     -fx-background-color: #FFFFFF;
-    -fx-border-color: #E8EEF6;
-    -fx-border-width: 1;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-border-radius: 6;
     -fx-background-radius: 6;
 }
@@ -400,8 +474,8 @@
 
 .table-view .column-header, .table-view .filler {
     -fx-background-color: transparent;
-    -fx-border-color: transparent #E0E8F4 transparent transparent;
-    -fx-border-width: 0 1 0 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-size: 38px;
 }
 
@@ -460,9 +534,9 @@
    SEARCH BAR
    ========================================= */
 .search-bar {
-    -fx-background-color: #FFFFFF;
-    -fx-border-color: #CCDDEE;
-    -fx-border-width: 1;
+    -fx-background-color: #F5F7FA;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 6 14 6 14;
@@ -472,20 +546,37 @@
 }
 
 .search-bar:focused {
-    -fx-border-color: #1565C0;
-    -fx-border-width: 2;
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: dropshadow(gaussian, rgba(21,101,192,0.12), 4, 0, 0, 0);
 }
 
 /* =========================================
-   SCROLL PANE
+   SCROLL PANE - xóa tất cả border mặc định
    ========================================= */
 .scroll-pane {
     -fx-background-color: transparent;
+    -fx-background: transparent;
     -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.scroll-pane:focused {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
 }
 
 .scroll-bar:vertical .track, .scroll-bar:horizontal .track {
@@ -732,4 +823,536 @@
     -fx-background-radius: 4;
     -fx-font-size: 12px;
     -fx-padding: 5 10 5 10;
+}
+
+/* =========================================
+   EXTRACTED FROM INLINE STYLES
+   ========================================= */
+
+/* --- Common page layout --- */
+.no-padding { -fx-padding: 0; }
+.page-header-padding { -fx-padding: 4 0 4 0; }
+.page-icon { -fx-font-size: 26px; }
+
+/* --- Sidebar elements (main.fxml) --- */
+.sidebar-logo-icon-label {
+    -fx-font-size: 26px;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.sidebar-user-strip {
+    -fx-background-color: #1A3255;
+    -fx-padding: 12 15 12 15;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.sidebar-avatar-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.sidebar-user-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+}
+
+.sidebar-user-role {
+    -fx-text-fill: #90CAF9;
+    -fx-font-size: 11px;
+    -fx-border-color: transparent;
+}
+
+.sidebar-scroll-content {
+    -fx-padding: 8 0 8 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.sidebar-logout-area {
+    -fx-padding: 0 0 8 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.sidebar-logout-separator {
+    -fx-padding: 4 0 4 0;
+    -fx-border-color: #2A4F7A;
+}
+
+.logout-button {
+    -fx-text-fill: #FF8A80;
+}
+
+.content-wrapper {
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.header-time {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13px;
+}
+
+/* --- Legend box (sodoMay.fxml) --- */
+.legend-box {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 4, 0, 0, 2);
+}
+
+.legend-dot {
+    -fx-background-radius: 3;
+    -fx-min-width: 14;
+    -fx-min-height: 14;
+}
+
+.legend-dot-green  { -fx-background-color: #4CAF50; }
+.legend-dot-blue   { -fx-background-color: #2196F3; }
+.legend-dot-orange { -fx-background-color: #FF9800; }
+.legend-dot-gray   { -fx-background-color: #CCCCCC; }
+
+.legend-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #555555;
+}
+
+/* --- Stat card number colors --- */
+.stat-number-green  { -fx-text-fill: #388E3C; }
+.stat-number-blue   { -fx-text-fill: #1565C0; }
+.stat-number-orange { -fx-text-fill: #F57C00; }
+.stat-number-red    { -fx-text-fill: #C62828; }
+.stat-number-small  { -fx-font-size: 18px; }
+
+/* --- Filter / toolbar labels --- */
+.filter-label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 13px;
+}
+
+.text-muted    { -fx-text-fill: #555555; }
+.text-light    { -fx-text-fill: #888888; }
+.text-lighter  { -fx-text-fill: #AAAAAA; }
+.text-green    { -fx-text-fill: #388E3C; }
+.text-red      { -fx-text-fill: #E53935; }
+.text-red-dark { -fx-text-fill: #C62828; }
+.text-blue     { -fx-text-fill: #1565C0; }
+.text-bold     { -fx-font-weight: bold; }
+.text-separator { -fx-text-fill: #CCCCCC; }
+.font-small    { -fx-font-size: 11px; }
+.font-12       { -fx-font-size: 12px; }
+.font-14       { -fx-font-size: 14px; }
+.font-16       { -fx-font-size: 16px; }
+
+/* --- Table footer --- */
+.table-footer {
+    -fx-padding: 10 16 10 16;
+    -fx-background-color: #FAFBFF;
+    -fx-border-color: #E8EEF6 transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* --- Status bar (sodoMay) --- */
+.status-bar {
+    -fx-padding: 4 0 0 0;
+}
+
+.status-selected {
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+}
+
+.status-auto-refresh {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 11px;
+}
+
+/* --- Section titles --- */
+.section-title-blue {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1565C0;
+}
+
+.section-title-blue-padded {
+    -fx-padding: 14 16 10 16;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1565C0;
+}
+
+.section-title-bold {
+    -fx-font-weight: bold;
+    -fx-text-fill: #555555;
+}
+
+/* --- Detail labels (hoaDon, nhapHang) --- */
+.detail-label {
+    -fx-text-fill: #888888;
+}
+
+/* --- Summary / info boxes (napTien) --- */
+.customer-info-box {
+    -fx-background-color: #EBF5FB;
+    -fx-background-radius: 8;
+    -fx-padding: 14;
+    -fx-border-color: #BBDEFB;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.promo-info-box {
+    -fx-background-color: #F1F8E9;
+    -fx-background-radius: 6;
+    -fx-padding: 12;
+    -fx-border-color: #C5E1A5;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+}
+
+.summary-box-blue {
+    -fx-background-color: #EBF2FA;
+    -fx-background-radius: 8;
+    -fx-padding: 14;
+    -fx-border-color: #BBDEFB;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+.quick-amount-btn {
+    -fx-font-size: 11px;
+    -fx-padding: 4 8;
+}
+
+.quick-amounts-padding {
+    -fx-padding: 4 0 0 0;
+}
+
+.btn-confirm-large {
+    -fx-font-size: 14px;
+    -fx-padding: 12;
+}
+
+/* --- History header (napTien) --- */
+.history-header {
+    -fx-padding: 16 16 12 16;
+    -fx-border-color: transparent transparent #E8EEF6 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+/* --- Live time (phienSuDung) --- */
+.live-time {
+    -fx-text-fill: #1565C0;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.refresh-btn-large {
+    -fx-font-size: 16px;
+}
+
+/* --- Tab content padding --- */
+.tab-content-padding {
+    -fx-padding: 16;
+}
+
+/* --- Chart placeholder --- */
+.chart-placeholder {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 14px;
+}
+
+/* --- Separator padding (hoaDon) --- */
+.separator-vertical-pad {
+    -fx-padding: 0 4;
+}
+
+/* --- No selection label --- */
+.no-selection-label {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 13px;
+}
+
+/* --- Payment labels --- */
+.payment-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* =========================================
+   MANAGER PAGES (dichVu, goiDichVu)
+   ========================================= */
+.manager-page-root {
+    -fx-padding: 20;
+    -fx-background-color: #F8FAFC;
+}
+
+.manager-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E40AF;
+}
+
+.manager-subtitle {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+}
+
+.manager-toolbar {
+    -fx-padding: 10;
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.manager-search {
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 6 10;
+}
+
+.manager-combo {
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+}
+
+.manager-table {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+.manager-total {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+}
+
+.btn-blue {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-red-manager {
+    -fx-background-color: #DC2626;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-amber {
+    -fx-background-color: #D97706;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-gray {
+    -fx-background-color: #64748B;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+/* --- Detail form panel (dichVu, goiDichVu) --- */
+.form-panel {
+    -fx-background-color: white;
+    -fx-background: white;
+    -fx-border-radius: 12;
+}
+
+.form-panel-content {
+    -fx-padding: 24;
+    -fx-background-color: white;
+}
+
+.form-title-dark {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.form-field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748B;
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+}
+
+.field-readonly {
+    -fx-background-color: #F1F5F9;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.field-input {
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8;
+}
+
+.btn-save {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.btn-cancel {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-padding: 10;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+/* table-view inside page-card - rounded */
+.table-rounded {
+    -fx-background-radius: 8;
+}
+
+.table-no-radius {
+    -fx-background-radius: 0;
+}
+
+/* --- Register page --- */
+.register-card-size {
+    -fx-max-width: 480;
+    -fx-min-width: 480;
+}
+
+.register-header-padding {
+    -fx-padding: 0 0 10 0;
+}
+
+.register-icon {
+    -fx-font-size: 36px;
+}
+
+.register-buttons-padding {
+    -fx-padding: 6 0 0 0;
+}
+
+.register-back-btn {
+    -fx-alignment: CENTER;
+}
+
+.register-center-padding {
+    -fx-padding: 30 0 30 0;
+}
+
+/* --- Dialog styles --- */
+.dialog-root-sm {
+    -fx-min-width: 380;
+    -fx-max-width: 460;
+}
+
+.dialog-root-md {
+    -fx-min-width: 400;
+    -fx-max-width: 480;
+}
+
+.dialog-root-lg {
+    -fx-min-width: 460;
+    -fx-max-width: 520;
+}
+
+.dialog-root-xl {
+    -fx-min-width: 500;
+}
+
+.dialog-icon {
+    -fx-font-size: 22px;
+}
+
+.dialog-big-icon {
+    -fx-font-size: 48px;
+}
+
+.dialog-big-icon-lg {
+    -fx-font-size: 52px;
+}
+
+.dialog-message {
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+    -fx-text-alignment: CENTER;
+}
+
+.dialog-sub-message {
+    -fx-text-fill: #888888;
+    -fx-font-size: 12px;
+    -fx-text-alignment: CENTER;
+}
+
+.dialog-phien-info {
+    -fx-text-fill: #90CAF9;
+    -fx-font-size: 12px;
+}
+
+.dialog-order-summary {
+    -fx-background-color: #EBF5FB;
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;
+}
+
+.dialog-qty-btn {
+    -fx-padding: 4 10;
+}
+
+.dialog-qty-field {
+    -fx-alignment: CENTER;
+}
+
+.dialog-scroll-max {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-max-height: 480;
+}
+
+/* --- Column alignment (used in table columns) --- */
+.col-center       { -fx-alignment: CENTER; }
+.col-center-left  { -fx-alignment: CENTER-LEFT; }
+.col-center-right { -fx-alignment: CENTER-RIGHT; }
+
+/* --- KH avatar label in napTien --- */
+.avatar-label-white {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+.kh-name-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
 }

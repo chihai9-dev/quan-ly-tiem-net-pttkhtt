@@ -2,7 +2,6 @@ package gui.controller;
 
 import bus.PhienSuDungBUS;
 import dao.*;
-import entity.KhachHang;
 import entity.NhanVien;
 import entity.PhienSuDung;
 import utils.SessionManager;
@@ -123,14 +122,6 @@ public class MainController implements Initializable {
                 if (lblAvatarChar != null && nv.getTen() != null && !nv.getTen().isEmpty())
                     lblAvatarChar.setText(String.valueOf(nv.getTen().charAt(0)).toUpperCase());
             }
-        } else if (SessionManager.isKhachHang()) {
-            KhachHang kh = SessionManager.getCurrentKhachHang();
-            if (kh != null) {
-                if (lblUserName != null) lblUserName.setText(kh.getHo() + " " + kh.getTen());
-                if (lblUserRole != null) lblUserRole.setText("KHACHHANG");
-                if (lblAvatarChar != null && kh.getTen() != null && !kh.getTen().isEmpty())
-                    lblAvatarChar.setText(String.valueOf(kh.getTen().charAt(0)).toUpperCase());
-            }
         }
         if (lblCurrentTime != null) {
             lblCurrentTime.setText(
@@ -142,9 +133,6 @@ public class MainController implements Initializable {
         if (!SessionManager.isQuanLy()) {
             hide(btnNhanVien); hide(btnThongKe);
             hide(btnNhapHang); hide(btnKhuyenMai);
-        }
-        if (SessionManager.isKhachHang()) {
-            hide(btnMayTinh); hide(btnKhuMay); hide(btnKhachHang);
         }
     }
 
