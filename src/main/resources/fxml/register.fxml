@@ -9,16 +9,14 @@
            stylesheets="@../css/login.css, @../css/style.css"
            styleClass="login-root">
 
-    <ScrollPane fitToWidth="true" fitToHeight="true"
-                style="-fx-background-color:transparent; -fx-border-color:transparent;">
-        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 30 0 30 0;">
+    <ScrollPane fitToWidth="true" fitToHeight="true">
+        <VBox alignment="CENTER" spacing="0" styleClass="register-center-padding">
 
-            <VBox styleClass="login-card" spacing="14"
-                  style="-fx-max-width: 480; -fx-min-width: 480;">
+            <VBox styleClass="login-card, register-card-size" spacing="14">
 
                 <!-- Header -->
-                <VBox alignment="CENTER" spacing="6" style="-fx-padding: 0 0 10 0;">
-                    <Label text="📝" style="-fx-font-size: 36px;"/>
+                <VBox alignment="CENTER" spacing="6" styleClass="register-header-padding">
+                    <Label text="📝" styleClass="register-icon"/>
                     <Label text="ĐĂNG KÝ TÀI KHOẢN" styleClass="login-title"/>
                     <Label text="Tạo tài khoản khách hàng mới" styleClass="login-subtitle"/>
                 </VBox>
@@ -71,11 +69,11 @@
                 <Label fx:id="lblError" styleClass="login-error-label" text="" wrapText="true"/>
 
                 <!-- Buttons -->
-                <VBox spacing="8" style="-fx-padding: 6 0 0 0;">
+                <VBox spacing="8" styleClass="register-buttons-padding">
                     <Button fx:id="btnDangKy" text="ĐĂNG KÝ" styleClass="login-btn"
                             maxWidth="Infinity" onAction="#handleDangKy"/>
-                    <Button text="← Quay lại đăng nhập" styleClass="login-register-link"
-                            maxWidth="Infinity" style="-fx-alignment: CENTER;"
+                    <Button text="← Quay lại đăng nhập" styleClass="login-register-link, register-back-btn"
+                            maxWidth="Infinity"
                             onAction="#handleBackToLogin"/>
                 </VBox>
 

@@ -4,146 +4,130 @@
 <?import javafx.geometry.*?>
 
 <HBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.controller.DichVuController" spacing="20"
-      style="-fx-padding: 20; -fx-background-color: #F8FAFC;">
+       fx:controller="gui.controller.DichVuController" spacing="20"
+       styleClass="manager-page-root">
 
-    <!-- LEFT -->
-    <VBox spacing="15" HBox.hgrow="ALWAYS">
+       <!-- LEFT -->
+       <VBox spacing="15" HBox.hgrow="ALWAYS">
 
-        <VBox spacing="4">
-            <Label text="QUAN LY DICH VU"
-                   style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#1E40AF;"/>
-            <Label fx:id="lblSubtitle" text="..."
-                   style="-fx-text-fill:#64748B; -fx-font-size:13px;"/>
-        </VBox>
+              <VBox spacing="4">
+                     <Label text="QUAN LY DICH VU"
+                            styleClass="manager-title" />
+                     <Label fx:id="lblSubtitle" text="..."
+                            styleClass="manager-subtitle" />
+              </VBox>
 
-        <HBox spacing="10" alignment="CENTER_LEFT"
-              style="-fx-padding:10; -fx-background-color:white; -fx-background-radius:8;
-                     -fx-border-color:#E2E8F0; -fx-border-radius:8;">
-            <TextField fx:id="txtSearch" prefWidth="230" onKeyReleased="#handleSearch"
-                       style="-fx-border-color:#CBD5E1; -fx-border-radius:6;
-                              -fx-background-radius:6; -fx-padding:6 10;"/>
-            <ComboBox fx:id="cboTrangThai" prefWidth="150"
-                      style="-fx-border-color:#CBD5E1; -fx-border-radius:6; -fx-background-radius:6;"/>
-            <Pane HBox.hgrow="ALWAYS"/>
-            <Button fx:id="btnThem"     onAction="#handleThem"
-                    style="-fx-background-color:#2563EB; -fx-text-fill:white; -fx-font-weight:bold;
-                           -fx-padding:8 16; -fx-background-radius:6; -fx-cursor:hand;"/>
-            <Button fx:id="btnXoa"      onAction="#handleXoa" disable="true"
-                    style="-fx-background-color:#DC2626; -fx-text-fill:white; -fx-font-weight:bold;
-                           -fx-padding:8 16; -fx-background-radius:6; -fx-cursor:hand;"/>
-            <Button fx:id="btnKhoiPhuc" onAction="#handleKhoiPhuc" disable="true"
-                    style="-fx-background-color:#D97706; -fx-text-fill:white; -fx-font-weight:bold;
-                           -fx-padding:8 16; -fx-background-radius:6; -fx-cursor:hand;"/>
-            <Button fx:id="btnLamMoi"   onAction="#handleLamMoi"
-                    style="-fx-background-color:#64748B; -fx-text-fill:white; -fx-font-weight:bold;
-                           -fx-padding:8 16; -fx-background-radius:6; -fx-cursor:hand;"/>
-        </HBox>
+              <HBox spacing="10" alignment="CENTER_LEFT"
+                     styleClass="manager-toolbar">
+                     <TextField fx:id="txtSearch" prefWidth="230" onKeyReleased="#handleSearch"
+                            styleClass="manager-search" />
+                     <ComboBox fx:id="cboTrangThai" prefWidth="150"
+                            styleClass="manager-combo" />
+                     <Pane HBox.hgrow="ALWAYS" />
+                     <Button fx:id="btnThem" onAction="#handleThem"
+                            styleClass="btn-blue" />
+                     <Button fx:id="btnXoa" onAction="#handleXoa" disable="true"
+                            styleClass="btn-red-manager" />
+                     <Button fx:id="btnKhoiPhuc" onAction="#handleKhoiPhuc" disable="true"
+                            styleClass="btn-amber" />
+                     <Button fx:id="btnLamMoi" onAction="#handleLamMoi"
+                            styleClass="btn-gray" />
+              </HBox>
 
-        <TableView fx:id="tableView" VBox.vgrow="ALWAYS" onMouseClicked="#handleRowClick"
-                   style="-fx-background-radius:8; -fx-border-color:#CBD5E1; -fx-border-radius:8;">
-            <columns>
-                <TableColumn fx:id="colMaDV"      prefWidth="90"  style="-fx-alignment:CENTER;"/>
-                <TableColumn fx:id="colTenDV"     prefWidth="220" style="-fx-alignment:CENTER-LEFT;"/>
-                <TableColumn fx:id="colDonGia"    prefWidth="110" style="-fx-alignment:CENTER-RIGHT;"/>
-                <TableColumn fx:id="colTonKho"    prefWidth="80"  style="-fx-alignment:CENTER;"/>
-                <TableColumn fx:id="colDonVi"     prefWidth="80"  style="-fx-alignment:CENTER;"/>
-                <TableColumn fx:id="colTrangThai" prefWidth="120" style="-fx-alignment:CENTER;"/>
-            </columns>
-            <columnResizePolicy>
-                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-            </columnResizePolicy>
-        </TableView>
+              <TableView fx:id="tableView" VBox.vgrow="ALWAYS" onMouseClicked="#handleRowClick"
+                     styleClass="manager-table">
+                     <columns>
+                            <TableColumn fx:id="colMaDV" prefWidth="90"
+                                   styleClass="col-center" />
+                            <TableColumn fx:id="colTenDV" prefWidth="220"
+                                   styleClass="col-center-left" />
+                            <TableColumn fx:id="colDonGia" prefWidth="110"
+                                   styleClass="col-center-right" />
+                            <TableColumn fx:id="colTonKho" prefWidth="80"
+                                   styleClass="col-center" />
+                            <TableColumn fx:id="colDonVi" prefWidth="80"
+                                   styleClass="col-center" />
+                            <TableColumn fx:id="colTrangThai" prefWidth="120"
+                                   styleClass="col-center" />
+                     </columns>
+                     <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+              </TableView>
 
-        <HBox alignment="CENTER_RIGHT">
-            <Label fx:id="lblTotal" text="..."
-                   style="-fx-text-fill:#64748B; -fx-font-size:12px;"/>
-        </HBox>
+              <HBox alignment="CENTER_RIGHT">
+                     <Label fx:id="lblTotal" text="..."
+                            styleClass="manager-total" />
+              </HBox>
 
-    </VBox>
+       </VBox>
 
-    <!-- RIGHT: Form - an mac dinh -->
-    <ScrollPane fx:id="paneDetail" prefWidth="340" minWidth="300"
-                fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
-                visible="false" managed="false"
-                style="-fx-background-color:white; -fx-background:white;
-                       -fx-border-color:#E2E8F0; -fx-border-radius:12;">
+       <!-- RIGHT: Form - an mac dinh -->
+       <ScrollPane fx:id="paneDetail" prefWidth="340" minWidth="300"
+              fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+              visible="false" managed="false"
+              styleClass="form-panel">
 
-        <VBox spacing="16" style="-fx-padding:24; -fx-background-color:white;">
+              <VBox spacing="16" styleClass="form-panel-content">
 
-            <!-- fx:id de Controller set text tieng Viet -->
-            <Label fx:id="lblFormTitle" text="."
-                   style="-fx-font-size:17px; -fx-font-weight:bold; -fx-text-fill:#1E293B;
-                          -fx-border-color:transparent; -fx-background-color:transparent;"/>
+                     <!-- fx:id de Controller set text tieng Viet -->
+                     <Label fx:id="lblFormTitle" text="."
+                            styleClass="form-title-dark" />
 
-            <VBox spacing="4">
-                <Label fx:id="lblMaDV" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <TextField fx:id="detailMaDV" editable="false"
-                           style="-fx-background-color:#F1F5F9; -fx-border-color:#CBD5E1;
-                                  -fx-border-radius:6; -fx-background-radius:6; -fx-padding:8;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblMaDV" text="."
+                                   styleClass="form-field-label" />
+                            <TextField fx:id="detailMaDV" editable="false"
+                                   styleClass="field-readonly" />
+                     </VBox>
 
-            <VBox spacing="4">
-                <Label fx:id="lblTenDV" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <TextField fx:id="detailTenDV"
-                           style="-fx-border-color:#CBD5E1; -fx-border-radius:6;
-                                  -fx-background-radius:6; -fx-padding:8;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblTenDV" text="."
+                                   styleClass="form-field-label" />
+                            <TextField fx:id="detailTenDV"
+                                   styleClass="field-input" />
+                     </VBox>
 
-            <VBox spacing="4">
-                <Label fx:id="lblLoaiDV" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <ComboBox fx:id="cboLoaiDV" maxWidth="Infinity"
-                          style="-fx-border-color:#CBD5E1; -fx-border-radius:6; -fx-background-radius:6;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblLoaiDV" text="."
+                                   styleClass="form-field-label" />
+                            <ComboBox fx:id="cboLoaiDV" maxWidth="Infinity"
+                                   styleClass="manager-combo" />
+                     </VBox>
 
-            <VBox spacing="4">
-                <Label fx:id="lblDonGia" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <TextField fx:id="detailDonGia"
-                           style="-fx-border-color:#CBD5E1; -fx-border-radius:6;
-                                  -fx-background-radius:6; -fx-padding:8;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblDonGia" text="."
+                                   styleClass="form-field-label" />
+                            <TextField fx:id="detailDonGia"
+                                   styleClass="field-input" />
+                     </VBox>
 
-            <VBox spacing="4">
-                <Label fx:id="lblDonViTinh" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <TextField fx:id="detailDonVi"
-                           style="-fx-border-color:#CBD5E1; -fx-border-radius:6;
-                                  -fx-background-radius:6; -fx-padding:8;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblDonViTinh" text="."
+                                   styleClass="form-field-label" />
+                            <TextField fx:id="detailDonVi"
+                                   styleClass="field-input" />
+                     </VBox>
 
-            <VBox spacing="4">
-                <Label fx:id="lblSoLuongTon" text="."
-                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#64748B;
-                              -fx-border-color:transparent; -fx-background-color:transparent;"/>
-                <TextField fx:id="detailTonKho" editable="false"
-                           style="-fx-background-color:#F1F5F9; -fx-border-color:#CBD5E1;
-                                  -fx-border-radius:6; -fx-background-radius:6; -fx-padding:8;"/>
-            </VBox>
+                     <VBox spacing="4">
+                            <Label fx:id="lblSoLuongTon" text="."
+                                   styleClass="form-field-label" />
+                            <TextField fx:id="detailTonKho" editable="false"
+                                   styleClass="field-readonly" />
+                     </VBox>
 
-            <Pane prefHeight="8"/>
+                     <Pane prefHeight="8" />
 
-            <HBox spacing="10">
-                <Button fx:id="btnLuu" onAction="#handleLuu"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity" visible="false"
-                        style="-fx-background-color:#2563EB; -fx-text-fill:white; -fx-font-weight:bold;
-                               -fx-padding:10; -fx-background-radius:6; -fx-cursor:hand;"/>
-                <Button fx:id="btnHuy" onAction="#handleHuy"
-                        HBox.hgrow="ALWAYS" maxWidth="Infinity" visible="false"
-                        style="-fx-background-color:#F1F5F9; -fx-text-fill:#475569; -fx-font-weight:bold;
-                               -fx-padding:10; -fx-background-radius:6; -fx-border-color:#CBD5E1;
-                               -fx-cursor:hand;"/>
-            </HBox>
+                     <HBox spacing="10">
+                            <Button fx:id="btnLuu" onAction="#handleLuu"
+                                   HBox.hgrow="ALWAYS" maxWidth="Infinity" visible="false"
+                                   styleClass="btn-save" />
+                            <Button fx:id="btnHuy" onAction="#handleHuy"
+                                   HBox.hgrow="ALWAYS" maxWidth="Infinity" visible="false"
+                                   styleClass="btn-cancel" />
+                     </HBox>
 
-        </VBox>
-    </ScrollPane>
+              </VBox>
+       </ScrollPane>
 
 </HBox>

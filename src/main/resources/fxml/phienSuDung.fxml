@@ -7,29 +7,28 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.PhienSuDungController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" styleClass="no-padding">
 
     <!-- Header -->
     <HBox alignment="CENTER_LEFT" spacing="12">
-        <Label text="⏱" style="-fx-font-size:26px;"/>
+        <Label text="⏱" styleClass="page-icon"/>
         <VBox spacing="2">
             <Label text="Quản Lý Phiên Sử Dụng" styleClass="page-title"/>
             <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
         </VBox>
         <Pane HBox.hgrow="ALWAYS"/>
         <Label fx:id="lblLiveTime" text="🕐 00:00:00"
-               style="-fx-text-fill:#1565C0; -fx-font-size:16px; -fx-font-weight:bold;"/>
+               styleClass="live-time"/>
     </HBox>
 
     <!-- Stats Cards -->
     <HBox spacing="12">
         <VBox styleClass="stat-card stat-card-blue" spacing="4" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblDangChoi" text="0" styleClass="stat-number" style="-fx-text-fill:#1565C0;"/>
+            <Label fx:id="lblDangChoi" text="0" styleClass="stat-number, stat-number-blue"/>
             <Label text="Phiên đang chơi" styleClass="stat-label"/>
         </VBox>
         <VBox styleClass="stat-card stat-card-green" spacing="4" HBox.hgrow="ALWAYS">
-            <Label fx:id="lblDoanhThuNgay" text="0 ₫" styleClass="stat-number"
-                   style="-fx-text-fill:#388E3C; -fx-font-size:18px;"/>
+            <Label fx:id="lblDoanhThuNgay" text="0 ₫" styleClass="stat-number, stat-number-green, stat-number-small"/>
             <Label text="Doanh thu hôm nay" styleClass="stat-label"/>
         </VBox>
         <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
@@ -49,12 +48,11 @@
                 onAction="#handleKetThucPhien" disable="true"/>
         <Button fx:id="btnOrderDV" text="🥤  Order DV" styleClass="btn btn-warning"
                 onAction="#handleOrderDichVu" disable="true"/>
-        <Button text="↺" styleClass="btn btn-secondary" onAction="#handleRefresh"
-                style="-fx-font-size:16px;"/>
+        <Button text="↺" styleClass="btn btn-secondary, refresh-btn-large" onAction="#handleRefresh"/>
     </HBox>
 
     <!-- Table -->
-    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding:0;">
+    <VBox VBox.vgrow="ALWAYS" styleClass="page-card, no-padding" spacing="0">
         <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="colMaPhien"   text="Mã phiên"       prefWidth="110"/>
@@ -68,10 +66,7 @@
             </columns>
         </TableView>
 
-        <HBox alignment="CENTER_RIGHT" spacing="12"
-              style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
-                     -fx-border-color:#E8EEF6 transparent transparent transparent;
-                     -fx-border-width:1 0 0 0;">
+        <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="table-footer">
             <Label fx:id="lblTotal" text="Tổng: 0 phiên" styleClass="page-subtitle"/>
         </HBox>
     </VBox>

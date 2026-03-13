@@ -8,12 +8,12 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.KhachHangController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" styleClass="no-padding">
 
     <!-- Page Header -->
     <HBox alignment="CENTER_LEFT" spacing="12"
-          style="-fx-padding: 4 0 4 0;">
-        <Label text="👥" style="-fx-font-size:26px;"/>
+          styleClass="page-header-padding">
+        <Label text="👥" styleClass="page-icon"/>
         <VBox spacing="2">
             <Label text="Quản Lý Khách Hàng" styleClass="page-title"/>
             <Label fx:id="lblSubtitle" text="Đang tải..." styleClass="page-subtitle"/>
@@ -38,9 +38,9 @@
     </HBox>
 
     <!-- Table -->
-    <VBox VBox.vgrow="ALWAYS" styleClass="page-card" spacing="0" style="-fx-padding: 0;">
+    <VBox VBox.vgrow="ALWAYS" styleClass="page-card, no-padding" spacing="0">
         <TableView fx:id="tableView" VBox.vgrow="ALWAYS"
-                   style="-fx-background-radius: 8;">
+                   styleClass="table-rounded">
             <TableColumn fx:id="colMaKH" text="Mã KH" prefWidth="80"/>
             <TableColumn fx:id="colHoTen" text="Họ tên" prefWidth="180"/>
             <TableColumn fx:id="colSDT" text="Điện thoại" prefWidth="120"/>
@@ -51,10 +51,7 @@
         </TableView>
 
         <!-- Footer -->
-        <HBox alignment="CENTER_RIGHT" spacing="12"
-              style="-fx-padding: 10 16 10 16; -fx-background-color:#FAFBFF;
-                     -fx-border-color:#E8EEF6 transparent transparent transparent;
-                     -fx-border-width: 1 0 0 0;">
+        <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="table-footer">
             <Label fx:id="lblTotal" text="Tổng: 0 bản ghi" styleClass="page-subtitle"/>
         </HBox>
     </VBox>

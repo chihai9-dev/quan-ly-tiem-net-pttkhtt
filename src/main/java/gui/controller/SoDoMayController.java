@@ -106,8 +106,7 @@ public class SoDoMayController implements Initializable {
             List<MayTinh> mayInKhu = grouped.getOrDefault(khu.getMakhu(), List.of());
 
             VBox khuBox = new VBox(10);
-            khuBox.setStyle("-fx-background-color:#FFFFFF; -fx-background-radius:10; -fx-padding:16;" +
-                            "-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);");
+            khuBox.setStyle("-fx-background-color:#F8FAFF; -fx-background-radius:10; -fx-padding:16;");
 
             Label khuLabel = new Label("📍 " + khu.getTenkhu() +
                     "  (" + mayInKhu.size() + " máy)");
@@ -135,13 +134,17 @@ public class SoDoMayController implements Initializable {
         card.setPrefHeight(95);
         card.setCursor(javafx.scene.Cursor.HAND);
 
-        String styleClass = switch (may.getTrangthai()) {
-            case "TRONG"    -> "machine-free";
-            case "DANGDUNG" -> "machine-using";
-            case "BAOTRI"   -> "machine-maintain";
-            default          -> "machine-off";
+        // Màu nền theo trạng thái - không có border
+        String bgColor = switch (may.getTrangthai()) {
+            case "TRONG"    -> "#E8F5E9";  // xanh lá nhạt
+            case "DANGDUNG" -> "#E3F2FD";  // xanh dương nhạt
+            case "BAOTRI"   -> "#FFF3E0";  // cam nhạt
+            default          -> "#F5F5F5";  // xám nhạt
         };
-        card.getStyleClass().addAll("machine-card", styleClass);
+        card.setStyle("-fx-background-color:" + bgColor + ";" +
+                      "-fx-background-radius:8;" +
+                      "-fx-border-color:transparent;" +
+                      "-fx-border-width:0;");
 
         String icon = switch (may.getTrangthai()) {
             case "TRONG"    -> "💚";
@@ -154,8 +157,8 @@ public class SoDoMayController implements Initializable {
         iconLbl.setStyle("-fx-font-size:22px;");
         Label nameLbl = new Label(may.getTenmay());
         nameLbl.getStyleClass().add("machine-name");
+        nameLbl.setStyle("-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#212121;");
         Label statusLbl = new Label(may.getTrangthai());
-        statusLbl.getStyleClass().add("machine-status-label");
         statusLbl.setStyle("-fx-font-size:10px; -fx-text-fill:#555555;");
 
         card.getChildren().addAll(iconLbl, nameLbl, statusLbl);

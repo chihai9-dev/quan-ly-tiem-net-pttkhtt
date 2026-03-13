@@ -7,10 +7,10 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="gui.controller.HoaDonController"
       stylesheets="@../css/style.css"
-      spacing="16" style="-fx-padding: 0;">
+      spacing="16" styleClass="no-padding">
 
     <HBox alignment="CENTER_LEFT" spacing="12">
-        <Label text="🧾" style="-fx-font-size:26px;"/>
+        <Label text="🧾" styleClass="page-icon"/>
         <VBox spacing="2">
             <Label text="Hóa Đơn" styleClass="page-title"/>
             <Label text="Xem và xuất hóa đơn dịch vụ" styleClass="page-subtitle"/>
@@ -18,12 +18,12 @@
     </HBox>
 
     <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
-        <Label text="Từ:" style="-fx-text-fill:#555555;"/>
+        <Label text="Từ:" styleClass="text-muted"/>
         <DatePicker fx:id="dateFrom" prefWidth="130"/>
-        <Label text="Đến:" style="-fx-text-fill:#555555;"/>
+        <Label text="Đến:" styleClass="text-muted"/>
         <DatePicker fx:id="dateTo" prefWidth="130"/>
         <Button text="🔍  Tìm" styleClass="btn btn-primary" onAction="#handleSearch"/>
-        <Separator orientation="VERTICAL" style="-fx-padding:0 4;"/>
+        <Separator orientation="VERTICAL" styleClass="separator-vertical-pad"/>
         <TextField fx:id="txtSearch" promptText="Tìm theo mã HĐ, KH..." styleClass="search-bar"
                    prefWidth="200" onKeyReleased="#handleSearchText"/>
         <Pane HBox.hgrow="ALWAYS"/>
@@ -36,7 +36,7 @@
     <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.6">
 
         <!-- Left: Table -->
-        <VBox styleClass="page-card" spacing="0" style="-fx-padding:0;">
+        <VBox styleClass="page-card, no-padding" spacing="0">
             <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
                 <columns>
                     <TableColumn fx:id="colMaHD"       text="Mã HĐ"        prefWidth="90"/>
@@ -48,18 +48,16 @@
                     <TableColumn fx:id="colTrangThai"  text="Trạng thái"   prefWidth="110"/>
                 </columns>
             </TableView>
-            <HBox alignment="CENTER_RIGHT" spacing="12"
-                  style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
-                         -fx-border-color:#E8EEF6 transparent transparent transparent; -fx-border-width:1 0 0 0;">
+            <HBox alignment="CENTER_RIGHT" spacing="12" styleClass="table-footer">
                 <Label fx:id="lblTotal" text="Tổng: 0 hóa đơn" styleClass="page-subtitle"/>
-                <Label text="|" style="-fx-text-fill:#CCCCCC;"/>
-                <Label fx:id="lblTongTienAll" text="Tổng tiền: 0 ₫" styleClass="currency-label" style="-fx-font-size:13px;"/>
+                <Label text="|" styleClass="text-separator"/>
+                <Label fx:id="lblTongTienAll" text="Tổng tiền: 0 ₫" styleClass="currency-label, font-12"/>
             </HBox>
         </VBox>
 
         <!-- Right: Detail -->
         <VBox styleClass="page-card" spacing="12">
-            <Label text="Chi tiết hóa đơn" style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#1565C0;"/>
+            <Label text="Chi tiết hóa đơn" styleClass="section-title-blue"/>
             <Separator/>
 
             <VBox fx:id="vboxDetail" spacing="8" visible="false" managed="false">
@@ -68,19 +66,19 @@
                         <ColumnConstraints minWidth="120" maxWidth="120"/>
                         <ColumnConstraints hgrow="ALWAYS"/>
                     </columnConstraints>
-                    <Label text="Mã hóa đơn:"  style="-fx-text-fill:#888888;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                    <Label fx:id="lblDetMaHD"   text="" style="-fx-font-weight:bold;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-                    <Label text="Khách hàng:"   style="-fx-text-fill:#888888;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                    <Label text="Mã hóa đơn:"  styleClass="detail-label" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                    <Label fx:id="lblDetMaHD"   text="" styleClass="text-bold" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Khách hàng:"   styleClass="detail-label" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                     <Label fx:id="lblDetKH"     text="" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-                    <Label text="Máy sử dụng:"  style="-fx-text-fill:#888888;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                    <Label text="Máy sử dụng:"  styleClass="detail-label" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                     <Label fx:id="lblDetMay"    text="" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-                    <Label text="Thời gian:"    style="-fx-text-fill:#888888;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                    <Label text="Thời gian:"    styleClass="detail-label" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                     <Label fx:id="lblDetThoiGian" text="" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-                    <Label text="Tiền máy:"     style="-fx-text-fill:#888888;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                    <Label text="Tiền máy:"     styleClass="detail-label" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
                     <Label fx:id="lblDetTienMay" text="" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
                 </GridPane>
 
-                <Label text="Dịch vụ đã order:" style="-fx-font-weight:bold; -fx-text-fill:#555555;"/>
+                <Label text="Dịch vụ đã order:" styleClass="section-title-bold"/>
                 <TableView fx:id="tableChiTiet" prefHeight="160">
                     <columns>
                         <TableColumn fx:id="colCTDV"        text="Dịch vụ"   prefWidth="160"/>
@@ -93,17 +91,17 @@
                 <Separator/>
 
                 <HBox>
-                    <Label text="Tổng tiền:" style="-fx-text-fill:#555555;" HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="lblDetTongTien" text="" style="-fx-font-weight:bold;"/>
+                    <Label text="Tổng tiền:" styleClass="text-muted" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblDetTongTien" text="" styleClass="text-bold"/>
                 </HBox>
                 <HBox>
-                    <Label text="Giảm giá:" style="-fx-text-fill:#E53935;" HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="lblDetGiamGia" text="" style="-fx-text-fill:#E53935;"/>
+                    <Label text="Giảm giá:" styleClass="text-red" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblDetGiamGia" text="" styleClass="text-red"/>
                 </HBox>
                 <Separator/>
                 <HBox>
-                    <Label text="Thanh toán:" style="-fx-font-weight:bold; -fx-font-size:14px;" HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="lblDetThanhToan" text="" styleClass="currency-label" style="-fx-font-size:16px;"/>
+                    <Label text="Thanh toán:" styleClass="payment-label" HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblDetThanhToan" text="" styleClass="currency-label, font-16"/>
                 </HBox>
 
                 <Button text="📄  Xuất PDF hóa đơn này" styleClass="btn btn-danger"
@@ -111,7 +109,7 @@
             </VBox>
 
             <Label fx:id="lblNoSelection" text="← Chọn một hóa đơn để xem chi tiết"
-                   style="-fx-text-fill:#AAAAAA; -fx-font-size:13px;" visible="true"/>
+                   styleClass="no-selection-label" visible="true"/>
         </VBox>
 
     </SplitPane>

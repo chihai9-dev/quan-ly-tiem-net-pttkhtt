@@ -3,17 +3,22 @@ package gui.dialog;
 import bus.DichVuBUS;
 import bus.SuDungDichVuBUS;
 import entity.DichVu;
+import entity.PhienSuDung;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -70,18 +75,19 @@ public class ChonDichVuDialog implements Initializable {
 
     private void setupDichVuTable() {
         if (tableDichVu == null) return;
-        if (colDVMa != null)  colDVMa.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("maDV"));
-        if (colDVTen != null) colDVTen.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("tenDV"));
+        if (colDVMa != null)  colDVMa.setCellValueFactory(new PropertyValueFactory<>("madv"));
+        if (colDVTen != null) colDVTen.setCellValueFactory(new PropertyValueFactory<>("tendv"));
         if (colDVGia != null) {
-            colDVGia.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("donGia"));
+            colDVGia.setCellValueFactory(new PropertyValueFactory<>("dongia"));
             colDVGia.setCellFactory(col -> new TableCell<>() {
                 @Override protected void updateItem(Double v, boolean e) {
-                    super.updateItem(v, e);
+               super.updateItem(v, e);
                     setText(e || v == null ? null : String.format("%,.0f ₫", v));
                 }
             });
+
         }
-        if (colDVTon != null) colDVTon.setCellValueFactory(new javafx.scene.control.cell.PropertyValueFactory<>("soLuongTon"));
+        if (colDVTon != null) colDVTon.setCellValueFactory(new PropertyValueFactory<>("soluongton"));
     }
 
     private void setupCartTable() {
@@ -123,9 +129,9 @@ public class ChonDichVuDialog implements Initializable {
         try {
             // getDanhSachDV() hoặc getAvailable() - dùng getDanhSachDV() an toàn hơn
             List<DichVu> list = dichVuBUS.getDichVuConHang();
-            // Chỉ lấy dịch vụ DANGBAN và còn hàng
+            // Chỉ lấy dịch vụ CONHANG và còn hàng
             list = list.stream()
-                .filter(d -> "DANGBAN".equals(d.getTrangthai()) && d.getSoluongton() > 0)
+                .filter(d -> "CONHANG".equals(d.getTrangthai()) && d.getSoluongton() > 0)
                 .toList();
             dichVuList.setAll(list);
             if (tableDichVu != null) tableDichVu.setItems(dichVuList);
@@ -186,11 +192,11 @@ public class ChonDichVuDialog implements Initializable {
             if (qty <= 0) qty = 1;
         } catch (NumberFormatException e) { qty = 1; }
 
-        // String comparison (maDV là String trong DichVu entity)
+        // String comparison (madv là String trong DichVu entity)
         final int finalQty = qty;
-        final String maDV  = selectedDV.getMadv();
+        final String madv  = selectedDV.getMadv();
         cartList.stream()
-            .filter(item -> maDV.equals(item.getMaDV()))
+            .filter(item -> madv.equals(item.getMaDV()))
             .findFirst().ifPresentOrElse(
                 item -> item.setSoLuong(item.getSoLuong() + finalQty),
                 () -> cartList.add(new CartItem(selectedDV, finalQty))
@@ -216,7 +222,7 @@ public class ChonDichVuDialog implements Initializable {
         if (maPhien == null)    { setError("Chưa có thông tin phiên"); return; }
         try {
             for (CartItem item : cartList) {
-                // orderDichVu(String maPhien, String maDV, int soLuong)
+                // orderDichVu(String maPhien, String madv, int soLuong)
                 suDungDVBUS.orderDichVu(maPhien, item.getMaDV(), item.getSoLuong());
             }
             if (onOrderCallback != null) onOrderCallback.run();
@@ -252,7 +258,7 @@ public class ChonDichVuDialog implements Initializable {
             this.soLuong  = qty;
         }
 
-        // maDV trả về String (khớp với DichVu entity)
+        // madv trả về String (khớp với DichVu entity)
         public String getMaDV()        { return dichVu.getMadv(); }
         public String getTenDV()       { return dichVu.getTendv(); }
         public int    getSoLuong()     { return soLuong; }

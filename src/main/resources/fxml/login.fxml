@@ -24,17 +24,7 @@
         <Separator/>
 
         <Label text="ĐĂNG NHẬP" styleClass="login-title"/>
-        <Label text="Vui lòng chọn vai trò và nhập thông tin" styleClass="login-subtitle"/>
-
-        <!-- Role Toggle -->
-        <HBox styleClass="login-role-toggle" alignment="CENTER" spacing="0">
-            <ToggleButton fx:id="btnRoleKhachHang" text="👤  Khách hàng"
-                          styleClass="login-role-btn" selected="true"
-                          onAction="#handleRoleToggle"/>
-            <ToggleButton fx:id="btnRoleNhanVien" text="🏢  Nhân viên"
-                          styleClass="login-role-btn"
-                          onAction="#handleRoleToggle"/>
-        </HBox>
+        <Label text="Vui lòng nhập thông tin đăng nhập" styleClass="login-subtitle"/>
 
         <!-- Username -->
         <VBox spacing="4">
@@ -62,14 +52,6 @@
         <!-- Login Button -->
         <Button fx:id="btnLogin" text="ĐĂNG NHẬP" styleClass="login-btn"
                 maxWidth="Infinity" onAction="#handleLogin"/>
-
-        <Separator/>
-
-        <!-- Register link -->
-        <HBox alignment="CENTER" spacing="5">
-            <Label text="Chưa có tài khoản?" style="-fx-text-fill: #888888; -fx-font-size: 13px;"/>
-            <Button text="Đăng ký ngay" styleClass="login-register-link" onAction="#handleRegister"/>
-        </HBox>
 
         <Label text="© 2026 Quản Lý Tiệm Net v1.0" styleClass="login-footer"/>
 

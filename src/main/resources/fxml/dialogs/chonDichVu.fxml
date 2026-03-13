@@ -1,81 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.geometry.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="gui.dialog.ChonDichVuDialog"
-      stylesheets="@../../css/style.css"
-      spacing="0" style="-fx-min-width:500;">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
-    <HBox styleClass="dialog-header" spacing="12" alignment="CENTER_LEFT">
-        <Label text="🥤" style="-fx-font-size:22px;"/>
+<VBox spacing="0" styleClass="dialog-root-xl" stylesheets="@../../css/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.dialog.ChonDichVuDialog">
+
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="dialog-header">
+        <Label styleClass="dialog-icon" text="🥤" />
         <VBox spacing="2">
-            <Label text="Order Dịch Vụ" styleClass="dialog-title"/>
-            <Label fx:id="lblPhienInfo" text="Phiên: ..." style="-fx-text-fill:#90CAF9; -fx-font-size:12px;"/>
+            <Label styleClass="dialog-title" text="Order Dịch Vụ" />
+            <Label fx:id="lblPhienInfo" styleClass="dialog-phien-info" text="Phiên: ..." />
         </VBox>
     </HBox>
 
-    <VBox styleClass="dialog-body" spacing="12">
+    <VBox spacing="12" styleClass="dialog-body">
         <!-- Search -->
-        <TextField fx:id="txtSearch" promptText="🔍  Tìm dịch vụ..." styleClass="search-bar"
-                   onKeyReleased="#handleSearch"/>
+        <TextField fx:id="txtSearch" onKeyReleased="#handleSearch" promptText="🔍  Tìm dịch vụ..." styleClass="search-bar" />
 
         <!-- DV list table -->
         <TableView fx:id="tableDichVu" prefHeight="220">
-            <TableColumn fx:id="colMaDV" text="Mã DV" prefWidth="80"/>
-            <TableColumn fx:id="colTenDV" text="Tên dịch vụ" prefWidth="200"/>
-            <TableColumn fx:id="colGia" text="Đơn giá" prefWidth="100"/>
-            <TableColumn fx:id="colTonKho" text="Tồn kho" prefWidth="90"/>
+            <columns>
+                <TableColumn fx:id="colDVMa" prefWidth="80" text="Mã DV" />
+                <TableColumn fx:id="colDVTen" prefWidth="200" text="Tên dịch vụ" />
+                <TableColumn fx:id="colDVGia" prefWidth="100" text="Đơn giá" />
+                <TableColumn fx:id="colDVTon" prefWidth="90" text="Tồn kho" />
+            </columns>
         </TableView>
 
         <!-- Selected item + quantity -->
-        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-background-color:#EBF5FB;
-              -fx-background-radius:8; -fx-padding:12; -fx-border-color:#BBDEFB;
-              -fx-border-width:1; -fx-border-radius:8;">
+        <HBox alignment="CENTER_LEFT" spacing="10" styleClass="dialog-order-summary">
             <VBox spacing="3" HBox.hgrow="ALWAYS">
-                <Label text="Dịch vụ đã chọn:" style="-fx-text-fill:#888888; -fx-font-size:12px;"/>
-                <Label fx:id="lblSelectedDV" text="Chưa chọn dịch vụ"
-                       style="-fx-font-weight:bold; -fx-font-size:13px;"/>
+                <Label styleClass="detail-label, font-12" text="Dịch vụ đã chọn:" />
+                <Label fx:id="lblSelectedDV" styleClass="text-bold, font-12" text="Chưa chọn dịch vụ" />
             </VBox>
-            <VBox spacing="4" alignment="CENTER">
-                <Label text="Số lượng:" styleClass="form-label"/>
-                <HBox spacing="4" alignment="CENTER">
-                    <Button text="−" styleClass="btn btn-secondary"
-                            style="-fx-padding:4 10;" onAction="#handleDecrease"/>
-                    <TextField fx:id="txtSoLuong" text="1" styleClass="text-field"
-                               prefWidth="60" style="-fx-alignment:CENTER;"/>
-                    <Button text="＋" styleClass="btn btn-primary"
-                            style="-fx-padding:4 10;" onAction="#handleIncrease"/>
+            <VBox alignment="CENTER" spacing="4">
+                <Label styleClass="form-label" text="Số lượng:" />
+                <HBox alignment="CENTER" spacing="4">
+                    <Button onAction="#handleDecrease" styleClass="btn btn-secondary, dialog-qty-btn" text="−" />
+                    <TextField fx:id="txtSoLuong" prefWidth="60" styleClass="text-field, dialog-qty-field" text="1" />
+                    <Button onAction="#handleIncrease" styleClass="btn btn-primary, dialog-qty-btn" text="＋" />
                 </HBox>
             </VBox>
         </HBox>
 
         <!-- Cart / order list -->
-        <Label text="Giỏ hàng:" style="-fx-font-weight:bold; -fx-text-fill:#555555;"/>
+        <Label styleClass="section-title-bold" text="Giỏ hàng:" />
         <TableView fx:id="tableCart" prefHeight="150">
-            <TableColumn fx:id="colCartDV" text="Dịch vụ" prefWidth="200"/>
-            <TableColumn fx:id="colCartSL" text="SL" prefWidth="50"/>
-            <TableColumn fx:id="colCartDonGia" text="Đơn giá" prefWidth="100"/>
-            <TableColumn fx:id="colCartThanhTien" text="Thành tiền" prefWidth="110"/>
-            <TableColumn fx:id="colCartXoa" text="" prefWidth="50"/>
+            <columns>
+                <TableColumn fx:id="colCartTen" prefWidth="200" text="Dịch vụ" />
+                <TableColumn fx:id="colCartSL" prefWidth="50" text="SL" />
+                <TableColumn fx:id="colCartDonGia" prefWidth="100" text="Đơn giá" />
+                <TableColumn fx:id="colCartThanhTien" prefWidth="110" text="Thành tiền" />
+                <TableColumn fx:id="colCartXoa" prefWidth="50" text="" />
+            </columns>
+
         </TableView>
 
         <HBox alignment="CENTER_RIGHT">
-            <Label text="Tổng tiền order: " style="-fx-font-weight:bold;"/>
-            <Label fx:id="lblTongTienCart" text="0 ₫" styleClass="currency-label"/>
+            <Label styleClass="text-bold" text="Tổng tiền order: " />
+            <Label fx:id="lblTongTienCart" styleClass="currency-label" text="0 ₫" />
         </HBox>
 
-        <Label fx:id="lblError" styleClass="error-label" text=""/>
+        <Label fx:id="lblError" styleClass="error-label" text="" />
     </VBox>
 
-    <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER_RIGHT">
-        <Button text="＋  Thêm vào giỏ" styleClass="btn btn-outline" onAction="#handleAddToCart"/>
-        <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="✕  Hủy" styleClass="btn btn-secondary" onAction="#handleCancel"/>
-        <Button fx:id="btnXacNhan" text="✔  Xác nhận order" styleClass="btn btn-success"
-                onAction="#handleXacNhan"/>
+    <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="dialog-footer">
+        <Button onAction="#handleAddToCart" styleClass="btn btn-outline" text="＋  Thêm vào giỏ" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <Button onAction="#handleRemoveFromCart" styleClass="btn btn-secondary" text="✕  Hủy" />
+        <Button fx:id="btnXacNhan" onAction="#handleXacNhan" styleClass="btn btn-success" text="✔  Xác nhận order" />
     </HBox>
 
 </VBox>

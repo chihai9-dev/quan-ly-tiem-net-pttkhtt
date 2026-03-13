@@ -1,8 +1,6 @@
 package gui.controller;
 
-import bus.KhachHangBUS;
 import bus.NhanVienBUS;
-import entity.KhachHang;
 import entity.NhanVien;
 import utils.SessionManager;
 import javafx.fxml.FXML;
@@ -18,58 +16,37 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    // Khai báo đúng 100% tên biến theo file FXML của bạn
     @FXML private TextField txtUsername;
     @FXML private PasswordField txtPassword;
-    @FXML private ToggleButton btnRoleKhachHang;
-    @FXML private ToggleButton btnRoleNhanVien;
     @FXML private Label lblError;
     @FXML private Button btnLogin;
 
-    private KhachHangBUS khachHangBUS = new KhachHangBUS();
-    private NhanVienBUS nhanVienBUS = new NhanVienBUS();
-
-    // Nhóm 2 nút Toggle lại để chỉ chọn được 1 trong 2
-    private ToggleGroup roleGroup = new ToggleGroup();
+    private final NhanVienBUS nhanVienBUS = new NhanVienBUS();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        if (btnRoleKhachHang != null && btnRoleNhanVien != null) {
-            btnRoleKhachHang.setToggleGroup(roleGroup);
-            btnRoleNhanVien.setToggleGroup(roleGroup);
-        }
-        if(lblError != null) lblError.setText("");
-    }
-
-    @FXML
-    private void handleRoleToggle() {
-        // Đảm bảo người dùng không thể bỏ chọn cả 2 nút
-        if (roleGroup.getSelectedToggle() == null) {
-            btnRoleKhachHang.setSelected(true);
-        }
+        if (lblError != null) lblError.setText("");
     }
 
     @FXML
     private void handleLogin() {
-        String username = txtUsername.getText();
+        String username = txtUsername.getText().trim();
         String password = txtPassword.getText().trim();
 
-        // Kiểm tra xem nút Khách hàng có đang được nhấn không
-        boolean isKhachHang = btnRoleKhachHang.isSelected();
+        if (username.isEmpty() || password.isEmpty()) {
+            lblError.setText("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.");
+            lblError.setStyle("-fx-text-fill: red;");
+            return;
+        }
 
         try {
-            if (isKhachHang) {
-                KhachHang kh = khachHangBUS.dangNhap(username, password);
-                if (kh != null) {
-                    SessionManager.setCurrentUser(kh);
-                    chuyenHuongMain("Khách hàng");
-                }
+            NhanVien nv = nhanVienBUS.dangNhap(username, password);
+            if (nv != null) {
+                SessionManager.setCurrentUser(nv);
+                chuyenHuongMain();
             } else {
-                NhanVien nv = nhanVienBUS.dangNhap(username, password);
-                if (nv != null) {
-                    SessionManager.setCurrentUser(nv);
-                    chuyenHuongMain("Nhân viên");
-                }
+                lblError.setText("Tên đăng nhập hoặc mật khẩu không đúng.");
+                lblError.setStyle("-fx-text-fill: red;");
             }
         } catch (Exception e) {
             lblError.setText(e.getMessage());
@@ -77,31 +54,14 @@ public class LoginController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleRegister() {
-        try {
-            Stage currentStage = (Stage) btnLogin.getScene().getWindow();
-            currentStage.close();
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/register.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Đăng ký tài khoản");
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void chuyenHuongMain(String role) throws Exception {
+    private void chuyenHuongMain() throws Exception {
         Stage currentStage = (Stage) btnLogin.getScene().getWindow();
         currentStage.close();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
         Parent root = loader.load();
         Stage stage = new Stage();
-        stage.setTitle("Hệ Thống Quản Lý Tiệm Net - " + role);
+        stage.setTitle("Hệ Thống Quản Lý Tiệm Net");
         stage.setScene(new Scene(root, 1280, 800));
         stage.setMaximized(true);
         stage.show();

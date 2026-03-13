@@ -26,7 +26,7 @@ public class DichVuBUS {
     public List<DichVu> getDichVuConHang() throws Exception {
         // KÍCH HOẠT PHÂN QUYỀN
         PermissionHelper.requireLogin();
-        PermissionHelper.requireKhachHang();
+        PermissionHelper.requireNhanVien();
 
         List<DichVu> list = dvDAO.getAll();
         Iterator<DichVu> it = list.iterator();
