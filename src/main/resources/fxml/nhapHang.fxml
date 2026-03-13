@@ -21,20 +21,48 @@
 
     <!-- Toolbar -->
     <HBox styleClass="toolbar" spacing="8" alignment="CENTER_LEFT">
-        <TextField fx:id="txtSearch" promptText="🔍  Tìm phiếu nhập..." styleClass="search-bar"
-                   prefWidth="220" onKeyReleased="#handleSearch"/>
+        <TextField fx:id="txtSearch"
+                   promptText="🔍  Tìm phiếu nhập..."
+                   styleClass="search-bar"
+                   prefWidth="220"
+                   onAction="#handleSearch"/>
+
+        <Button text="Tìm"
+                styleClass="btn btn-secondary"
+                onAction="#handleSearch"
+                prefWidth="80"/>
+
         <DatePicker fx:id="dateFrom" promptText="Từ ngày" prefWidth="130"/>
         <DatePicker fx:id="dateTo" promptText="Đến ngày" prefWidth="130"/>
-        <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="150"
+
+        <ComboBox fx:id="cboTrangThai"
+                  promptText="Trạng thái"
+                  styleClass="combo-box"
+                  prefWidth="150"
                   onAction="#handleFilter">
         </ComboBox>
+
         <Pane HBox.hgrow="ALWAYS"/>
-        <Button text="＋  Tạo phiếu nhập" styleClass="btn btn-primary" onAction="#handleTaoPHieu"/>
-        <Button fx:id="btnDuyet" text="✔  Duyệt phiếu" styleClass="btn btn-success"
-                onAction="#handleDuyetPhieu" disable="true"/>
-        <Button fx:id="btnHuy" text="✕  Hủy phiếu" styleClass="btn btn-danger"
-                onAction="#handleHuyPhieu" disable="true"/>
-        <Button text="↺" styleClass="btn btn-secondary" onAction="#handleRefresh"/>
+
+        <Button text="＋  Tạo phiếu nhập"
+                styleClass="btn btn-primary"
+                onAction="#handleTaoPhieu"/>
+
+        <Button fx:id="btnDuyet"
+                text="✔  Duyệt phiếu"
+                styleClass="btn btn-success"
+                onAction="#handleDuyetPhieu"
+                disable="true"/>
+
+        <Button fx:id="btnHuy"
+                text="✕  Hủy phiếu"
+                styleClass="btn btn-danger"
+                onAction="#handleHuyPhieu"
+                disable="true"/>
+
+        <Button text="↺"
+                styleClass="btn btn-secondary"
+                onAction="#handleRefresh"/>
     </HBox>
 
     <!-- Split: Phieu list + Detail -->
@@ -44,14 +72,18 @@
         <VBox styleClass="page-card" spacing="0" style="-fx-padding:0;">
             <Label text="Danh sách phiếu nhập"
                    style="-fx-padding:14 16 10 16; -fx-font-weight:bold; -fx-font-size:14px; -fx-text-fill:#1565C0;"/>
+
             <TableView fx:id="tablePhieu" VBox.vgrow="ALWAYS">
-                <TableColumn fx:id="colMaPhieu" text="Mã phiếu" prefWidth="100"/>
-                <TableColumn fx:id="colNCC" text="Nhà cung cấp" prefWidth="160"/>
-                <TableColumn fx:id="colNgayNhap" text="Ngày nhập" prefWidth="120"/>
-                <TableColumn fx:id="colTongTien" text="Tổng tiền" prefWidth="110"/>
-                <TableColumn fx:id="colNguoiTao" text="Người tạo" prefWidth="120"/>
-                <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="110"/>
+                <columns>
+                    <TableColumn fx:id="colMaPhieu" text="Mã phiếu" prefWidth="100"/>
+                    <TableColumn fx:id="colNCC" text="Nhà cung cấp" prefWidth="160"/>
+                    <TableColumn fx:id="colNgayNhap" text="Ngày nhập" prefWidth="120"/>
+                    <TableColumn fx:id="colTongTien" text="Tổng tiền" prefWidth="110"/>
+                    <TableColumn fx:id="colNguoiTao" text="Người tạo" prefWidth="120"/>
+                    <TableColumn fx:id="colTrangThai" text="Trạng thái" prefWidth="110"/>
+                </columns>
             </TableView>
+
             <HBox alignment="CENTER_RIGHT" spacing="12"
                   style="-fx-padding:10 16; -fx-background-color:#FAFBFF;
                          -fx-border-color:#E8EEF6 transparent transparent transparent; -fx-border-width:1 0 0 0;">
@@ -67,6 +99,7 @@
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblTrangThaiPhieu" text="" styleClass="badge"/>
             </HBox>
+
             <Separator/>
 
             <GridPane hgap="10" vgap="8">
@@ -74,22 +107,29 @@
                     <ColumnConstraints minWidth="110" maxWidth="110"/>
                     <ColumnConstraints hgrow="ALWAYS"/>
                 </columnConstraints>
+
                 <Label text="Mã phiếu:" style="-fx-text-fill:#888888;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetMaPhieu" text="-" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
                 <Label text="Nhà cung cấp:" style="-fx-text-fill:#888888;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetNCC" text="-" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
                 <Label text="Ngày nhập:" style="-fx-text-fill:#888888;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetNgay" text="-" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
                 <Label text="Ghi chú:" style="-fx-text-fill:#888888;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
                 <Label fx:id="lblDetGhiChu" text="-" wrapText="true" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
             </GridPane>
 
             <Label text="Chi tiết hàng hóa:" style="-fx-font-weight:bold; -fx-text-fill:#555555;"/>
+
             <TableView fx:id="tableChiTiet" VBox.vgrow="ALWAYS">
-                <TableColumn fx:id="colCTDV" text="Dịch vụ" prefWidth="180"/>
-                <TableColumn fx:id="colCTSL" text="Số lượng" prefWidth="90"/>
-                <TableColumn fx:id="colCTDonGia" text="Đơn giá" prefWidth="100"/>
-                <TableColumn fx:id="colCTThanhTien" text="Thành tiền" prefWidth="110"/>
+                <columns>
+                    <TableColumn fx:id="colCTDV" text="Dịch vụ" prefWidth="180"/>
+                    <TableColumn fx:id="colCTSL" text="Số lượng" prefWidth="90"/>
+                    <TableColumn fx:id="colCTDonGia" text="Đơn giá" prefWidth="100"/>
+                    <TableColumn fx:id="colCTThanhTien" text="Thành tiền" prefWidth="110"/>
+                </columns>
             </TableView>
 
             <HBox alignment="CENTER_RIGHT">

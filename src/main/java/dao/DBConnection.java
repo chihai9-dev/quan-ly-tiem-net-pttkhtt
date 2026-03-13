@@ -8,7 +8,7 @@ public class DBConnection  {
     private static final String HOST = "127.0.0.1";
     private static final String PORT = "3306";
     private static  final  String USER = "root";
-    private static final  String PASS = "chauchihai";
+    private static final  String PASS = "12345";
     private static final String DATABASE = "quanlytiemnet_simple";
     private static final String URL = "jdbc:mysql://"+HOST+":"+PORT + "/"+DATABASE
             + "?useSSL=false"

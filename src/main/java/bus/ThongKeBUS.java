@@ -95,7 +95,16 @@ public class ThongKeBUS {
         return thongkeDAO.thongKeTongQuan();
     }
 
+    public List<Map<String, Object>> thongKeTheo12Thang(int nam) throws Exception {
+        requireQuanLy();
+
+        if (nam < 2000) throw new Exception("Năm không hợp lệ");
+
+        return thongkeDAO.thongKeTheo12Thang(nam);
+    }
+
     public void xuatBaoCaoExcel(LocalDate tuNgay, LocalDate denNgay) {
         throw new UnsupportedOperationException("Chưa implement (tuỳ chọn).");
     }
 }
+

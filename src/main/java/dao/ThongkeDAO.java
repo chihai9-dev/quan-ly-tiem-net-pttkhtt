@@ -156,6 +156,65 @@ public class ThongkeDAO {
         }
     }
 
+    public List<Map<String, Object>> thongKeTheo12Thang(int nam) {
+        Map<Integer, Double> doanhThuMap = new HashMap<>();
+        Map<Integer, Double> chiPhiMap = new HashMap<>();
+
+        String sqlDoanhThu =
+                "SELECT MONTH(NgayLap) AS Thang, COALESCE(SUM(ThanhToan),0) AS TongDoanhThu " +
+                        "FROM hoadon " +
+                        "WHERE TrangThai='DATHANHTOAN' AND YEAR(NgayLap)=? " +
+                        "GROUP BY MONTH(NgayLap)";
+
+        String sqlChiPhi =
+                "SELECT MONTH(NgayNhap) AS Thang, COALESCE(SUM(TongTien),0) AS TongChiPhi " +
+                        "FROM phieunhaphang " +
+                        "WHERE TrangThai='DANHAP' AND YEAR(NgayNhap)=? " +
+                        "GROUP BY MONTH(NgayNhap)";
+
+        try (Connection conn = DBConnection.getConnection()) {
+
+            try (PreparedStatement ps = conn.prepareStatement(sqlDoanhThu)) {
+                ps.setInt(1, nam);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        doanhThuMap.put(rs.getInt("Thang"), rs.getDouble("TongDoanhThu"));
+                    }
+                }
+            }
+
+            try (PreparedStatement ps = conn.prepareStatement(sqlChiPhi)) {
+                ps.setInt(1, nam);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        chiPhiMap.put(rs.getInt("Thang"), rs.getDouble("TongChiPhi"));
+                    }
+                }
+            }
+
+            List<Map<String, Object>> list = new ArrayList<>();
+            for (int thang = 1; thang <= 12; thang++) {
+                double thu = doanhThuMap.getOrDefault(thang, 0.0);
+                double chi = chiPhiMap.getOrDefault(thang, 0.0);
+                double loiNhuan = thu - chi;
+
+                Map<String, Object> row = new HashMap<>();
+                row.put("Thang", thang);
+                row.put("ThoiGian", "Tháng " + thang + "/" + nam);
+                row.put("TongDoanhThu", thu);
+                row.put("TongNhapHang", chi);
+                row.put("LoiNhuan", loiNhuan);
+
+                list.add(row);
+            }
+
+            return list;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("ThongkeDAO.thongKeTheo12Thang error", e);
+        }
+    }
+
     private int scalarInt(Connection conn, String sql) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -172,3 +231,5 @@ public class ThongkeDAO {
         }
     }
 }
+
+
