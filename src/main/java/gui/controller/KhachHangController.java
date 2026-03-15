@@ -24,15 +24,14 @@ import java.util.ResourceBundle;
 public class KhachHangController implements Initializable {
 
     @FXML private TableView<KhachHang> tableView;
-    @FXML private TableColumn<KhachHang, String> colMa;
-    @FXML private TableColumn<KhachHang, String> colHo;
-    @FXML private TableColumn<KhachHang, String> colTen;
+    @FXML private TableColumn<KhachHang, String> colMaKH;
+    @FXML private TableColumn<KhachHang, String> colHoTen;
     @FXML private TableColumn<KhachHang, String> colSDT;
-    @FXML private TableColumn<KhachHang, String> colTDN;
     @FXML private TableColumn<KhachHang, Double> colSoDu;
     @FXML private TableColumn<KhachHang, String> colTrangThai;
 
     @FXML private TextField txtSearch;
+
     @FXML private ComboBox<String> cboTrangThai;
     @FXML private Label lblSubtitle;
     @FXML private Label lblTotal;
@@ -57,21 +56,31 @@ public class KhachHangController implements Initializable {
     }
 
     private void setupTableColumns() {
-        if (colMa       != null) colMa.setCellValueFactory(new PropertyValueFactory<>("makh"));
-        if (colHo       != null) colHo.setCellValueFactory(new PropertyValueFactory<>("ho"));
-        if (colTen      != null) colTen.setCellValueFactory(new PropertyValueFactory<>("ten"));
-        if (colSDT      != null) colSDT.setCellValueFactory(new PropertyValueFactory<>("sodienthoai"));
-        if (colTDN      != null) colTDN.setCellValueFactory(new PropertyValueFactory<>("tendangnhap"));
-        if (colSoDu     != null) {
+        if (colMaKH != null) colMaKH.setCellValueFactory(new PropertyValueFactory<>("makh"));
+
+        // Nối cột Họ và Tên lại với nhau
+        if (colHoTen != null) {
+            colHoTen.setCellValueFactory(cellData -> {
+                KhachHang kh = cellData.getValue();
+                String hoTen = (kh.getHo() != null ? kh.getHo() + " " : "") + (kh.getTen() != null ? kh.getTen() : "");
+                return new javafx.beans.property.SimpleStringProperty(hoTen.trim());
+            });
+        }
+
+        if (colSDT != null) colSDT.setCellValueFactory(new PropertyValueFactory<>("sodienthoai"));
+
+        // Format hiển thị tiền VNĐ
+        if (colSoDu != null) {
             colSoDu.setCellValueFactory(new PropertyValueFactory<>("sodu"));
-            colSoDu.setCellFactory(col -> new TableCell<>() {
+            colSoDu.setCellFactory(col -> new TableCell<KhachHang, Double>() {
                 @Override protected void updateItem(Double v, boolean empty) {
                     super.updateItem(v, empty);
                     setText(empty || v == null ? null : String.format("%,.0f ₫", v));
                 }
             });
         }
-        if (colTrangThai!= null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
+
+        if (colTrangThai != null) colTrangThai.setCellValueFactory(new PropertyValueFactory<>("trangthai"));
     }
 
     private void setupTableSelection() {
