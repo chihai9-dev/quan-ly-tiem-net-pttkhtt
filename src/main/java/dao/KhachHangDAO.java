@@ -131,38 +131,43 @@ public class KhachHangDAO {
 
         }
     }
-    //cập nhật dữ liệu cho khách hàng
+    // cập nhật dữ liệu cho khách hàng
     public boolean update (KhachHang kh){
 
         KhachHang existing = getById(kh.getMakh());
 
-        //kiểm tra khách hàng tồn tại
+        // kiểm tra khách hàng tồn tại
         if(existing == null){
             throw new RuntimeException("Lỗi khách hàng không tồn tại !");
         }
 
-        //khách hàng đã bị xóa trước đó
+        // khách hàng đã bị xóa trước đó thì không cho sửa
         if(existing.isNgung()){
             throw new RuntimeException("Khách hàng đã bị xóa !");
         }
 
-        //kiểm tra Valid
+        // BẢO MẬT: Nếu người dùng cố tình chuyển sang NGUNG trong form sửa,
+        // phải kiểm tra xem khách đó có đang chơi net không
+        if ("NGUNG".equals(kh.getTrangthai()) && hasActiveSession(kh.getMakh())) {
+            throw new RuntimeException("Không thể khóa khách hàng đang có phiên chơi !");
+        }
+
+        // kiểm tra Valid
         validateKhachHang(kh,false);
 
-
-        String sql = "UPDATE khachhang SET Ho = ? , Ten = ? , SoDienThoai = ? , MatKhau = ? WHERE MaKH = ? AND TrangThai = ?";
+        // ĐÃ SỬA LỖI: Thêm TrangThai = ? vào danh sách SET để MySQL cập nhật
+        String sql = "UPDATE khachhang SET Ho = ? , Ten = ? , SoDienThoai = ? , MatKhau = ?, TrangThai = ? WHERE MaKH = ?";
 
         try{
-
             Connection conn = DBConnection.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql);
 
-            pstmt.setString(1,kh.getHo());
-            pstmt.setString(2,kh.getTen());
-            pstmt.setString(3,kh.getSodienthoai());
-            pstmt.setString(4,kh.getMatkhau());
-            pstmt.setString(5,kh.getMakh());
-            pstmt.setString(6,"HOATDONG");
+            pstmt.setString(1, kh.getHo());
+            pstmt.setString(2, kh.getTen());
+            pstmt.setString(3, kh.getSodienthoai());
+            pstmt.setString(4, kh.getMatkhau());
+            pstmt.setString(5, kh.getTrangthai()); // Lưu Trạng thái mới xuống DB
+            pstmt.setString(6, kh.getMakh());      // Khớp với WHERE MaKH = ?
 
             pstmt.executeUpdate();
             pstmt.close();
