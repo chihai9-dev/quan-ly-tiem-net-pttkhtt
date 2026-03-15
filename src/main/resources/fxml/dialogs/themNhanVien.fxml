@@ -60,7 +60,7 @@
 
     <!-- Footer -->
     <HBox styleClass="dialog-footer" spacing="10" alignment="CENTER_RIGHT">
-        <Button text="✕  Hủy" styleClass="btn btn-secondary"
+        <Button fx:id="btnCancel" text="✕  Hủy" styleClass="btn btn-secondary"
                 onAction="#handleCancel"/>
         <Button fx:id="btnSave" text="💾  Lưu" styleClass="btn btn-primary"
                 onAction="#handleSave"/>
