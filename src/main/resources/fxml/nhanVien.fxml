@@ -32,6 +32,8 @@
                 <ComboBox fx:id="cboTrangThai" promptText="Chọn trạng thái" styleClass="combo-box" maxWidth="Infinity"/>
             </VBox>
         </HBox>
+        <ComboBox fx:id="cboTrangThai" promptText="Trạng thái" styleClass="combo-box" prefWidth="140">
+        </ComboBox>
 
         <Pane HBox.hgrow="ALWAYS"/>
         <Button fx:id="btnThem" text="＋ Thêm" styleClass="btn btn-primary"
