@@ -49,6 +49,11 @@
             <graphic><Label text="&#xe5d5;" styleClass="icon-sm"/></graphic>
             <text>  Làm mới</text>
         </Button>
+
+        <Button styleClass="btn btn-success" onAction="#exportExcel">
+            <graphic><Label text="&#xeb9e;" styleClass="icon-sm"/></graphic>
+            <text>  Xuất Excel</text>
+        </Button>
     </HBox>
 
     <!-- Table -->

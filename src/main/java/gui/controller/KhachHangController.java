@@ -12,12 +12,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import utils.KhachHangExporter;
 import utils.ThongBaoDialogHelper;
 
+import java.io.File;
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -46,6 +51,7 @@ public class KhachHangController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         setupTableColumns();
         setupTableSelection();
         if (cboTrangThai != null) {
@@ -59,6 +65,7 @@ public class KhachHangController implements Initializable {
             cbFilterSoDu.setOnAction(e -> applyFilter());
         }
         loadData();
+        List<KhachHang> ds = filteredList;
     }
 
     private void setupTableColumns() {
@@ -203,6 +210,31 @@ public class KhachHangController implements Initializable {
         if (cboTrangThai != null) cboTrangThai.setValue("Tất cả");
         if(cbFilterSoDu != null) cbFilterSoDu.setValue("Tất cả");
         loadData();
+    }
+
+    @FXML
+    public void exportExcel(){
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Lưu thông tin khách hàng Excel");
+        fileChooser.getExtensionFilters().add(
+          new FileChooser.ExtensionFilter("Excel Workbook (*.xlsx)","*.xlsx")
+        );
+        fileChooser.setInitialFileName(
+                "ThongTinKhachHang"+ LocalDate.now().toString()+".xlsx"
+        );
+        File file = fileChooser.showSaveDialog(
+                tableView != null && tableView.getScene() != null
+                ?tableView.getScene().getWindow():
+                        null
+        );
+        if(file == null)
+            return;
+//        if(!file.getName().toLowerCase().endsWith(".xlsx"));{
+//            file = new File(file.getAbsolutePath() + ".xlsx");
+//        }
+        KhachHangExporter.exportKhachHang(file,filteredList);
+
     }
 
     private void openDialog(KhachHang entity) {

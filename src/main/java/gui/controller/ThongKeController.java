@@ -17,7 +17,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import java.io.File;
-import utils.ThongKeExcelExporter;
+
+import javafx.stage.Window;
+import utils.ThongKeExporter;
 
 
 import java.net.URL;
@@ -68,6 +70,10 @@ public class ThongKeController implements Initializable {
     @FXML private TableColumn<Object[], String> colTopThoiGian;
     @FXML private TableColumn<Object[], String> colTopTongTien;
 
+
+
+    @FXML private Button btnXuatPDF;
+
     private final ThongKeBUS thongKeBUS = new ThongKeBUS();
     private final HoaDonBUS hoaDonBUS = new HoaDonBUS();
 
@@ -78,7 +84,9 @@ public class ThongKeController implements Initializable {
 
         if (dateTCFrom != null) dateTCFrom.setValue(LocalDate.now().withDayOfMonth(1));
         if (dateTCTo != null) dateTCTo.setValue(LocalDate.now());
-
+        if(btnXuatPDF != null){
+            btnXuatPDF.setDisable(true);
+        }
         if (cboLoaiTK != null) {
             cboLoaiTK.getItems().setAll("Từ ngày đến ngày", "Theo tháng");
             cboLoaiTK.setValue("Từ ngày đến ngày");
@@ -238,6 +246,14 @@ public class ThongKeController implements Initializable {
                     ? dateFrom.getValue()
                     : LocalDate.now());
         }
+
+        if( cboLoaiTK.getValue().equals("Từ ngày đến ngày")){
+            btnXuatPDF.setDisable(true);
+        }
+        else {
+            btnXuatPDF.setDisable(false);
+        }
+
     }
 
     @FXML
@@ -348,7 +364,7 @@ public class ThongKeController implements Initializable {
     @FXML
     public void handleXuatExcel() {
         try {
-            String loai = cboLoaiTK != null ? cboLoaiTK.getValue() : "Từ ngày đến ngày";
+            String loai = "Theo tháng";
 
             LocalDate from;
             LocalDate to;
@@ -357,52 +373,28 @@ public class ThongKeController implements Initializable {
             double tongChi;
             double tongLoiNhuan;
 
-            if ("Theo tháng".equals(loai)) {
-                LocalDate mocNam = (dateFrom != null && dateFrom.getValue() != null)
-                        ? dateFrom.getValue()
-                        : LocalDate.now();
+            LocalDate mocNam = (dateFrom != null && dateFrom.getValue() != null)
+                    ? dateFrom.getValue()
+                    : LocalDate.now();
 
-                int nam = mocNam.getYear();
-                from = LocalDate.of(nam, 1, 1);
-                to = LocalDate.of(nam, 12, 31);
+            int nam = mocNam.getYear();
+            from = LocalDate.of(nam, 1, 1);
+            to = LocalDate.of(nam, 12, 31);
 
-                exportData = thongKeBUS.thongKeTheo12Thang(nam);
+            exportData = thongKeBUS.thongKeTheo12Thang(nam);
 
-                tongThu = exportData.stream()
-                        .mapToDouble(r -> getDouble(r, "TongDoanhThu"))
-                        .sum();
+            tongThu = exportData.stream()
+                    .mapToDouble(r -> getDouble(r, "TongDoanhThu"))
+                    .sum();
 
-                tongChi = exportData.stream()
-                        .mapToDouble(r -> getDouble(r, "TongNhapHang"))
-                        .sum();
+            tongChi = exportData.stream()
+                    .mapToDouble(r -> getDouble(r, "TongNhapHang"))
+                    .sum();
 
-                tongLoiNhuan = exportData.stream()
-                        .mapToDouble(r -> getDouble(r, "LoiNhuan"))
-                        .sum();
+            tongLoiNhuan = exportData.stream()
+                    .mapToDouble(r -> getDouble(r, "LoiNhuan"))
+                    .sum();
 
-            } else {
-                from = (dateFrom != null && dateFrom.getValue() != null)
-                        ? dateFrom.getValue()
-                        : LocalDate.now().withDayOfMonth(1);
-
-                to = (dateTo != null && dateTo.getValue() != null)
-                        ? dateTo.getValue()
-                        : LocalDate.now();
-
-                Map<String, Object> data = thongKeBUS.thongKeDoanhThu(from, to);
-
-                Map<String, Object> row = new LinkedHashMap<>();
-                row.put("ThoiGian", from + " → " + to);
-                row.put("TongDoanhThu", data.get("TongDoanhThu"));
-                row.put("TongNhapHang", data.getOrDefault("TongNhapHang", 0));
-                row.put("LoiNhuan", data.getOrDefault("LoiNhuan", 0));
-
-                exportData = List.of(row);
-
-                tongThu = getDouble(data, "TongDoanhThu");
-                tongChi = getDouble(data, "TongNhapHang");
-                tongLoiNhuan = getDouble(data, "LoiNhuan");
-            }
 
             Map<String, Object> tongQuan = thongKeBUS.thongKeTongQuan();
             int soPhienDangChoi = (int) Math.round(getDouble(tongQuan, "SoPhienDangChoi"));
@@ -430,7 +422,7 @@ public class ThongKeController implements Initializable {
                 file = new File(file.getAbsolutePath() + ".xlsx");
             }
 
-            ThongKeExcelExporter.exportThongKe(
+            ThongKeExporter.exportThongKe(
                     file,
                     "BÁO CÁO THỐNG KÊ TIỆM NET",
                     loai,
@@ -452,6 +444,79 @@ public class ThongKeController implements Initializable {
         } catch (Exception e) {
             showError("Lỗi xuất Excel", e.getMessage());
         }
+    }
+
+    @FXML
+    public void handXuatPDF(){
+        try {
+
+
+            String loai =  cboLoaiTK.getValue();
+
+            LocalDate from;
+            LocalDate to;
+            List<Map<String, Object>> exportData;
+            double tongThu;
+            double tongChi;
+            double tongLoiNhuan;
+
+            LocalDate mocNam = (dateFrom != null && dateFrom.getValue() != null) ?
+                    dateFrom.getValue() : LocalDate.now();
+            int nam = mocNam.getYear();
+            from = LocalDate.of(nam, 1, 1);
+            to = LocalDate.of(nam, 12, 31);
+
+            exportData = thongKeBUS.thongKeTheo12Thang(nam);
+
+            tongThu = exportData.stream().
+                    mapToDouble(r -> getDouble(r,"TongDanhThu")).sum();
+            tongChi = exportData.stream().
+                    mapToDouble(r -> getDouble(r,"TongNhapHang")).sum();
+            tongLoiNhuan = exportData.stream().
+                    mapToDouble(r -> getDouble(r,"LoiNhuan")).sum();
+
+
+
+
+            Map<String,Object> tongQuan = thongKeBUS.thongKeTongQuan();
+            int soPhienDangChoi = (int)Math.round(getDouble(tongQuan,"SoPhienDangChoi"));
+
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Lưu báo cáo PDF");
+            fileChooser.setInitialFileName("BaoCao_" + LocalDate.now() + ".pdf");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+
+            File file = fileChooser.showSaveDialog(
+                    chartContainer != null && chartContainer.getScene() != null
+                            ? chartContainer.getScene().getWindow()
+                            : null
+            );
+
+            if (file == null) return;
+
+            ThongKeExporter.xuatPDFThongKe(file.getAbsolutePath(),
+                    "BÁO CÁO THỐNG KÊ TIỆM NET",
+                    loai,
+                    from,
+                    to,
+                    exportData,
+                    tongThu,
+                    tongChi,
+                    tongLoiNhuan,
+                    soPhienDangChoi);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Thành công");
+            alert.setHeaderText(null);
+//            alert.setContentText("Xuất file PDF thành công:\n" + file.getAbsolutePath());
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            showError("Lỗi xuất PDF", e.getMessage());
+        }
+
+
+
     }
 
     @FXML

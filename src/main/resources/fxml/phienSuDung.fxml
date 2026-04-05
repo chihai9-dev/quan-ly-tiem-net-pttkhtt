@@ -31,11 +31,15 @@
         </VBox>
         <VBox styleClass="stat-card stat-card-green" spacing="4" HBox.hgrow="ALWAYS">
             <Label fx:id="lblDoanhThuNgay" text="0 ₫" styleClass="stat-number, stat-number-green, stat-number-small"/>
-            <Label text="Doanh thu hôm nay" styleClass="stat-label"/>
+            <Label text="Tổng doanh thu " styleClass="stat-label"/>
         </VBox>
-        <VBox styleClass="stat-card" spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="Tổng số phiên" styleClass="stat-label"/>
-            <Label fx:id="lblPhienHomNay" text="0" styleClass="stat-number"/>
+        <VBox styleClass="stat-card stat-card-orange" spacing="4"   HBox.hgrow="ALWAYS">
+                <Label text="Tổng số phiên" styleClass="stat-label"/>
+                <Label fx:id="lblPhienHomNay" text="0" styleClass="stat-number"/>
+        </VBox>
+        <VBox styleClass="stat-card"  spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Giờ kiểm tra kết thúc phiên " styleClass="stat-label"/>
+            <Label fx:id="lblTimeKetThucPhien" text="00:00:00" styleClass="live-time" />
         </VBox>
     </HBox>
 

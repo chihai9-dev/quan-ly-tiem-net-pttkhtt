@@ -30,6 +30,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import utils.ThongBaoDialogHelper;
 
+import javax.swing.text.DateFormatter;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,6 +63,7 @@ public class PhienSuDungController implements Initializable {
     @FXML private Label            lblDangChoi;
     @FXML private Label            lblDoanhThuNgay;
     @FXML private Label            lblPhienHomNay;
+    @FXML private Label            lblTimeKetThucPhien;
     @FXML private Button           btnKetThuc;
     @FXML private Button           btnOrderDV;
 
@@ -86,6 +88,7 @@ public class PhienSuDungController implements Initializable {
     private PhienSuDung                       selectedPhien;
     private Timeline                          clockTimeline;
     private Timeline                          cellRefreshTimeline;
+    private Timeline                          refreshDataBase;
 
     // Cache để tìm kiếm theo tên
     private List<KhachHang> cacheKhachHang = new java.util.ArrayList<>();
@@ -107,6 +110,7 @@ public class PhienSuDungController implements Initializable {
         loadData();
         startClock();
         startCellRefresh();
+        startRefreshKetThucPhien();
     }
 
     private void loadCache() {
@@ -565,6 +569,17 @@ public class PhienSuDungController implements Initializable {
         loadData();
     }
 
+    private  void loadKetThucPhien(){
+        List<PhienSuDung> danhSachDaKetThuc = phienBUS.kiemTraVaKetThucPhienQuaHan();
+        if (!danhSachDaKetThuc.isEmpty()) {
+            ThongBaoDialogHelper.showWarning(tableView.getScene(),
+                    "⚠ Tự động kết thúc " + danhSachDaKetThuc.size()
+                            + " phiên do khách hàng hết tiền.\nHóa đơn đã được tạo tự động.");
+        }
+        loadCache();
+        loadData();
+    }
+
     // ================================================================
     //  PHẦN 11: ORDER DỊCH VỤ
     // ================================================================
@@ -631,6 +646,26 @@ public class PhienSuDungController implements Initializable {
                 e -> { if (tableView != null) tableView.refresh(); }));
         cellRefreshTimeline.setCycleCount(Timeline.INDEFINITE);
         cellRefreshTimeline.play();
+    }
+
+
+
+
+
+
+
+    //
+    private void startRefreshKetThucPhien(){
+        DateTimeFormatter fm = DateTimeFormatter.ofPattern("HH:mm:ss");
+        refreshDataBase = new Timeline(new KeyFrame(Duration.seconds(60),
+                e -> {
+                    startRefreshKetThucPhien();
+                }));
+        refreshDataBase.setCycleCount(Timeline.INDEFINITE);
+        refreshDataBase.play();
+        if(lblTimeKetThucPhien != null){
+            lblTimeKetThucPhien.setText(LocalDateTime.now().format(fm));
+        }
     }
 
 

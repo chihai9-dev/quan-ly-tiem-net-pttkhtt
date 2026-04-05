@@ -58,6 +58,11 @@
                         <graphic><Label text="&#xeb9e;" styleClass="icon-sm"/></graphic>
                         <text>  Xuất Excel</text>
                     </Button>
+                    <Button fx:id="btnXuatPDF" styleClass="btn btn-danger"
+                            onAction="#handXuatPDF" disable="true">
+                        <graphic><Label text="&#xe415;" styleClass="icon-sm"/></graphic>
+                        <text>  Xuất PDF</text>
+                    </Button>
                 </HBox>
 
                 <SplitPane dividerPositions="0.55" VBox.vgrow="ALWAYS">

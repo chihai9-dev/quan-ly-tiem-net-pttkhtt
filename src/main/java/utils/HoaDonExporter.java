@@ -46,9 +46,12 @@ public class HoaDonExporter {
         doc.add(new Paragraph(" "));
         //Thông tin hóa đơn
         PdfPTable infoTable = new PdfPTable(2);
+        // width = 100%
         infoTable.setWidthPercentage(100);
+        //chi bảng ra 2 phần đều nhau
         infoTable.setWidths(new float[]{1f, 1f});
         infoTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        //chỉ áp dụng cho .addCell("văn bản ) , PdfCell thì cần định dạng
 
         addInfoCell(infoTable, "Mã hóa đơn: ", hd.getMaHD(), fontBold, fontNormal);
         addInfoCell(infoTable, "Ngày lập: ", hd.getNgayLap() != null ? hd.getNgayLap().format(FMT) : "-", fontBold, fontNormal);
@@ -59,6 +62,7 @@ public class HoaDonExporter {
         doc.add(infoTable);
 
         doc.add(new Paragraph(" "));
+        //gạch ngang
         PdfPTable ls = new PdfPTable(1);
         ls.setWidthPercentage(100);
         PdfPCell lsCell = new PdfPCell();

@@ -367,6 +367,23 @@ quan-ly-tiem-net-pttkhtt/
 
 ---
 
+## Thành Viên Nhóm
+
+<div align="center">
+
+| STT | Họ và Tên | MSSV | Vai Trò |
+|:---:|---|:---:|:---:|
+| 1 | Phạm Duy Đăng | `3124410068` | Nhóm Trưởng |
+| 2 | Nguyễn Phúc Thắng | `3124410331` | Thành viên |
+| 3 | Nguyễn Vương Hoàng Tịnh | `3124560091` | Thành viên |
+| 4 | Nguyễn Thành Long | `3124410195` | Thành viên |
+| 5 | Nguyễn Phú Tài | `3121410435` | Thành viên |
+| 6 | Châu Chí Hải | `3124410076` | Thành viên |
+
+</div>
+
+---
+
 <div align="center">
 
 Môn học: **Phân Tích Thiết Kế Hệ Thống Thông Tin** &nbsp;|&nbsp; Phiên bản: `1.0-SNAPSHOT`

@@ -270,6 +270,7 @@ public class HoaDonController implements Initializable {
         }
     }
 
+
     @FXML public void handleXuatPDFChiTiet() { handleXuatPDF(); }
 
     @FXML

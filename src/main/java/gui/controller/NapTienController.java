@@ -226,7 +226,9 @@ public class NapTienController implements Initializable {
     //=========================================
     private void startClock() {
         if (lblLiveTime == null) return;
+        //tạo bộ định dạng thời gian
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm:ss");
+        //
         clockTimeline = new Timeline(new KeyFrame(Duration.seconds(1),
                 e -> lblLiveTime.setText(LocalDateTime.now().format(fmt))));
         clockTimeline.setCycleCount(Timeline.INDEFINITE);
